@@ -1,3 +1,9 @@
+USE [master];
+CREATE DATABASE [stats];
+GO
+
+USE [stats];
+
 CREATE TABLE [Person] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	FirstName VARCHAR(255) NOT NULL,
