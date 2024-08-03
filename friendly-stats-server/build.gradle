@@ -1,28 +1,53 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.3.2'
-	id 'io.spring.dependency-management' version '1.1.6'
+  id 'java'
+  id 'org.springframework.boot' version '3.3.2'
+  id 'io.spring.dependency-management' version '1.1.6'
+  id "com.diffplug.spotless" version "6.25.0"
 }
 
 group = 'com.potrt'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
 }
 
 repositories {
-	mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  implementation 'org.springframework.boot:spring-boot-starter'
+  implementation 'com.google.googlejavaformat:google-java-format:1.23.0'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+spotless {
+  format 'misc', {
+    target '.gitattributes', '.gitignore'
+    trimTrailingWhitespace()
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+
+  groovyGradle {
+    target '*.gradle'
+    greclipse()
+  }
+
+  java {
+    importOrder()
+    removeUnusedImports()
+
+    googleJavaFormat()
+    formatAnnotations()
+    licenseHeader '/* Copywrite (c) $YEAR */'
+  }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+  useJUnitPlatform()
 }
