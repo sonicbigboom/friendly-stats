@@ -1,5 +1,4 @@
 #!/bin/bash
-
 /usr/bin/date >> /tmp/log
 /usr/bin/echo "configure-db.sh" >> /tmp/log 
 /usr/bin/echo "pass: $MSSQL_SA_PASSWORD" >> /tmp/log
@@ -26,4 +25,6 @@ if [ $DBSTATUS -ne 0 ] OR [ $ERRCODE -ne 0 ]; then
 fi
 
 # Run the setup script to create the DB.
-/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i createTables.sql
+/usr/bin/date >> /tmp/log
+/usr/bin/echo "About to run createTables.sql" >> /tmp/log 
+/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i createTables.sql
