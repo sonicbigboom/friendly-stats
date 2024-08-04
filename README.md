@@ -42,6 +42,11 @@ Start container - `sudo docker start friendly_stats`
 Stop container - `sudo docker stop friendly_stats`  
 Delete container and image - `sudo delete-container.sh`
 
+> [!CAUTION]  
+> Running the following command will permanently delete all data. Please make a backup first!
+
+Delete volume and data - `sudo docker volume rm friendly_stats_db_volume`
+
 TODO: Expand the following section with detailed instructions.
 
 Change the `sa` password by providing a new secure password to the prompt:

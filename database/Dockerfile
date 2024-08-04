@@ -16,7 +16,7 @@ COPY . /usr/config
 
 # Grant scripts permissions to run.
 RUN chmod +x /usr/config/entrypoint.sh
-RUN chmod +x /usr/config/configure-db.sh
+RUN chmod +x /usr/config/configure-db-volume.sh
 
 # Run the scripts.
 ENTRYPOINT ["./entrypoint.sh"]

@@ -3,16 +3,16 @@ date >> /tmp/log
 echo "entrypoint.sh" >> /tmp/log 
 
 
-if [ -e /usr/config/setup.done ]; then
+if [ -e /var/opt/mssql/db-volume-setup.done ]; then
   date >> /tmp/log
-  echo "Skipping setup." >> /tmp/log 
+  echo "Skipping db volume setup." >> /tmp/log 
 else
   date >> /tmp/log
-  echo "Running initial setup." >> /tmp/log 
+  echo "Running db volume initial setup." >> /tmp/log 
 
-  /usr/config/configure-db.sh &
+  /usr/config/configure-db-volume.sh &
 
-  touch /usr/config/setup.done
+  touch /var/opt/mssql/db-volume-setup.done
 fi
 
 # Start SQL Server.
