@@ -33,12 +33,14 @@ Follow these instructions: https://docs.docker.com/engine/install/
 
 #### SQL Server
 
-Clone this repository `https://github.com/sonicbigboom/friendly-stats.git` and navigate to the database directory.  Use the following commands as admin as needed:
+Clone this repository `https://github.com/sonicbigboom/friendly-stats.git` and navigate to the database directory.  
+Run `sudo chmod +x create-docker.sh` and `sudo chmod +x delete-container.sh` to give the scripts permissions.
+Use the following commands as admin as needed:
 
-Create container - `create-docker.sh`  
-Start container - `docker start friendly_stats`  
-Stop container - `docker stop friendly_stats`  
-Delete container and image - `delete-container.sh`
+Create container - `sudo create-docker.sh`  
+Start container - `sudo docker start friendly_stats`  
+Stop container - `sudo docker stop friendly_stats`  
+Delete container and image - `sudo delete-container.sh`
 
 TODO: Expand the following section with detailed instructions.
 
