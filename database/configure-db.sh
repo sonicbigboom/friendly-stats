@@ -1,5 +1,9 @@
 #!/bin/bash
 
+/usr/bin/date >> /tmp/log
+/usr/bin/echo "configure-db.sh" >> /tmp/log 
+/usr/bin/echo "pass: $MSSQL_SA_PASSWORD" >> /tmp/log
+
 # Wait 60 seconds for SQL Server to start up by ensuring that 
 # calling SQLCMD does not return an error code, which will ensure that sqlcmd is accessible
 # and that system and user databases return "0" which means all databases are in an "online" state
@@ -21,5 +25,5 @@ if [ $DBSTATUS -ne 0 ] OR [ $ERRCODE -ne 0 ]; then
 	exit 1
 fi
 
-# Run the setup script to create the DB
-/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i createTables.sql
+# Run the setup script to create the DB.
+/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i createTables.sql

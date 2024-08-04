@@ -12,6 +12,16 @@ CREATE TABLE [Person] (
 	PRIMARY KEY (ID)
 );
 
+CREATE TABLE [Friendship] (
+	PersonID INT NOT NULL,
+	TargetPersonID INT NOT NULL,
+	IsFriend BIT NOT NULL,
+	IsBlocking BIT DEFAULT 0 NOT NULL,
+	PRIMARY KEY (PersonID, TargetPersonID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID)
+);
+
 CREATE TABLE [Club] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	Name VARCHAR(255) NOT NULL,

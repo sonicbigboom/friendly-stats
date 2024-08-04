@@ -42,10 +42,10 @@ Run the following to create the sql server:
 TODO: This command should run the `createTables.sql` script.
 
 ```
-sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=DefaultPassword1!" \
+sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=DefaultPassword1!" -e "TZ=America/New_York" \
    -p 1433:1433 --name friendly_stats --hostname friendly_stats \
    -d \
-   mcr.microsoft.com/mssql/server:2022-latest
+   friendly_stats_image
 ```
 
 TODO: Expand the following section with detailed instructions.
