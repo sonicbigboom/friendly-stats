@@ -1,9 +1,19 @@
 #!/bin/bash
-/usr/bin/date >> /tmp/log
-/usr/bin/echo "entrypoint.sh" >> /tmp/log 
+date >> /tmp/log
+echo "entrypoint.sh" >> /tmp/log 
 
-# Start the script to configure the DB in the background.
-/usr/config/configure-db.sh &
+
+if [ -e /usr/config/setup.done ]; then
+  date >> /tmp/log
+  echo "Skipping setup." >> /tmp/log 
+else
+  date >> /tmp/log
+  echo "Running initial setup." >> /tmp/log 
+
+  /usr/config/configure-db.sh &
+
+  touch /usr/config/setup.done
+fi
 
 # Start SQL Server.
 /opt/mssql/bin/sqlservr
