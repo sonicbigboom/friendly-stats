@@ -50,7 +50,18 @@ sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=DefaultPassword1!" \
 
 TODO: Expand the following section with detailed instructions.
 
-Change the `sa` password to a secure password.  Create a new sysadmin account with a strong password. Disable the `sa` account and use the new sysadmin account instead.
+Change the `sa` password by providing a new secure password to the prompt:
+
+```
+sudo docker exec -it friendly_stats /opt/mssql-tools18/bin/sqlcmd \
+ -C \
+ -S localhost \
+ -U SA \
+ -P "DefaultPassword1!" \
+ -Q "ALTER LOGIN SA WITH PASSWORD=\"$(read -sp "Enter new SA password: "; echo "${REPLY}")\""
+```
+
+Create a new sysadmin account with a strong password. Disable the `sa` account and use the new sysadmin account instead.
 
 Create a new user with a strong password for the server to connect to the database. This user should only have access to the `stats` database.
 
