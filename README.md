@@ -33,20 +33,12 @@ Follow these instructions: https://docs.docker.com/engine/install/
 
 #### SQL Server
 
-Run the following to download the SQL Server image:
+Clone this repository `https://github.com/sonicbigboom/friendly-stats.git` and navigate to the database directory.  Use the following commands as admin as needed:
 
-`sudo docker pull mcr.microsoft.com/mssql/server:2022-latest`
-
-Run the following to create the sql server:
-
-TODO: This command should run the `createTables.sql` script.
-
-```
-sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=DefaultPassword1!" -e "TZ=America/New_York" \
-   -p 1433:1433 --name friendly_stats --hostname friendly_stats \
-   -d \
-   friendly_stats_image
-```
+Create container - `create-docker.sh`  
+Start container - `docker start friendly_stats`  
+Stop container - `docker stop friendly_stats`  
+Delete container and image - `delete-container.sh`
 
 TODO: Expand the following section with detailed instructions.
 
