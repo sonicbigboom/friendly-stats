@@ -1,9 +1,8 @@
+/* Copywrite (c) 2024 */
 package com.potrt.stats;
 
 import java.util.List;
-
 import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,9 +21,10 @@ public class Example {
 
   @GetMapping("/")
   public String test() {
-    RowMapper<String> mapper = (resultSet, rowNum) -> {
-      return resultSet.getString("FirstName");
-    };
+    RowMapper<String> mapper =
+        (resultSet, rowNum) -> {
+          return resultSet.getString("FirstName");
+        };
 
     List<String> names = jdbcTemplate.query("SELECT * FROM PERSON;", mapper);
 

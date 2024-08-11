@@ -19,9 +19,14 @@ repositories {
 }
 
 dependencies {
+	compileOnly 'org.projectlombok:lombok:1.18.34'
+	annotationProcessor 'org.projectlombok:lombok:1.18.34'
+	implementation 'org.apache.commons:commons-text:1.12.0'
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web:3.3.2'
-  implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.3.2'
+	implementation 'org.springframework.boot:spring-boot-starter-security:3.3.2'
 	implementation 'com.google.googlejavaformat:google-java-format:1.23.0'
 	implementation 'com.google.code.gson:gson:2.11.0'
 	implementation 'com.microsoft.sqlserver:mssql-jdbc:12.8.0.jre11'
