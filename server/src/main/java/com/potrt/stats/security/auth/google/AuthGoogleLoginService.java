@@ -2,6 +2,8 @@
 package com.potrt.stats.security.auth.google;
 
 import com.google.gson.JsonParser;
+import com.potrt.stats.entities.Person;
+import com.potrt.stats.repositories.PersonRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -19,10 +21,13 @@ import org.springframework.web.client.RestTemplate;
 public class AuthGoogleLoginService {
 
   private AuthGoogleRepository googleRepository;
+  private PersonRepository personRepository;
 
   @Autowired
-  public AuthGoogleLoginService(AuthGoogleRepository googleRepository) {
+  public AuthGoogleLoginService(
+      AuthGoogleRepository googleRepository, PersonRepository personRepository) {
     this.googleRepository = googleRepository;
+    this.personRepository = personRepository;
   }
 
   /**
@@ -52,29 +57,25 @@ public class AuthGoogleLoginService {
   }
 
   /**
-   * Gets the {@link AuthGoogle} from a Google access token.
+   * Gets the {@link Person} from a Google access token.
    *
    * @param accessToken The Google access token.
-   * @return The {@link AuthGoogle} for the person.
+   * @return The {@link Person}.
    */
-  public String getAuthGoogle(String accessToken) {
+  public Person getPerson(String accessToken) {
     String info = getProfileInfo(accessToken);
-    return JsonParser.parseString(info).getAsJsonObject().get("id").getAsString();
-  }
-
-  /**
-   * Gets the application person id from a Google id.
-   *
-   * @param googleID The Google user id.
-   * @return The application person id.
-   */
-  public Integer getID(String googleID) {
+    String googleID = JsonParser.parseString(info).getAsJsonObject().get("id").getAsString();
     Optional<AuthGoogle> optionalID = googleRepository.findById(googleID);
     if (optionalID.isEmpty()) {
       return null;
     }
 
-    return optionalID.get().getPersonID();
+    Integer id = optionalID.get().getPersonID();
+    if (id == null) {
+      return null;
+    }
+
+    return personRepository.findById(id).orElseGet(() -> null);
   }
 
   /**

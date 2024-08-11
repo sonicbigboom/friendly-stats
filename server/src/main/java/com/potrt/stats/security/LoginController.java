@@ -1,6 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
+import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.auth.google.AuthGoogleLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +34,9 @@ public class LoginController {
   }
 
   @GetMapping("/auth/google/grantcode")
-  public Integer grantCode(@RequestParam("code") String code) {
+  public Person grantCode(@RequestParam("code") String code) {
     String out = code;
-    out = authGoogleLoginService.getAccessToken(out);
-    out = authGoogleLoginService.getAuthGoogle(out);
-    Integer id = authGoogleLoginService.getID(out);
-    return id;
+    String accessToken = authGoogleLoginService.getAccessToken(out);
+    return authGoogleLoginService.getPerson(accessToken);
   }
 }
