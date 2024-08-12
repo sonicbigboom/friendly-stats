@@ -1,9 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.entities.Person;
-import com.potrt.stats.security.auth.google.AuthGoogleLoginService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,14 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-
-  AuthGoogleLoginService authGoogleLoginService;
-
-  @Autowired
-  public LoginController(AuthGoogleLoginService authGoogleLoginService) {
-    this.authGoogleLoginService = authGoogleLoginService;
-  }
-
   @RequestMapping("/auth/login")
   public String login() {
     return "<a href=\"https://accounts.google.com/o/oauth2/v2/auth?"
@@ -34,9 +24,7 @@ public class LoginController {
   }
 
   @GetMapping("/auth/google/grantcode")
-  public Person grantCode(@RequestParam("code") String code) {
-    String out = code;
-    String accessToken = authGoogleLoginService.getAccessToken(out);
-    return authGoogleLoginService.getPerson(accessToken);
+  public String grantCode(@RequestParam("code") String code) {
+    return SecurityContextHolder.getContext().getAuthentication().getName();
   }
 }

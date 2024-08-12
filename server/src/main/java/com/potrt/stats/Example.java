@@ -21,10 +21,7 @@ public class Example {
 
   @GetMapping("/")
   public String test() {
-    RowMapper<String> mapper =
-        (resultSet, rowNum) -> {
-          return resultSet.getString("FirstName");
-        };
+    RowMapper<String> mapper = (resultSet, rowNum) -> resultSet.getString("FirstName");
 
     List<String> names = jdbcTemplate.query("SELECT * FROM PERSON;", mapper);
 
