@@ -25,7 +25,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /** The service for google authentication. */
-@Service
 public class AuthGoogleAuthenticationProvider implements AuthenticationProvider {
 
   private AuthGoogleRepository googleRepository;
