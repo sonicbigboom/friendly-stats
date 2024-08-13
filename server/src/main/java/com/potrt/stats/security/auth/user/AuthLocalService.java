@@ -2,7 +2,6 @@
 package com.potrt.stats.security.auth.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class AuthLocalService implements UserDetailsService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String email) {
+  public AuthLocalPrincipal loadUserByUsername(String email) {
     AuthLocal authLocal = authLocalRepository.findByEmail(email);
     if (authLocal == null) {
       throw new UsernameNotFoundException(email);

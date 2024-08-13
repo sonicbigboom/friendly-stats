@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.CredentialsContainer;
 
 /**
  * A {@link AuthGoogle} represents the connection from a Google account to a application person
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class AuthLocal {
+public class AuthLocal implements CredentialsContainer {
   @Id private String email;
   private String password;
   private Integer personID;
@@ -28,4 +29,9 @@ public class AuthLocal {
   }
 
   @Transient private Person person;
+
+  @Override
+  public void eraseCredentials() {
+    password = null;
+  }
 }
