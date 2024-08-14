@@ -6,7 +6,6 @@ import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationFilter;
 import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationProvider;
 import com.potrt.stats.security.auth.google.AuthGoogleRepository;
 import com.potrt.stats.security.auth.local.AuthLocalService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

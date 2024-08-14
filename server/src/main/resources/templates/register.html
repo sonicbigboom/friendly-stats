@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xml:lang="en">
+  <head>
+    <title>Register an account</title>
+  </head>
+
+  <body>
+    <form th:action="@{/auth/register}" th:object="${person}" method="post">
+      <div>
+			  <input type="text" th:field="*{username}" placeholder="Username"/>
+				<p th:if="${#fields.hasErrors('username')}" th:errorclass="error" th:errors="*{username}" />
+			</div>
+      <div>
+			  <input type="email" th:name="email" th:value="*{email}" placeholder="Email"/>
+				<p th:if="${#fields.hasErrors('email')}" th:errorclass="error" th:errors="*{email}" />
+			</div>
+      <div>
+			  <input type="text" th:name="firstName" th:value="*{firstName}" placeholder="First Name"/>
+				<p th:if="${#fields.hasErrors('firstName')}" th:errorclass="error" th:errors="*{firstName}" />
+			</div>
+      <div>
+			  <input type="text" th:name="lastName" th:value="*{lastName}" placeholder="Last Name"/>
+				<p th:if="${#fields.hasErrors('lastName')}" th:errorclass="error" th:errors="*{lastName}" />
+			</div>
+      <div>
+			  <input type="text" th:name="nickname" th:value="*{nickname}" placeholder="Nickname"/>
+				<p th:if="${#fields.hasErrors('nickname')}" th:errorclass="error" th:errors="*{nickname}" />
+			</div>
+			<div>
+			  <input type="password" th:name="password" th:value="${local.password}" placeholder="Password"/>
+			</div>
+      <div>
+			  <input type="password" th:name="passwordConfirm" th:value="${local.passwordConfirm}" placeholder="Confirm Password"/>
+			</div>
+			<input type="submit" value="Register" />
+		</form>
+  </body>
+</html>

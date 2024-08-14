@@ -3,7 +3,9 @@ package com.potrt.stats.security.auth.local;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.repositories.PersonRepository;
+import com.potrt.stats.security.PersonDto;
 import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,12 +17,16 @@ public class AuthLocalService implements UserDetailsService {
 
   private AuthLocalRepository authLocalRepository;
   private PersonRepository personRepository;
+  private AuthLocalPasswordRepository authLocalPasswordRepository;
 
   @Autowired
   public AuthLocalService(
-      AuthLocalRepository authLocalRepository, PersonRepository personRepository) {
+      AuthLocalRepository authLocalRepository,
+      AuthLocalPasswordRepository authLocalPasswordRepository,
+      PersonRepository personRepository) {
     this.authLocalRepository = authLocalRepository;
     this.personRepository = personRepository;
+    this.authLocalPasswordRepository = authLocalPasswordRepository;
   }
 
   @Override
@@ -39,5 +45,14 @@ public class AuthLocalService implements UserDetailsService {
     }
     authLocal.setPerson(person.get());
     return new AuthLocalPrincipal(authLocal);
+  }
+
+  @Transactional
+  public Person registerNewPerson(PersonDto personDto, AuthLocalPasswordDto authLocalDto) {
+    Person person = personDto.toPerson();
+    person = personRepository.save(person);
+    AuthLocalPassword authLocalPassword = authLocalDto.toAuthLocalPassword(person.getId());
+    authLocalPasswordRepository.save(authLocalPassword);
+    return person;
   }
 }
