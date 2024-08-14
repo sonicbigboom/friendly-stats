@@ -24,11 +24,15 @@ public class AuthLocalService implements UserDetailsService {
   }
 
   @Override
-  public AuthLocalPrincipal loadUserByUsername(String email) {
-    AuthLocal authLocal = authLocalRepository.findByEmail(email);
+  public AuthLocalPrincipal loadUserByUsername(String loginName) {
+    AuthLocal authLocal = authLocalRepository.findByUsername(loginName);
     if (authLocal == null) {
-      throw new UsernameNotFoundException(email);
+      authLocal = authLocalRepository.findByEmail(loginName);
     }
+    if (authLocal == null) {
+      throw new UsernameNotFoundException(loginName);
+    }
+
     Optional<Person> person = personRepository.findById(authLocal.getPersonID());
     if (person.isEmpty()) {
       throw new PersonDoesNotExistException(authLocal.getPersonID());

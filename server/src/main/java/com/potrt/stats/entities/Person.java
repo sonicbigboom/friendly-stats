@@ -27,6 +27,9 @@ public class Person {
   private Integer id;
 
   @Column(nullable = false)
+  private String email;
+
+  @Column(nullable = false)
   private String username;
 
   @Column(nullable = true)

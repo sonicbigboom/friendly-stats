@@ -28,7 +28,7 @@ public class AuthLocalPrincipal implements UserDetails, CredentialsContainer, Pe
 
   @Override
   public String getUsername() {
-    return authLocal.getEmail();
+    return authLocal.getUsername();
   }
 
   @Override

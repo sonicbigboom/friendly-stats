@@ -50,7 +50,7 @@ public class SecurityConfig {
                     .loginProcessingUrl("/auth/login")
                     .defaultSuccessUrl("/")
                     .failureUrl("/auth/login?error=true"))
-        .logout((logout) -> logout.logoutUrl("/auth/logout"))
+        .logout(logout -> logout.logoutUrl("/auth/logout"))
         .addFilterAfter(
             new AuthGoogleAuthenticationFilter(authenticationManager),
             BasicAuthenticationFilter.class)

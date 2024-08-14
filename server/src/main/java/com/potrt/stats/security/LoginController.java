@@ -36,7 +36,7 @@ public class LoginController {
   }
 
   @ResponseBody
-  @GetMapping("/test")
+  @GetMapping("/")
   public Person authenticatedTest() {
     return securityService.getPerson();
   }

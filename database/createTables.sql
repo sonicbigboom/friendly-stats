@@ -3,31 +3,39 @@ CREATE DATABASE [stats];
 GO
 
 USE [stats];
-
 CREATE TABLE [Person] (
 	ID INT IDENTITY(1,1) NOT NULL,
+	Email VARCHAR(255) NOT NULL,
 	Username VARCHAR(255) NOT NULL,
 	FirstName VARCHAR(255) NULL,
 	LastName VARCHAR(255) NULL,
 	Nickname VARCHAR(255) NULL, 
-	PRIMARY KEY (ID)
+	PRIMARY KEY (ID),
+	CONSTRAINT AK_Email UNIQUE(Email),
+	CONSTRAINT AK_Username UNIQUE(Username)
 );
+GO
 
-CREATE TABLE [AuthLocal] (
-	Email VARCHAR(255) NOT NULL,
-	Password VARCHAR(255) NOT NULL,
+CREATE TABLE [AuthLocalPassword] (
 	PersonID INT NOT NULL,
-	PRIMARY KEY (Email),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	CONSTRAINT AK_Email UNIQUE(Email)
+	Password VARCHAR(255) NOT NULL,
+	PRIMARY KEY (PersonID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
 );
+GO
+
+CREATE VIEW [AuthLocal] AS
+SELECT P.Email Email, P.Username Username, A.Password Password, A.PersonID PersonID
+FROM [Person] P INNER JOIN [AuthLocalPassword] A ON P.ID = A.PersonID;
+GO
 
 CREATE TABLE [AuthGoogle] (
 	AuthID VARCHAR(255) NOT NULL, 
-	PersonID INT NULL,
+	PersonID INT NOT NULL,
 	PRIMARY KEY (AuthID),
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [Friendship] (
 	PersonID INT NOT NULL,
@@ -38,6 +46,7 @@ CREATE TABLE [Friendship] (
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [Club] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -46,6 +55,7 @@ CREATE TABLE [Club] (
 	PRIMARY KEY (ID),
 	FOREIGN KEY (OwnerPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [Membership] (
 	PersonID INT NOT NULL,
@@ -56,6 +66,7 @@ CREATE TABLE [Membership] (
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
 );
+GO
 
 CREATE TABLE [GameType] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -64,6 +75,7 @@ CREATE TABLE [GameType] (
 	IsZeroSum BIT NOT NULL,
 	PRIMARY KEY (ID)
 );
+GO
 
 CREATE TABLE [Game] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -75,6 +87,7 @@ CREATE TABLE [Game] (
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
 );
+GO
 
 CREATE TABLE [GameRecord] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -91,6 +104,7 @@ CREATE TABLE [GameRecord] (
 	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [GameRecordAudit] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -106,6 +120,7 @@ CREATE TABLE [GameRecordAudit] (
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [Score] (
 	PersonID INT NOT NULL,
@@ -117,6 +132,7 @@ CREATE TABLE [Score] (
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
 );
+GO
 
 CREATE TABLE [CashTransaction] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -133,6 +149,7 @@ CREATE TABLE [CashTransaction] (
 	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [CashTransactionAudit] (
 	ID INT IDENTITY(1,1) NOT NULL,
@@ -148,6 +165,7 @@ CREATE TABLE [CashTransactionAudit] (
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 );
+GO
 
 CREATE TABLE [Cash] (
 	PersonID INT NOT NULL,
@@ -157,3 +175,4 @@ CREATE TABLE [Cash] (
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
 );
+GO

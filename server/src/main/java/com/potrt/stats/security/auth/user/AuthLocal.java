@@ -18,17 +18,19 @@ import org.springframework.security.core.CredentialsContainer;
 @Data
 @NoArgsConstructor
 public class AuthLocal implements CredentialsContainer {
-  @Id private String email;
+  private String email;
+  private String username;
   private String password;
-  private Integer personID;
+  @Id private Integer personID;
 
-  public AuthLocal(String email, String password, Integer personID) {
+  @Transient private Person person;
+
+  public AuthLocal(String email, String username, String password, Integer personID) {
     this.email = email;
+    this.username = username;
     this.password = password;
     this.personID = personID;
   }
-
-  @Transient private Person person;
 
   @Override
   public void eraseCredentials() {
