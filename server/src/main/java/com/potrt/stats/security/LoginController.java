@@ -1,7 +1,8 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.potrt.stats.entities.Person;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -9,6 +10,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class LoginController {
+
+  private SecurityService securityService;
+
+  @Autowired
+  public LoginController(SecurityService securityService) {
+    this.securityService = securityService;
+  }
+
   @GetMapping("/auth/login")
   public String login() {
     return "login";
@@ -16,19 +25,19 @@ public class LoginController {
 
   @ResponseBody
   @GetMapping("/auth/google/grantcode")
-  public String grantCode(@RequestParam("code") String code) {
-    return SecurityContextHolder.getContext().getAuthentication().getName();
+  public Person grantCode(@RequestParam("code") String code) {
+    return securityService.getPerson();
   }
 
   @ResponseBody
   @GetMapping("/auth/test")
-  public String anyoneTest() {
-    return "anyone";
+  public Person anyoneTest() {
+    return securityService.getPerson();
   }
 
   @ResponseBody
   @GetMapping("/test")
-  public String authenticatedTest() {
-    return "authenticated";
+  public Person authenticatedTest() {
+    return securityService.getPerson();
   }
 }

@@ -2,12 +2,14 @@
 package com.potrt.stats.security.auth;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.security.PersonPrincipal;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-public abstract class AbstractPersonAuthentication implements Authentication, CredentialsContainer {
+public abstract class AbstractPersonAuthentication
+    implements Authentication, CredentialsContainer, PersonPrincipal {
 
   private transient Person person;
 
@@ -60,5 +62,10 @@ public abstract class AbstractPersonAuthentication implements Authentication, Cr
     if (!authenticated) {
       this.person = null;
     }
+  }
+
+  @Override
+  public Person getPerson() {
+    return person;
   }
 }
