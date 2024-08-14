@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.user;
+package com.potrt.stats.security.auth.local;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.PersonPrincipal;
