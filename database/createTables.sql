@@ -105,10 +105,12 @@ CREATE TABLE [GameRecord] (
 );
 GO
 
+-- CashTransaction
+-- A cash transaction between players.
 CREATE TABLE [CashTransaction] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	OriginPersonID INT NOT NULL,
-	TargetPersonID INT NULL,
+	TargetPersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	Amount INT NOT NULL,
 	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -118,6 +120,25 @@ CREATE TABLE [CashTransaction] (
 	PRIMARY KEY (ID),
 	FOREIGN KEY (OriginPersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
+	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
+);
+GO
+
+-- BankCashTransaction
+-- A player to bank transaction.
+CREATE TABLE [BankCashTransaction] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	PersonID INT NOT NULL,
+	ClubID INT NOT NULL,
+	Deposit INT NOT NULL,
+	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CreatedByPersonID INT NOT NULL,
+	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	ModifiedByPersonID INT NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
@@ -164,7 +185,6 @@ CREATE TRIGGER [CASH_TRANSACTION_TRIGGER]
 AS
 	-- If this is an update, undo the previous transaction first.
 	IF EXISTS ( SELECT 0 FROM [Deleted] ) BEGIN
-
 		-- Undo giving away money.
 		UPDATE M
 		SET M.CashBalance = M.CashBalance + D.Amount
@@ -173,14 +193,7 @@ AS
 		-- Undo receiving money.
 		UPDATE M
 		SET M.CashBalance = M.CashBalance - D.Amount
-		FROM [Membership] M INNER JOIN [Deleted] D ON M.ClubID = D.ClubID AND M.PersonID = D.TargetPersonID
-		WHERE D.TargetPersonID IS NOT NULL;
-
-		-- Undo money withdrawl.
-		UPDATE M
-		SET M.StoredCash = M.StoredCash + D.Amount
-		FROM [Club] M INNER JOIN [Inserted] D ON M.ID = D.ClubID
-		WHERE D.TargetPersonID IS NULL;
+		FROM [Membership] M INNER JOIN [Deleted] D ON M.ClubID = D.ClubID AND M.PersonID = D.TargetPersonID;
 	END
 
 	-- Give away money.
@@ -191,14 +204,38 @@ AS
 	-- Receive money.
 	UPDATE M
 	SET M.CashBalance = M.CashBalance + I.Amount
-	FROM [Membership] M INNER JOIN [Inserted] I ON M.ClubID = I.ClubID AND M.PersonID = I.TargetPersonID
-	WHERE I.TargetPersonID IS NOT NULL;
+	FROM [Membership] M INNER JOIN [Inserted] I ON M.ClubID = I.ClubID AND M.PersonID = I.TargetPersonID;
+GO
+
+-- Bank Transaction Trigger
+-- Updates user and bank balances.
+CREATE TRIGGER [BANK_CASH_TRANSACTION_TRIGGER]
+	ON [BankCashTransaction]
+	AFTER INSERT, UPDATE
+AS
+	-- If this is an update, undo the previous transaction first.
+	IF EXISTS ( SELECT 0 FROM [Deleted] ) BEGIN
+
+		-- Undo giving away money.
+		UPDATE M
+		SET M.CashBalance = M.CashBalance + D.Deposit
+		FROM [Membership] M INNER JOIN [Deleted] D ON M.ClubID = D.ClubID AND M.PersonID = D.PersonID;
+
+		-- Undo money withdrawl.
+		UPDATE M
+		SET M.StoredCash = M.StoredCash + D.Deposit
+		FROM [Club] M INNER JOIN [Inserted] D ON M.ID = D.ClubID;
+	END
+
+	-- Give away money.
+	UPDATE M
+	SET M.CashBalance = M.CashBalance - I.Deposit
+	FROM [Membership] M INNER JOIN [Inserted] I ON M.ClubID = I.ClubID AND M.PersonID = I.PersonID;
 
 	-- Withdraw money.
 	UPDATE M
-	SET M.StoredCash = M.StoredCash - I.Amount
-	FROM [Club] M INNER JOIN [Inserted] I ON M.ID = I.ClubID
-	WHERE I.TargetPersonID IS NULL;
+	SET M.StoredCash = M.StoredCash - I.Deposit
+	FROM [Club] M INNER JOIN [Inserted] I ON M.ID = I.ClubID;
 GO
 
 -- ========================== --
@@ -257,4 +294,30 @@ CREATE TRIGGER [CASH_TRANSACTION_AUDIT_TRIGGER]
 AS
 	INSERT INTO [CashTransactionAudit] (CashTransactionID, OriginPersonID, TargetPersonID, ClubID, Amount, ModifiedTime, ModifiedByPersonID)
 	SELECT I.ID, I.OriginPersonID, I.TargetPersonID, I.ClubID, I.Amount, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
+GO
+
+-- Bank Cash Transaction Audit
+CREATE TABLE [BankCashTransactionAudit] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	CashTransactionID INT NOT NULL,
+	PersonID INT NOT NULL,
+	ClubID INT NOT NULL,
+	Deposit INT NOT NULL,
+	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	ModifiedByPersonID INT NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (CashTransactionID) REFERENCES [CashTransaction](ID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
+	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
+);
+GO
+
+-- Bank Cash Transaction Audit Trigger
+CREATE TRIGGER [BANK_CASH_TRANSACTION_AUDIT_TRIGGER]
+	ON [BankCashTransaction]
+	AFTER INSERT, UPDATE
+AS
+	INSERT INTO [BankCashTransactionAudit] (CashTransactionID, PersonID, ClubID, Deposit, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.PersonID, I.ClubID, I.Deposit, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO
