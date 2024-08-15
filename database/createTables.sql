@@ -1,8 +1,12 @@
+-- Create Stats DB
 USE [master];
 CREATE DATABASE [stats];
 GO
 
 USE [stats];
+GO
+
+-- Person
 CREATE TABLE [Person] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	Email VARCHAR(255) NOT NULL,
@@ -11,55 +15,29 @@ CREATE TABLE [Person] (
 	LastName VARCHAR(255) NULL,
 	Nickname VARCHAR(255) NULL, 
 	PRIMARY KEY (ID),
-	CONSTRAINT AK_Email UNIQUE(Email),
-	CONSTRAINT AK_Username UNIQUE(Username)
+	CONSTRAINT AK_Person_Email UNIQUE(Email),
+	CONSTRAINT AK_Person_Username UNIQUE(Username)
 );
 GO
 
-CREATE TABLE [AuthLocalPassword] (
-	PersonID INT NOT NULL,
-	Password VARCHAR(255) NOT NULL,
-	PRIMARY KEY (PersonID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
-);
-GO
-
-CREATE VIEW [AuthLocal] AS
-SELECT P.Email Email, P.Username Username, A.Password Password, A.PersonID PersonID
-FROM [Person] P INNER JOIN [AuthLocalPassword] A ON P.ID = A.PersonID;
-GO
-
-CREATE TABLE [AuthGoogle] (
-	AuthID VARCHAR(255) NOT NULL, 
-	PersonID INT NOT NULL,
-	PRIMARY KEY (AuthID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
-);
-GO
-
-CREATE TABLE [Friendship] (
-	PersonID INT NOT NULL,
-	TargetPersonID INT NOT NULL,
-	IsFriend BIT NOT NULL,
-	IsBlocking BIT DEFAULT 0 NOT NULL,
-	PRIMARY KEY (PersonID, TargetPersonID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID)
-);
-GO
-
+-- Club
+-- StoredCash represents the bank for the club.
 CREATE TABLE [Club] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	Name VARCHAR(255) NOT NULL,
 	OwnerPersonID INT NOT NULL,
+	StoredCash INT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (OwnerPersonID) REFERENCES [Person](ID)
 );
 GO
 
+-- Membership
+-- Person to Club many-to-many relationship
 CREATE TABLE [Membership] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
+	CashBalance INT DEFAULT 0 NOT NULL,
 	IsCashAdmin BIT DEFAULT 0 NOT NULL,
 	IsGameAdmin BIT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (PersonID, ClubID),
@@ -68,19 +46,38 @@ CREATE TABLE [Membership] (
 );
 GO
 
+-- GameType
+-- Represents a single game like: Poker, Mahjong, or Fantasy Football.
 CREATE TABLE [GameType] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	Name VARCHAR(255) NOT NULL,
-	IsCash BIT NOT NULL,
 	IsZeroSum BIT NOT NULL,
 	PRIMARY KEY (ID)
 );
 GO
 
+-- Score
+CREATE TABLE [Score] (
+	PersonID INT NOT NULL,
+	ClubID INT NOT NULL,
+	GameTypeID INT NOT NULL,
+	Total INT NOT NULL,
+	PRIMARY KEY (PersonID, ClubID, GameTypeID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
+	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
+);
+GO
+
+-- Game
+-- A single game like: one night of Poker, or one match of Mahjong. 
+-- If EndDate is NULL, the game is still on-going.
 CREATE TABLE [Game] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	ClubID INT NOT NULL,
 	GameTypeID INT NOT NULL,
+	ForCash BIT DEFAULT 0 NOT NULL,
+	AccumulateScore BIT DEFAULT 0 NOT NULL,
 	StartDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	EndDate DATETIME NULL,
 	PRIMARY KEY (ID),
@@ -89,6 +86,8 @@ CREATE TABLE [Game] (
 );
 GO
 
+-- GameRecord
+-- A single event in a game like: a player buys in for Poker, or a Mahjong round has ended and points are distributed.
 CREATE TABLE [GameRecord] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	GameID INT NOT NULL,
@@ -106,6 +105,107 @@ CREATE TABLE [GameRecord] (
 );
 GO
 
+CREATE TABLE [CashTransaction] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	OriginPersonID INT NOT NULL,
+	TargetPersonID INT NULL,
+	ClubID INT NOT NULL,
+	Amount INT NOT NULL,
+	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CreatedByPersonID INT NOT NULL,
+	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	ModifiedByPersonID INT NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (OriginPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
+	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
+);
+GO
+
+-- ========================== --
+-- ===== Authentication ===== --
+-- ========================== -- 
+
+-- Username + Password
+CREATE TABLE [AuthLocalPassword] (
+	PersonID INT NOT NULL,
+	Password VARCHAR(255) NOT NULL,
+	PRIMARY KEY (PersonID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
+);
+GO
+
+CREATE VIEW [AuthLocal] AS
+	SELECT P.Email Email, P.Username Username, A.Password Password, A.PersonID PersonID
+	FROM [Person] P INNER JOIN [AuthLocalPassword] A ON P.ID = A.PersonID;
+GO
+
+-- Google oAuth
+CREATE TABLE [AuthGoogle] (
+	AuthID VARCHAR(255) NOT NULL, 
+	PersonID INT NOT NULL,
+	PRIMARY KEY (AuthID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	CONSTRAINT AK_AuthGoogle_PersonID UNIQUE(PersonID)
+);
+GO
+
+-- ========================== --
+-- ======== Triggers ======== --
+-- ========================== -- 
+
+-- Cash Transaction Trigger
+-- Updates user and bank balances.
+CREATE TRIGGER [CASH_TRANSACTION_TRIGGER]
+	ON [CashTransaction]
+	AFTER INSERT, UPDATE
+AS
+	-- If this is an update, undo the previous transaction first.
+	IF EXISTS ( SELECT 0 FROM [Deleted] ) BEGIN
+
+		-- Undo giving away money.
+		UPDATE M
+		SET M.CashBalance = M.CashBalance + D.Amount
+		FROM [Membership] M INNER JOIN [Deleted] D ON M.ClubID = D.ClubID AND M.PersonID = D.OriginPersonID;
+
+		-- Undo receiving money.
+		UPDATE M
+		SET M.CashBalance = M.CashBalance - D.Amount
+		FROM [Membership] M INNER JOIN [Deleted] D ON M.ClubID = D.ClubID AND M.PersonID = D.TargetPersonID
+		WHERE D.TargetPersonID IS NOT NULL;
+
+		-- Undo money withdrawl.
+		UPDATE M
+		SET M.StoredCash = M.StoredCash + D.Amount
+		FROM [Club] M INNER JOIN [Inserted] D ON M.ID = D.ClubID
+		WHERE D.TargetPersonID IS NULL;
+	END
+
+	-- Give away money.
+	UPDATE M
+	SET M.CashBalance = M.CashBalance - I.Amount
+	FROM [Membership] M INNER JOIN [Inserted] I ON M.ClubID = I.ClubID AND M.PersonID = I.OriginPersonID;
+
+	-- Receive money.
+	UPDATE M
+	SET M.CashBalance = M.CashBalance + I.Amount
+	FROM [Membership] M INNER JOIN [Inserted] I ON M.ClubID = I.ClubID AND M.PersonID = I.TargetPersonID
+	WHERE I.TargetPersonID IS NOT NULL;
+
+	-- Withdraw money.
+	UPDATE M
+	SET M.StoredCash = M.StoredCash - I.Amount
+	FROM [Club] M INNER JOIN [Inserted] I ON M.ID = I.ClubID
+	WHERE I.TargetPersonID IS NULL;
+GO
+
+-- ========================== --
+-- ======== Audit Log ======= --
+-- ========================== -- 
+
+-- Game Record Audit
 CREATE TABLE [GameRecordAudit] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	GameRecordID INT NOT NULL,
@@ -122,57 +222,39 @@ CREATE TABLE [GameRecordAudit] (
 );
 GO
 
-CREATE TABLE [Score] (
-	PersonID INT NOT NULL,
-	ClubID INT NOT NULL,
-	GameTypeID INT NOT NULL,
-	Total INT NOT NULL,
-	PRIMARY KEY (PersonID, ClubID, GameTypeID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
-	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
-);
+-- Game Record Audit Trigger
+CREATE TRIGGER [GAME_RECORD_AUDIT_TRIGGER]
+	ON [GameRecord]
+	AFTER INSERT, UPDATE
+AS
+	INSERT INTO [GameRecordAudit] (GameRecordID, GameID, PersonID, ScoreChange, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.GameID, I.PersonID, I.ScoreChange, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO
 
-CREATE TABLE [CashTransaction] (
-	ID INT IDENTITY(1,1) NOT NULL,
-	PersonID INT NOT NULL,
-	ClubID INT NOT NULL,
-	CashChange INT NOT NULL,
-	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	CreatedByPersonID INT NOT NULL,
-	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	ModifiedByPersonID INT NOT NULL,
-	PRIMARY KEY (ID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
-	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
-);
-GO
-
+-- Cash Transaction Audit
 CREATE TABLE [CashTransactionAudit] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	CashTransactionID INT NOT NULL,
-	PersonID INT NOT NULL,
+	OriginPersonID INT NOT NULL,
+	TargetPersonID INT NULL,
 	ClubID INT NOT NULL,
-	CashChange INT NOT NULL,
+	Amount INT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	ModifiedByPersonID INT NOT NULL,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (CashTransactionID) REFERENCES [CashTransaction](ID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (OriginPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (TargetPersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 );
 GO
 
-CREATE TABLE [Cash] (
-	PersonID INT NOT NULL,
-	ClubID INT NOT NULL,
-	Total INT NOT NULL,
-	PRIMARY KEY (PersonID, ClubID),
-	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
-);
+-- Cash Transaction Audit Trigger
+CREATE TRIGGER [CASH_TRANSACTION_AUDIT_TRIGGER]
+	ON [CashTransaction]
+	AFTER INSERT, UPDATE
+AS
+	INSERT INTO [CashTransactionAudit] (CashTransactionID, OriginPersonID, TargetPersonID, ClubID, Amount, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.OriginPersonID, I.TargetPersonID, I.ClubID, I.Amount, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO
