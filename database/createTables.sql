@@ -61,8 +61,9 @@ CREATE TABLE [Score] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	GameTypeID INT NOT NULL,
+	ForCash BIT NOT NULL,
 	Total INT NOT NULL,
-	PRIMARY KEY (PersonID, ClubID, GameTypeID),
+	PRIMARY KEY (PersonID, ClubID, GameTypeID, ForCash),
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
 	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
@@ -86,6 +87,15 @@ CREATE TABLE [Game] (
 	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
 );
 GO
+
+-- GamePlayer
+CREATE TABLE [GamePlayer] (
+	GameID INT NOT NULL,
+	PersonID INT NOT NULL,
+	PRIMARY KEY (GameID, PersonID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (GameID) REFERENCES [Game](ID)
+)
 
 -- GameRecord
 -- A single event in a game like: a player buys in for Poker, or a Mahjong round has ended and points are distributed.
@@ -178,6 +188,17 @@ GO
 -- ======== Triggers ======== --
 -- ========================== -- 
 
+-- Game Score Trigger
+CREATE TRIGGER [GAME_PLAYER_SCORE_TRIGGER]
+	ON [GamePlayer]
+	AFTER INSERT
+AS
+	INSERT INTO [Score] (PersonID, ClubID, GameTypeID, ForCash, Total)
+	SELECT I.PersonID, G.ClubID, G.GameTypeID, G.ForCash, 0
+	FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
+	WHERE G.AccumulateScore = 1;
+GO
+
 -- Game Record Trigger
 CREATE TRIGGER [GAME_RECORD_TRIGGER]
 	ON [GameRecord]
@@ -207,6 +228,18 @@ AS
 			GROUP BY GameID
 		) R
 		ON G.ID = R.GameID;
+
+		-- Undo player score update.
+		UPDATE S
+		SET S.Total = S.Total - R.Total
+		FROM [Score] S INNER JOIN 
+		(
+			SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.ForCash ForCash, SUM(I.ScoreChange) Total
+			FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
+			WHERE G.AccumulateScore = 1
+			GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.ForCash
+		) R
+		ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.ForCash = R.ForCash;
 	END
 
 	-- Update player cash balance.
@@ -231,6 +264,18 @@ AS
 		GROUP BY GameID
 	) R
 	ON G.ID = R.GameID;
+
+	-- Update player score.
+	UPDATE S
+	SET S.Total = S.Total + R.Total
+	FROM [Score] S INNER JOIN 
+	(
+		SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.ForCash ForCash, SUM(I.ScoreChange) Total
+		FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
+		WHERE G.AccumulateScore = 1
+		GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.ForCash
+	) R
+	ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.ForCash = R.ForCash;
 GO
 
 -- Cash Transaction Trigger
