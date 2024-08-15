@@ -78,6 +78,7 @@ CREATE TABLE [Game] (
 	GameTypeID INT NOT NULL,
 	ForCash BIT DEFAULT 0 NOT NULL,
 	AccumulateScore BIT DEFAULT 0 NOT NULL,
+	NetScoreChange INT DEFAULT 0 NOT NULL,
 	StartDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	EndDate DATETIME NULL,
 	PRIMARY KEY (ID),
@@ -176,6 +177,61 @@ GO
 -- ========================== --
 -- ======== Triggers ======== --
 -- ========================== -- 
+
+-- Game Record Trigger
+CREATE TRIGGER [GAME_RECORD_TRIGGER]
+	ON [GameRecord]
+	AFTER INSERT, UPDATE
+AS
+	-- If this is an update, undo the previous transaction first.
+	IF EXISTS ( SELECT 0 FROM [Deleted] ) BEGIN
+		-- Undo player cash balance change.
+		UPDATE M
+		SET M.CashBalance = M.CashBalance - R.Total
+		FROM [Membership] M INNER JOIN 
+		(
+			SELECT G.ClubID ClubID, D.PersonID PersonID, SUM(D.ScoreChange) Total
+			FROM [Deleted] D INNER JOIN [Game] G ON D.GameID = G.ID
+			WHERE G.ForCash = 1
+			GROUP BY G.ClubID, D.PersonID
+		) R
+		ON M.ClubID = R.ClubID AND M.PersonID = R.PersonID;
+
+		-- Undo game net score change.
+		UPDATE G
+		SET G.NetScoreChange = G.NetScoreChange - R.Total
+		FROM [Game] G INNER JOIN 
+		(
+			SELECT GameID, SUM(ScoreChange) Total
+			FROM [Deleted]
+			GROUP BY GameID
+		) R
+		ON G.ID = R.GameID;
+	END
+
+	-- Update player cash balance.
+	UPDATE M
+	SET M.CashBalance = M.CashBalance + R.Total
+	FROM [Membership] M INNER JOIN 
+	(
+		SELECT G.ClubID ClubID, I.PersonID PersonID, SUM(I.ScoreChange) Total
+		FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
+		WHERE G.ForCash = 1
+		GROUP BY G.ClubID, I.PersonID
+	) R
+	ON M.ClubID = R.ClubID AND M.PersonID = R.PersonID;
+
+	-- Update game net score change.
+	UPDATE G
+	SET G.NetScoreChange = G.NetScoreChange + R.Total
+	FROM [Game] G INNER JOIN 
+	(
+		SELECT GameID, SUM(ScoreChange) Total
+		FROM [Inserted]
+		GROUP BY GameID
+	) R
+	ON G.ID = R.GameID;
+GO
 
 -- Cash Transaction Trigger
 -- Updates user and bank balances.
