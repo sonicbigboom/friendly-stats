@@ -73,7 +73,12 @@ Set the following environment variables appropriately, based on the database.
 `FRIENDLY_STATS_DB_USERNAME` - The database username. For example: `sa`\
 `FRIENDLY_STATS_DB_PASSWORD` - The database host. For example: `DefaultPassword1!`\
 `FRIENDLY_STATS_GOOGLE_CLIENT_ID` - The google oauth client id.\
-`FRIENDLY_STATS_GOOGLE_CLIENT_SECRET` - The google oauth client secret.
+`FRIENDLY_STATS_GOOGLE_CLIENT_SECRET` - The google oauth client secret. \
+`FRIENDLY_STATS_EMAIL_ADDRESS` - The application email address. For example: `friendly-stats-noreply@potrt.com` \
+`FRIENDLY_STATS_EMAIL_HOST` - The application email's host. For example: `smtp.gmail.com` \
+`FRIENDLY_STATS_EMAIL_PORT` - The applicaiton email's ssl port. For example: `465` \
+`FRIENDLY_STATS_EMAIL_USERNAME` - The application email's username. \
+`FRIENDLY_STATS_EMAIL_PASSWORD` - The application email's password.
 
 ## Goals
 

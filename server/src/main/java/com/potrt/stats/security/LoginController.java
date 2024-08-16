@@ -4,8 +4,13 @@ package com.potrt.stats.security;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.auth.local.AuthLocalPasswordDto;
 import com.potrt.stats.security.auth.local.AuthLocalService;
+import com.potrt.stats.services.EmailService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
+import java.io.UnsupportedEncodingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,11 +27,16 @@ public class LoginController {
 
   private SecurityService securityService;
   private AuthLocalService authLocalService;
+  private EmailService emailService;
 
   @Autowired
-  public LoginController(SecurityService securityService, AuthLocalService authLocalService) {
+  public LoginController(
+      SecurityService securityService,
+      AuthLocalService authLocalService,
+      EmailService emailService) {
     this.securityService = securityService;
     this.authLocalService = authLocalService;
+    this.emailService = emailService;
   }
 
   @GetMapping("/auth/login")
@@ -65,9 +75,20 @@ public class LoginController {
   }
 
   @ResponseBody
-  @GetMapping("/auth/test")
-  public Person anyoneTest() {
+  @GetMapping("/auth/test/person")
+  public Person testPerson() {
     return securityService.getPerson();
+  }
+
+  @ResponseBody
+  @GetMapping("/auth/test/email")
+  public String testEmail() {
+    try {
+      emailService.sendMessage("", "Test Email", "Text");
+      return "Sent email!";
+    } catch (MessagingException | UnsupportedEncodingException e) {
+      return "Error: " + e.getMessage();
+    }
   }
 
   @ResponseBody
