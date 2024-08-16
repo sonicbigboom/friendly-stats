@@ -15,20 +15,23 @@
 `game`              - A session of a game that keeps score, such as one night of poker, or one fantasy football league. \
 `game-type`         - A type of game, such as poker, or mahjong. \
 `game-record`       - A record of a single action in a `game`. \
-`score`             - The accumulated score of a `person`, in a `club`, for a `game-type`, for cash or for points.
+`score`             - The accumulated score of a `person`, in a `club`, for a `game-type`, for cash or for points. \
 `transaction`       - Money given from one person to another person. \
 `bank-transaction`  - Money deposited into the `club's` bank.
 
 ### Parameters
 `*Object*-id`       - The id of the `*Object*`, like `user` or `game-record`. Default: null \
 `ongoing`           - Whether the `game` is still being played. Default: null \
-`for-cash`          - Whether the `games` were played for cash or not. Default: `true` 
+`for-cash`          - Whether the `games` were played for cash or not. Default: `true` \
+`filter`            - Text which the app searches for based on.  For `users` this would compare against any names associated with the user. Default: null
 
 
 ## Resouce Table
 
-| **Resource** | POST | GET | PATCH | DELETE |
+| **Resource** | **POST** | **GET** | **PATCH** | **DELETE** |
 |:---:|:---:|:---:|:---:|:---:|
+| **/users** | ERROR | Gets all of the `users`. Parameters: `filter`. | ERROR | ERROR |
+| **/me** | ERROR | Gets `client` details. | Updates `client` details. | `Deletes` `client` account. |
 | **/balance** | ERROR | Gets the `client's` total `cash balance`. | ERROR | ERROR |
 | **/memberships** | Creates a new `membership`. | ERROR | Updates a `membership`. | `Deletes` a `membership`. |
 | **/groups** | Creates a new `group`. | Gets all `groups` that the `client` is a member of. | ERROR | ERROR |

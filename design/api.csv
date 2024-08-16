@@ -1,4 +1,6 @@
 Resource,POST,GET,PATCH,DELETE
+/users,ERROR,Gets all of the `users`. Parameters: `filter`.,ERROR,ERROR
+/me,ERROR,Gets `client` details.,Updates `client` details.,`Deletes` `client` account.
 /balance,ERROR,Gets the `client's` total `cash balance`.,ERROR,ERROR
 /memberships,Creates a new `membership`.,ERROR,Updates a `membership`.,`Deletes` a `membership`.
 /groups,Creates a new `group`.,Gets all `groups` that the `client` is a member of.,ERROR,ERROR
