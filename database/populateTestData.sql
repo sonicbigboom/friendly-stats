@@ -84,10 +84,10 @@ SET IDENTITY_INSERT [GameType] OFF
 GO
 
 SET IDENTITY_INSERT [Game] ON
-INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [ForCash], [AccumulateScore], [NetScoreChange], [StartDate], [EndDate]) VALUES
-	('1', '1', '1', '0', '1', '0', '2024-08-09 20:00:00.000', '2024-08-09 20:03:00.000'),
-	('2', '1', '1', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000'),
-	('3', '2', '5', '1', '1', '0', '2024-08-15 19:12:00.000', NULL);
+INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [Name], [ForCash], [AccumulateScore], [NetScoreChange], [StartDate], [EndDate]) VALUES
+	('1', '1', '1', '0', '1', 'Mistake', '0', '2024-08-09 20:00:00.000', '2024-08-09 20:03:00.000'),
+	('2', '1', '1', '1', '1', 'Poker Game', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000'),
+	('3', '2', '5', '1', '1', 'Football League', '0', '2024-08-15 19:12:00.000', NULL);
 SET IDENTITY_INSERT [Game] OFF
 GO
 
