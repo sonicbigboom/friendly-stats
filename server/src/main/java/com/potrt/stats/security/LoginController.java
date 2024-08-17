@@ -8,9 +8,7 @@ import com.potrt.stats.services.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-
 import java.io.UnsupportedEncodingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,16 +23,11 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class LoginController {
 
-  private SecurityService securityService;
   private AuthLocalService authLocalService;
   private EmailService emailService;
 
   @Autowired
-  public LoginController(
-      SecurityService securityService,
-      AuthLocalService authLocalService,
-      EmailService emailService) {
-    this.securityService = securityService;
+  public LoginController(AuthLocalService authLocalService, EmailService emailService) {
     this.authLocalService = authLocalService;
     this.emailService = emailService;
   }
@@ -68,16 +61,9 @@ public class LoginController {
     }
   }
 
-  @ResponseBody
   @GetMapping("/auth/google/grantcode")
-  public Person grantCode(@RequestParam("code") String code) {
-    return securityService.getPerson();
-  }
-
-  @ResponseBody
-  @GetMapping("/auth/test/person")
-  public Person testPerson() {
-    return securityService.getPerson();
+  public void grantCode(@RequestParam("code") String code) {
+    /* Creates endpoint. */
   }
 
   @ResponseBody
@@ -89,11 +75,5 @@ public class LoginController {
     } catch (MessagingException | UnsupportedEncodingException e) {
       return "Error: " + e.getMessage();
     }
-  }
-
-  @ResponseBody
-  @GetMapping("/")
-  public Person authenticatedTest() {
-    return securityService.getPerson();
   }
 }

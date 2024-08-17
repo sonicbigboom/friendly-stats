@@ -2,12 +2,13 @@
 package com.potrt.stats.security;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.UnauthenticatedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SecurityService {
-  public Person getPerson() {
+  public Person getPerson() throws UnauthenticatedException {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (Person.class.isAssignableFrom(principal.getClass())) {
       return (Person) principal;
@@ -15,7 +16,11 @@ public class SecurityService {
       PersonPrincipal personPrincipal = (PersonPrincipal) principal;
       return personPrincipal.getPerson();
     } else {
-      return null;
+      throw new UnauthenticatedException();
     }
+  }
+
+  public Integer getPersonID() throws UnauthenticatedException {
+    return getPerson().getId();
   }
 }

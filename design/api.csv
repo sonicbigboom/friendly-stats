@@ -8,16 +8,20 @@ Resource,POST,GET,PATCH,DELETE
 /groups/{group-id}/users,Adds a `user` to `group` `{group-id}` with a `{user-id}`.,Get all of the `users` in `group` `{group-id}`.,ERROR,ERROR
 /groups/{group-id}/games,Creates a `game` in `group` `{group-id}`.,Gets all of the `games` in `group` `{group-id}`. Parameters: `ongoing`.,ERROR,ERROR
 /groups/{group-id}/transactions,Creates a new `transaction`. This must originate from the `client`.,"If the `client` is an `admin` of the `group`, gets all of the `group `{group-id}` `transactions`. Parameters: `{user-id}`. Otherwise, gets all  `group` `{group-id}` `transactions` for the `client`. ",ERROR,ERROR
-/groups/{group-id}/bank-transactions,Creates a new `bank-transaction`. `Client` must be a `cash-admin`.,"If the `client` is an `admin` of the `group`, gets all of the `group `{group-id}` `bank-transactions`. Parameters: `{user-id}`. Otherwise, gets all  `group` `{group-id}` `bank-transactions` for the `client`.",ERROR,ERROR
+/groups/{group-id}/bank-transactions,Creates a new `bank-transaction`. `Client` must be a `cash-admin`.,"If the `client` is an `cash-admin` of the `group`, gets all of the `group` `{group-id}` `bank-transactions`. Parameters: `{user-id}`. Otherwise, gets all  `group` `{group-id}` `bank-transactions` for the `client`.",ERROR,ERROR
 /groups/{group-id}/balance,ERROR,Gets `cash balances` of all of the `users` in `group` `{group-id}`. Parameters: `{user-id}`.,ERROR,ERROR
-/groups/{group-id}/game-type,ERROR,Gets all of the game types used by `{group}` `{group-id}`.,ERROR,ERROR
+/groups/{group-id}/game-type,Creates a new `game-type`.,Gets all of the game types that can be used by `{group}` `{group-id}`.,ERROR,ERROR
 /groups/{group-id}/game-type/{game-type-id},ERROR,"Gets all of the `scores` for a `game-type` `{game-type-id}` in `group` `{group-id}`. Parameters: `{user-id}`, `{for-cash}`.",ERROR,ERROR
-/game-types,Creates a new `game-type`.,Gets all of the available `game-types`.,ERROR,ERROR
+/game-types,ERROR,Gets available `game-types` to all clubs.,ERROR,ERROR
 /game-types/{game-type-id},ERROR,Gets details on `game-type` `{game-type-id}`.,Updates `game-type` `{game-type-id}`.,`Deletes` `game-type` `{game-type-id}`.
 /games,Creates a new `game`.,ERROR,ERROR,ERROR
 /games/{game-id},ERROR,Gets details on `game` `{game-id}`.,Updates `game` `{game-id}`.,`Deletes` `game` `{game-id}`.
 /games/{game-id}/finish,Finishes the `game` `{game-id}`.,ERROR,ERROR,ERROR
-/games/{game-id}/game-records,Creates a new `game-record` for the `game`.,Gets all of the `game-records` for the `game` `{game-id`. Parameters: `{user-id}`.,ERROR,ERROR
+/games/{game-id}/game-records,Creates a new `game-record` for the `game`.,Gets all of the `game-records` for the `game` `{game-id}`. Parameters: `{user-id}`.,ERROR,ERROR
 /game-records/{game-record-id},ERROR,Gets details on `game-record` `{game-record-id}`.,Updates `game-record` `{game-record-id}`.,`Deletes` `game-record` `{game-record-id}`.
 /transaction/{transaction-id},ERROR,Gets details on `transaction` `{transaction-id}`.,Updates `transaction` `{transaction-id}`.,`Deletes` `transaction` `{transaction-id}`.
 /bank-transaction/{bank-transaction-id},ERROR,Gets details on `bank-transaction` `{bank-transaction-id}`.,Updates `bank-transaction` `{bank-transaction-id}`.,`Deletes` `bank-transaction` `{bank-transaction-id}`.
+/auth/login,Authenticates the user if the credentials are correct.,Gets a login page.,ERROR,ERROR
+/auth/logout,ERROR,Logs out the user.,ERROR,ERROR
+/auth/register,Registers a user with the given details and credentials.,Gets a registration page.,ERROR,ERROR
+/auth/username/{username},ERROR,Checks if a the username is taken.,ERROR,ERROR

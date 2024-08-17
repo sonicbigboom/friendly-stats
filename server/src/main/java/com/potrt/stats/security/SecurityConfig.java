@@ -48,7 +48,7 @@ public class SecurityConfig {
                 chain
                     .loginPage("/auth/login")
                     .loginProcessingUrl("/auth/login")
-                    .defaultSuccessUrl("/")
+                    .defaultSuccessUrl("/me")
                     .failureUrl("/auth/login?error=true"))
         .logout(logout -> logout.logoutUrl("/auth/logout"))
         .addFilterAfter(

@@ -12,32 +12,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@link Person} represents a user of the application. */
 @Table
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Person {
-
+public class Club {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(nullable = false)
   private Integer id;
 
   @Column(nullable = false)
-  private String email;
+  private String name;
 
   @Column(nullable = false)
-  private String username;
+  private Integer ownerPersonID;
 
-  @Column(nullable = true)
-  private String firstName;
-
-  @Column(nullable = true)
-  private String lastName;
-
-  @Column(nullable = true)
-  private String nickname;
+  @Column(nullable = false)
+  private String storedCash;
 }
