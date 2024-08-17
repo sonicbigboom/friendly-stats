@@ -1,7 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.group;
 
-import com.potrt.stats.entities.Club;
+import com.potrt.stats.entities.masked.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.services.ClubService;
@@ -21,10 +21,9 @@ public class GroupsApi {
   }
 
   @GetMapping("/groups")
-  public ResponseEntity<List<Club>> getGroup() {
+  public ResponseEntity<List<MaskedClub>> getGroup() {
     try {
-      List<Club> clubs = clubService.getClubs();
-      ;
+      List<MaskedClub> clubs = clubService.getClubs();
       return new ResponseEntity<>(clubs, HttpStatus.OK);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

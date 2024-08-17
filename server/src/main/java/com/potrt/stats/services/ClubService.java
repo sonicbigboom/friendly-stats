@@ -2,6 +2,7 @@
 package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Club;
+import com.potrt.stats.entities.masked.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -30,13 +31,13 @@ public class ClubService {
     this.membershipRepository = membershipRepository;
   }
 
-  public List<Club> getClubs() throws UnauthenticatedException, NoResourceException {
+  public List<MaskedClub> getClubs() throws UnauthenticatedException, NoResourceException {
     Integer personID = securityService.getPersonID();
     Collection<Integer> clubIDs = membershipRepository.getClubIDs(personID);
 
-    List<Club> clubs = new ArrayList<>();
+    List<MaskedClub> clubs = new ArrayList<>();
     for (Club club : clubRepository.findAllById(clubIDs)) {
-      clubs.add(club);
+      clubs.add(new MaskedClub(club));
     }
 
     if (clubs.isEmpty()) {
@@ -46,7 +47,7 @@ public class ClubService {
     return clubs;
   }
 
-  public Club getClub(Integer clubID)
+  public MaskedClub getClub(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
     Integer personID = securityService.getPersonID();
 
@@ -58,6 +59,6 @@ public class ClubService {
     if (club.isEmpty()) {
       throw new NoResourceException();
     }
-    return club.get();
+    return new MaskedClub(club.get());
   }
 }

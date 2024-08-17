@@ -1,7 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.group.id;
 
-import com.potrt.stats.entities.Club;
+import com.potrt.stats.entities.masked.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -22,9 +22,9 @@ public class GroupsIdApi {
   }
 
   @GetMapping("/groups/{groupID}")
-  public ResponseEntity<Club> getGroupId(@PathVariable(value = "groupID") String id) {
+  public ResponseEntity<MaskedClub> getGroupId(@PathVariable(value = "groupID") String id) {
     try {
-      Club club = clubService.getClub(Integer.valueOf(id));
+      MaskedClub club = clubService.getClub(Integer.valueOf(id));
       return new ResponseEntity<>(club, HttpStatus.OK);
     } catch (UnauthenticatedException | UnauthorizedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
