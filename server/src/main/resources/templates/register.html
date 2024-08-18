@@ -5,7 +5,7 @@
   </head>
 
   <body>
-    <form th:action="@{/auth/register}" th:object="${person}" method="post">
+    <form th:action="@{/auth/register}" th:object="${register}" method="post">
       <div>
 			  <input type="text" th:field="*{username}" placeholder="Username"/>
 				<p th:if="${#fields.hasErrors('username')}" th:errorclass="error" th:errors="*{username}" />
@@ -27,10 +27,12 @@
 				<p th:if="${#fields.hasErrors('nickname')}" th:errorclass="error" th:errors="*{nickname}" />
 			</div>
 			<div>
-			  <input type="password" th:name="password" th:value="${local.password}" placeholder="Password"/>
+			  <input type="text" th:name="authType" th:value="*{authType}" placeholder="Auth Type (Use 'local')"/>
+				<p th:if="${#fields.hasErrors('authType')}" th:errorclass="authType" th:errors="*{authType}" />
 			</div>
-      <div>
-			  <input type="password" th:name="passwordConfirm" th:value="${local.passwordConfirm}" placeholder="Confirm Password"/>
+			<div>
+			  <input type="password" th:name="code" th:value="*{code}" placeholder="Password"/>
+				<p th:if="${#fields.hasErrors('code')}" th:errorclass="code" th:errors="*{code}" />
 			</div>
 			<input type="submit" value="Register" />
 		</form>

@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security;
+package com.potrt.stats.security.auth;
 
 import com.potrt.stats.entities.Person;
 import jakarta.validation.constraints.Email;
@@ -14,7 +14,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonDto {
+@AuthExists
+public class RegisterDto {
   @Email @NotNull @NotEmpty private String email;
 
   @NotNull @NotEmpty private String username;
@@ -25,7 +26,11 @@ public class PersonDto {
 
   private String nickname;
 
-  public Person toPerson() {
+  private String authType;
+
+  private String code;
+
+  public Person getPerson() {
     if (firstName.isBlank()) {
       firstName = null;
     }

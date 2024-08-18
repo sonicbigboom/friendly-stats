@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.local.validation;
+package com.potrt.stats.security.auth;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -11,10 +11,10 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PasswordMatchesValidator.class)
+@Constraint(validatedBy = AuthExistsValidator.class)
 @Documented
-public @interface PasswordMatches {
-  String message() default "Passwords don't match";
+public @interface AuthExists {
+  String message() default "Given code type is not supported.";
 
   Class<?>[] groups() default {};
 

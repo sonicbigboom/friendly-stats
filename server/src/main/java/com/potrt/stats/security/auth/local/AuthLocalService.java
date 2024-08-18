@@ -3,17 +3,19 @@ package com.potrt.stats.security.auth.local;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.repositories.PersonRepository;
-import com.potrt.stats.security.PersonDto;
+import com.potrt.stats.security.auth.AuthService;
+import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthLocalService implements UserDetailsService {
+public class AuthLocalService implements UserDetailsService, AuthService {
 
   private AuthLocalRepository authLocalRepository;
   private PersonRepository personRepository;
@@ -47,11 +49,14 @@ public class AuthLocalService implements UserDetailsService {
     return new AuthLocalPrincipal(authLocal);
   }
 
+  @Override
   @Transactional
-  public Person registerNewPerson(PersonDto personDto, AuthLocalPasswordDto authLocalDto) {
-    Person person = personDto.toPerson();
+  public Person registerPerson(RegisterDto registerDto) {
+    Person person = registerDto.getPerson();
     person = personRepository.save(person);
-    AuthLocalPassword authLocalPassword = authLocalDto.toAuthLocalPassword(person.getId());
+    String encodedPassword =
+        "{bcrypt}" + new BCryptPasswordEncoder(14).encode(registerDto.getCode());
+    AuthLocalPassword authLocalPassword = new AuthLocalPassword(person.getId(), encodedPassword);
     authLocalPasswordRepository.save(authLocalPassword);
     return person;
   }
