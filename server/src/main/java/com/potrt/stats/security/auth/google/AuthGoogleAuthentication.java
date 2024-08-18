@@ -1,18 +1,18 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.key;
+package com.potrt.stats.security.auth.google;
 
 import com.potrt.stats.entities.Person;
 import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
-public class AuthKeyAuthentication extends AbstractAuthenticationToken {
-  private transient String apiKey;
+public class AuthGoogleAuthentication extends AbstractAuthenticationToken {
+  private transient String accessToken;
   private final transient Person person;
 
-  public AuthKeyAuthentication(String apiKey, Person person) {
+  public AuthGoogleAuthentication(String accessToken, Person person) {
     super(AuthorityUtils.NO_AUTHORITIES);
-    this.apiKey = apiKey;
+    this.accessToken = accessToken;
     this.person = person;
   }
 
@@ -23,7 +23,7 @@ public class AuthKeyAuthentication extends AbstractAuthenticationToken {
 
   @Override
   public Object getCredentials() {
-    return apiKey;
+    return accessToken;
   }
 
   @Override
@@ -34,7 +34,7 @@ public class AuthKeyAuthentication extends AbstractAuthenticationToken {
   @Override
   public void eraseCredentials() {
     super.eraseCredentials();
-    apiKey = null;
+    accessToken = null;
   }
 
   @Override
@@ -43,13 +43,13 @@ public class AuthKeyAuthentication extends AbstractAuthenticationToken {
       return false;
     }
 
-    AuthKeyAuthentication authKey = (AuthKeyAuthentication) obj;
+    AuthGoogleAuthentication authGoogle = (AuthGoogleAuthentication) obj;
 
-    return this.apiKey.equals(authKey.apiKey) && this.person.equals(authKey.person);
+    return this.accessToken.equals(authGoogle.accessToken) && this.person.equals(authGoogle.person);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(apiKey, person);
+    return Objects.hash(accessToken, person);
   }
 }

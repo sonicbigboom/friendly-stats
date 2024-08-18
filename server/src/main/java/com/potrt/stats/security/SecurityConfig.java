@@ -1,10 +1,8 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.repositories.PersonRepository;
-import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationFilter;
-import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationProvider;
-import com.potrt.stats.security.auth.google.AuthGoogleRepository;
+import com.potrt.stats.security.auth.google.AuthGoogleFilter;
+import com.potrt.stats.security.auth.google.AuthGoogleService;
 import com.potrt.stats.security.auth.key.AuthKeyFilter;
 import com.potrt.stats.security.auth.key.AuthKeyService;
 import com.potrt.stats.security.auth.local.AuthLocalService;
@@ -19,7 +17,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -28,21 +25,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  AuthKeyService authKeyService;
-  AuthLocalService authLocalService;
-  PersonRepository personRepository;
-  AuthGoogleRepository authGoogleRepository;
+  private AuthKeyService authKeyService;
+  private AuthLocalService authLocalService;
+  private AuthGoogleService authGoogleService;
 
   @Autowired
   public SecurityConfig(
       AuthKeyService authKeyService,
       AuthLocalService authLocalService,
-      PersonRepository personRepository,
-      AuthGoogleRepository authGoogleRepository) {
+      AuthGoogleService authGoogleService) {
     this.authKeyService = authKeyService;
     this.authLocalService = authLocalService;
-    this.personRepository = personRepository;
-    this.authGoogleRepository = authGoogleRepository;
+    this.authGoogleService = authGoogleService;
   }
 
   @Bean
@@ -60,11 +54,9 @@ public class SecurityConfig {
                     .failureUrl("/auth/login?error=true"))
         .logout(logout -> logout.logoutUrl("/auth/logout"))
         .addFilterBefore(
-            new AuthKeyFilter(authKeyService),
-            UsernamePasswordAuthenticationFilter.class)
+            new AuthKeyFilter(authKeyService), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(
-            new AuthGoogleAuthenticationFilter(authenticationManager),
-            UsernamePasswordAuthenticationFilter.class)
+            new AuthGoogleFilter(authGoogleService), UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager);
 
     return http.build();
@@ -75,19 +67,16 @@ public class SecurityConfig {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
     authProvider.setUserDetailsService(authLocalService);
 
-    AuthGoogleAuthenticationProvider authGoogleProvider =
-        new AuthGoogleAuthenticationProvider(authGoogleRepository, personRepository);
-
-    return new ProviderManager(authProvider, authGoogleProvider);
+    return new ProviderManager(authProvider);
   }
 
   @Bean
   public WebMvcConfigurer corsConfigurer() {
-      return new WebMvcConfigurer() {
-          @Override
-          public void addCorsMappings(CorsRegistry registry) {
-              registry.addMapping("/**");
-          }
-      };
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+      }
+    };
   }
 }

@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.key;
+package com.potrt.stats.security.auth.google;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,13 +13,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-public class AuthKeyFilter extends GenericFilterBean {
+public class AuthGoogleFilter extends GenericFilterBean {
 
-  AuthKeyService authKeyService;
+  AuthGoogleService authGoogleService;
 
   @Autowired
-  public AuthKeyFilter(AuthKeyService authKeyService) {
-    this.authKeyService = authKeyService;
+  public AuthGoogleFilter(AuthGoogleService authGoogleService) {
+    this.authGoogleService = authGoogleService;
   }
 
   @Override
@@ -27,7 +27,7 @@ public class AuthKeyFilter extends GenericFilterBean {
       throws IOException, ServletException {
     try {
       Authentication authentication =
-          authKeyService.getAuthentication((HttpServletRequest) request);
+          authGoogleService.getAuthentication((HttpServletRequest) request);
       SecurityContextHolder.getContext().setAuthentication(authentication);
     } catch (BadCredentialsException e) {
       logger.debug("No api key: ", e);

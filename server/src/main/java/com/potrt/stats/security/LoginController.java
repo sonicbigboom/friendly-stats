@@ -5,12 +5,10 @@ import com.potrt.stats.services.EmailService;
 import jakarta.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class LoginController {
 
   private EmailService emailService;
@@ -20,12 +18,6 @@ public class LoginController {
     this.emailService = emailService;
   }
 
-  @GetMapping("/auth/google/grantcode")
-  public void grantCode(@RequestParam("code") String code) {
-    /* Creates endpoint. */
-  }
-
-  @ResponseBody
   @GetMapping("/auth/test/email")
   public String testEmail() {
     try {
