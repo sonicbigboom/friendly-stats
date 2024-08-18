@@ -10,6 +10,9 @@ function App() {
         <p>
           Change <code>src/App.tsx</code> and save to reload.
         </p>
+        <p>
+          Server application url is: {process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}
+        </p>
         <a
           className="App-link"
           href="https://reactjs.org"
