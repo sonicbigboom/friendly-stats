@@ -18,6 +18,7 @@ A website that lets friends track stats with one another. (Poker games, silly be
 
 - [Java 21](https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.4+7/OpenJDK21U-jdk_x64_windows_hotspot_21.0.4_7.msi)
 - Linux VM / Machine
+- [Node Package Manager 10.8.1](https://nodejs.org/en/download/package-manager)
 
 ## Setup
 
