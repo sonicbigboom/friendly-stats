@@ -69,6 +69,10 @@ Create a new user with a strong password for the server to connect to the databa
 
 Set the following environment variables appropriately, based on the database.
 
+**Client:** \
+`REACT_APP_FRIENDLY_STATS_SERVER_HOST` - The base server application url. For example: `localhost:8080`
+
+**Server:** \
 `FRIENDLY_STATS_SIGNATURE` - An HMAC-SHA256 hex hash that is the application's secret signature. \
 `FRIENDLY_STATS_DB_HOST` - The database host. For example: `localhost:1433`\
 `FRIENDLY_STATS_DB_USERNAME` - The database username. For example: `sa`\
