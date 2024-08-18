@@ -5,6 +5,8 @@ import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationFilter;
 import com.potrt.stats.security.auth.google.AuthGoogleAuthenticationProvider;
 import com.potrt.stats.security.auth.google.AuthGoogleRepository;
+import com.potrt.stats.security.auth.key.AuthKeyFilter;
+import com.potrt.stats.security.auth.key.AuthKeyService;
 import com.potrt.stats.security.auth.local.AuthLocalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -25,15 +28,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
+  AuthKeyService authKeyService;
   AuthLocalService authLocalService;
   PersonRepository personRepository;
   AuthGoogleRepository authGoogleRepository;
 
   @Autowired
   public SecurityConfig(
+      AuthKeyService authKeyService,
       AuthLocalService authLocalService,
       PersonRepository personRepository,
       AuthGoogleRepository authGoogleRepository) {
+    this.authKeyService = authKeyService;
     this.authLocalService = authLocalService;
     this.personRepository = personRepository;
     this.authGoogleRepository = authGoogleRepository;
@@ -53,9 +59,12 @@ public class SecurityConfig {
                     .defaultSuccessUrl("/me")
                     .failureUrl("/auth/login?error=true"))
         .logout(logout -> logout.logoutUrl("/auth/logout"))
-        .addFilterAfter(
+        .addFilterBefore(
+            new AuthKeyFilter(authKeyService),
+            UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(
             new AuthGoogleAuthenticationFilter(authenticationManager),
-            BasicAuthenticationFilter.class)
+            UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager);
 
     return http.build();
