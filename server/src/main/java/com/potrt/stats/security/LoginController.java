@@ -20,11 +20,6 @@ public class LoginController {
     this.emailService = emailService;
   }
 
-  @GetMapping("/auth/login")
-  public String login() {
-    return "login";
-  }
-
   @GetMapping("/auth/google/grantcode")
   public void grantCode(@RequestParam("code") String code) {
     /* Creates endpoint. */
