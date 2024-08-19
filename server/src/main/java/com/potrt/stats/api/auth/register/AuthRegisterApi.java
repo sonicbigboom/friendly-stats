@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class AuthRegisterApi {
@@ -35,7 +36,7 @@ public class AuthRegisterApi {
 
   @PostMapping("/auth/register")
   public ResponseEntity<Void> registerUserAccount(
-      @Valid RegisterDto registerDto, HttpServletRequest request) {
+      @RequestBody @Valid RegisterDto registerDto, HttpServletRequest request) {
 
     try {
       AuthService service = AuthType.getAuthService(applicationContext, registerDto.getAuthType());

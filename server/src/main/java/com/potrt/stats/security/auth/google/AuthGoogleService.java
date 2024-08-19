@@ -6,10 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.potrt.stats.entities.Person;
-import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
+import com.potrt.stats.services.PersonService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Optional;
@@ -32,14 +32,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class AuthGoogleService implements AuthService {
 
-  private AuthGoogleRepository googleRepository;
-  private PersonRepository personRepository;
+  private AuthGoogleRepository authGoogleRepository;
+  private PersonService personService;
 
   @Autowired
-  public AuthGoogleService(
-      AuthGoogleRepository googleRepository, PersonRepository personRepository) {
-    this.googleRepository = googleRepository;
-    this.personRepository = personRepository;
+  public AuthGoogleService(AuthGoogleRepository authGoogleRepository, PersonService personService) {
+    this.authGoogleRepository = authGoogleRepository;
+    this.personService = personService;
   }
 
   public Authentication getAuthentication(HttpServletRequest request) {
@@ -47,7 +46,7 @@ public class AuthGoogleService implements AuthService {
       String code = request.getParameter("code");
       String accessToken = getAccessToken(code);
       Person person = getPerson(accessToken);
-      return new AuthGoogleAuthentication(code, person);
+      return new AuthGoogleAuthentication(accessToken, person);
     } catch (Exception e) {
       throw new BadCredentialsException("Invalid Google Key");
     }
@@ -99,19 +98,23 @@ public class AuthGoogleService implements AuthService {
    * @return The {@link Person}.
    */
   public Person getPerson(String accessToken) {
-    String info = getProfileInfo(accessToken);
-    String googleID = JsonParser.parseString(info).getAsJsonObject().get("id").getAsString();
-    Optional<AuthGoogle> optionalID = googleRepository.findById(googleID);
+    String googleID = getGoogleID(accessToken);
+    Optional<AuthGoogle> optionalID = authGoogleRepository.findById(googleID);
     if (optionalID.isEmpty()) {
-      return null;
+      throw new BadCredentialsException("Google token did not have an id.");
     }
 
     Integer id = optionalID.get().getPersonID();
     if (id == null) {
-      return null;
+      throw new BadCredentialsException("No user with this google account.");
     }
 
-    return personRepository.findById(id).orElseGet(() -> null);
+    return personService.getPerson(id);
+  }
+
+  public String getGoogleID(String accessToken) {
+    String info = getProfileInfo(accessToken);
+    return JsonParser.parseString(info).getAsJsonObject().get("id").getAsString();
   }
 
   /**
@@ -133,14 +136,26 @@ public class AuthGoogleService implements AuthService {
 
   @Override
   public Person registerPerson(RegisterDto registerDto) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'registerPerson'");
+    String accessToken = getAccessToken(registerDto.getCode());
+    String googleID = getGoogleID(accessToken);
+
+    Person person = registerDto.getPerson();
+    person = personService.register(person);
+
+    AuthGoogle authGoogle = new AuthGoogle(googleID, person.getId());
+    authGoogleRepository.save(authGoogle);
+    return person;
   }
 
   @Override
   public Authentication login(
       @Valid LoginDto loginDto, AuthenticationManager authenticationManager) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'login'");
+    try {
+      String accessToken = getAccessToken(loginDto.getCode());
+      Person person = getPerson(accessToken);
+      return new AuthGoogleAuthentication(accessToken, person);
+    } catch (Exception e) {
+      throw new BadCredentialsException("Invalid Google Key");
+    }
   }
 }
