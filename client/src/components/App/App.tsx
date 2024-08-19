@@ -4,13 +4,18 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from '../Login/Login';
 import Dashboard from '../Dashboard/Dashboard';
-import { TokenContext } from '../Token/TokenContext';
+import Wrapper from '../Wrapper/Wrapper';
+
 
 function App() {
   const { token, setToken } = useToken();
 
   if (!token) {
-    return <Login setToken={setToken} />
+    return (
+      <Wrapper token={token}>
+        <Login setToken={setToken} />
+      </Wrapper>
+    )
   }
 
   function logout() {
@@ -18,7 +23,7 @@ function App() {
   }
 
   return (
-    <TokenContext.Provider value={token}>
+    <Wrapper token={token}>
       <div className="wrapper">
         <h1>Friendly Stats</h1>
         <BrowserRouter>
@@ -28,7 +33,7 @@ function App() {
         </BrowserRouter>
         <button onClick={logout}>Logout</button>
       </div>
-    </TokenContext.Provider>
+    </Wrapper>
   );
 }
 

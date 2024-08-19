@@ -27,6 +27,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /** The service for google authentication. */
 @Service
@@ -147,13 +148,46 @@ public class AuthGoogleService implements AuthService {
     return person;
   }
 
+  public String getGoogleIDFromIDToken(String idToken) {
+    String url = "https://oauth2.googleapis.com/tokeninfo";
+    String urlTemplate = UriComponentsBuilder.fromHttpUrl(url).queryParam("id_token", idToken).encode()
+    .toUriString();
+    HttpEntity<String> requestEntity = new HttpEntity<>(new HttpHeaders());
+    ResponseEntity<String> response =
+        new RestTemplate().exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
+    String info = response.getBody();
+    return JsonParser.parseString(info).getAsJsonObject().get("sub").getAsString();
+  }
+
+    /**
+   * Gets the {@link Person} from a Google access token.
+   *
+   * @param accessToken The Google access token.
+   * @return The {@link Person}.
+   */
+  public Person getPersonFromID(String googleID) {
+    Optional<AuthGoogle> optionalID = authGoogleRepository.findById(googleID);
+    if (optionalID.isEmpty()) {
+      throw new BadCredentialsException("Google token did not have an id.");
+    }
+
+    Integer id = optionalID.get().getPersonID();
+    if (id == null) {
+      throw new BadCredentialsException("No user with this google account.");
+    }
+
+    return personService.getPerson(id);
+  }
+
+
   @Override
   public Authentication login(
       @Valid LoginDto loginDto, AuthenticationManager authenticationManager) {
     try {
-      String accessToken = getAccessToken(loginDto.getCode());
-      Person person = getPerson(accessToken);
-      return new AuthGoogleAuthentication(accessToken, person);
+      String idToken = loginDto.getCode();
+      String googleID = getGoogleIDFromIDToken(idToken);
+      Person person = getPersonFromID(googleID);
+      return new AuthGoogleAuthentication(idToken, person);
     } catch (Exception e) {
       throw new BadCredentialsException("Invalid Google Key");
     }

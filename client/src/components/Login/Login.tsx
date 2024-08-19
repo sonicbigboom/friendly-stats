@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 import PropTypes from 'prop-types';
-
+import { GoogleLogin } from '@react-oauth/google';
 
 async function loginUser(credentials: { loginName: string; code: string; authType: string; }) {
   return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`, {
@@ -49,6 +49,23 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
           <button type="submit">Submit</button>
         </div>
       </form>
+      <GoogleLogin
+        onSuccess={async credentialResponse => {
+          if (credentialResponse.credential === undefined) {
+            throw credentialResponse;
+          }
+
+          const token: { accessToken: string, tokenType: string } = await loginUser({
+            loginName: "",
+            code: credentialResponse.credential,
+            authType: "google"
+          })
+          setToken(`${token.tokenType} ${token.accessToken}`);
+        }}
+        onError={() => {
+          console.log('Login Failed');
+        }}
+      />
     </div>
   )
 }
