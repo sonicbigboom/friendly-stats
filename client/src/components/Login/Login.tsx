@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 async function loginUser(credentials: { loginName: string; code: string; authType: string; }) {
   return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`, {
     method: 'POST',
-    headers: new Headers({'content-type': 'application/json'}),
+    headers: new Headers({ 'content-type': 'application/json' }),
     body: JSON.stringify(credentials)
   })
     .then(response => {
@@ -25,7 +25,7 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token: {accessToken:string, tokenType:string} = await loginUser({
+    const token: { accessToken: string, tokenType: string } = await loginUser({
       "loginName": username,
       "code": password,
       "authType": "local"
