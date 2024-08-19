@@ -1,7 +1,6 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.security.auth.google.AuthGoogleService;
 import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
 import com.potrt.stats.security.auth.local.AuthLocalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +24,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
   private AuthLocalService authLocalService;
-  private AuthGoogleService authGoogleService;
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Autowired
   public SecurityConfig(
-      AuthLocalService authLocalService,
-      AuthGoogleService authGoogleService,
-      JwtAuthenticationFilter jwtAuthenticationFilter) {
+      AuthLocalService authLocalService, JwtAuthenticationFilter jwtAuthenticationFilter) {
     this.authLocalService = authLocalService;
-    this.authGoogleService = authGoogleService;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 

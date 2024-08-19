@@ -13,8 +13,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -26,12 +24,6 @@ public class AuthRegisterApi {
   @Autowired
   public AuthRegisterApi(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
-  }
-
-  @GetMapping("/auth/register")
-  public String register(Model model) {
-    model.addAttribute("register", new RegisterDto());
-    return "register";
   }
 
   @PostMapping("/auth/register")
