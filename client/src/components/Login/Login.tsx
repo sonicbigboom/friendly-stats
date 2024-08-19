@@ -3,20 +3,20 @@ import './Login.css';
 import PropTypes from 'prop-types';
 
 
-async function loginUser(credentials: { username: string; password: string; }) {
-  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login?` + new URLSearchParams({
-      username: credentials.username,
-      password: credentials.password
-  }).toString(), {
+async function loginUser(credentials: { loginName: string; code: string; authType: string; }) {
+  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`, {
     method: 'POST',
+    headers: new Headers({'content-type': 'application/json'}),
+    body: JSON.stringify(credentials)
   })
-  .then( response => {
-    if (!response.ok) { throw response }
-    return response.json()} );
+    .then(response => {
+      if (!response.ok) { throw response }
+      return response.json()
+    });
 }
 
 interface LoginProps {
-  setToken: React.Dispatch<React.SetStateAction<undefined>>;
+  setToken: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 const Login: React.FC<LoginProps> = ({ setToken }) => {
@@ -25,11 +25,12 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
+    const token: {accessToken:string, tokenType:string} = await loginUser({
+      "loginName": username,
+      "code": password,
+      "authType": "local"
     });
-    setToken(token);
+    setToken(`${token.tokenType} ${token.accessToken}`);
   }
 
   return (

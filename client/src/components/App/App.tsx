@@ -6,7 +6,7 @@ import Login from '../Login/Login';
 import Dashboard from '../Dashboard/Dashboard';
 
 function App() {
-  const [token, setToken] = useState();
+  const [token, setToken] = useState<string>();
 
   if(!token) {
     return <Login setToken={setToken} />
@@ -20,6 +20,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard/>} />
         </Routes>
       </BrowserRouter>
+      <h2>Token: {token}</h2>
     </div>
   );
 }
