@@ -16,7 +16,7 @@ async function loginUser(credentials: { loginName: string; code: string; authTyp
 }
 
 interface LoginProps {
-  setToken: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setToken: (token: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ setToken }) => {

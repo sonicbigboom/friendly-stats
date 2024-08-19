@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
+import useToken from './useToken';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import Login from '../Login/Login';
 import Dashboard from '../Dashboard/Dashboard';
 
 function App() {
-  const [token, setToken] = useState<string>();
+  const {token, setToken} = useToken();
 
   if(!token) {
     return <Login setToken={setToken} />
