@@ -3,8 +3,7 @@ package com.potrt.stats.security;
 
 import com.potrt.stats.security.auth.google.AuthGoogleFilter;
 import com.potrt.stats.security.auth.google.AuthGoogleService;
-import com.potrt.stats.security.auth.key.AuthKeyFilter;
-import com.potrt.stats.security.auth.key.AuthKeyService;
+import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
 import com.potrt.stats.security.auth.local.AuthLocalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +14,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -25,18 +25,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private AuthKeyService authKeyService;
   private AuthLocalService authLocalService;
   private AuthGoogleService authGoogleService;
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Autowired
   public SecurityConfig(
-      AuthKeyService authKeyService,
       AuthLocalService authLocalService,
-      AuthGoogleService authGoogleService) {
-    this.authKeyService = authKeyService;
+      AuthGoogleService authGoogleService,
+      JwtAuthenticationFilter jwtAuthenticationFilter) {
     this.authLocalService = authLocalService;
     this.authGoogleService = authGoogleService;
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
   @Bean
@@ -45,16 +45,10 @@ public class SecurityConfig {
     http.csrf(chain -> chain.disable())
         .authorizeHttpRequests(
             chain -> chain.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
-        .formLogin(
-            chain ->
-                chain
-                    .loginPage("/auth/login")
-                    .loginProcessingUrl("/auth/login")
-                    .defaultSuccessUrl("/me")
-                    .failureUrl("/auth/login?error=true"))
-        .logout(logout -> logout.logoutUrl("/auth/logout"))
-        .addFilterBefore(
-            new AuthKeyFilter(authKeyService), UsernamePasswordAuthenticationFilter.class)
+        .httpBasic(chain -> chain.disable())
+        .formLogin(chain -> chain.disable())
+        .sessionManagement(chain -> chain.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(
             new AuthGoogleFilter(authGoogleService), UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager);

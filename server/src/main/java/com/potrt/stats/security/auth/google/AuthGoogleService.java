@@ -8,8 +8,10 @@ import com.google.gson.JsonSyntaxException;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.auth.AuthService;
+import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -132,5 +135,12 @@ public class AuthGoogleService implements AuthService {
   public Person registerPerson(RegisterDto registerDto) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'registerPerson'");
+  }
+
+  @Override
+  public Authentication login(
+      @Valid LoginDto loginDto, AuthenticationManager authenticationManager) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'login'");
   }
 }

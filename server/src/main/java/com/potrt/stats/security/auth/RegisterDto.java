@@ -14,7 +14,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@AuthExists
 public class RegisterDto {
   @Email @NotNull @NotEmpty private String email;
 
@@ -26,7 +25,7 @@ public class RegisterDto {
 
   private String nickname;
 
-  private String authType;
+  @AuthExists private String authType;
 
   private String code;
 

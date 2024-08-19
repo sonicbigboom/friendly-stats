@@ -13,7 +13,7 @@ public class AuthExistsValidator implements ConstraintValidator<AuthExists, Obje
 
   @Override
   public boolean isValid(Object obj, ConstraintValidatorContext context) {
-    RegisterDto register = (RegisterDto) obj;
-    return AuthType.authExists(register.getAuthType());
+    String authType = (String) obj;
+    return AuthType.authExists(authType);
   }
 }
