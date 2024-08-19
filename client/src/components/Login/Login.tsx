@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Login.css';
 import PropTypes from 'prop-types';
 import { GoogleLogin } from '@react-oauth/google';
+import Register from '../Register/Register';
 
 async function loginUser(credentials: { loginName: string; code: string; authType: string; }) {
   return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`, {
@@ -20,8 +21,23 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ setToken }) => {
+  const [isRegistering, setIsRegistering] = useState(false)
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
+  function flipIsRegistering() {
+    setIsRegistering(isRegistering => !isRegistering)
+  }
+
+  if (isRegistering) {
+    return (
+      <div className="login-wrapper">
+        <Register/>
+        <br/>
+        <button onClick={flipIsRegistering}> Login </button>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +82,8 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
           console.log('Login Failed');
         }}
       />
+      <br/>
+      <button onClick={flipIsRegistering}> Register </button>
     </div>
   )
 }
