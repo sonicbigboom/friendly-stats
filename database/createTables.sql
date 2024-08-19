@@ -165,7 +165,7 @@ GO
 -- ========================== -- 
 
 -- Username + Password
-CREATE TABLE [AuthLocalPassword] (
+CREATE TABLE [AuthBasicPassword] (
 	PersonID INT NOT NULL,
 	Password VARCHAR(255) NOT NULL,
 	PRIMARY KEY (PersonID),
@@ -173,9 +173,9 @@ CREATE TABLE [AuthLocalPassword] (
 );
 GO
 
-CREATE VIEW [AuthLocal] AS
+CREATE VIEW [AuthBasic] AS
 	SELECT P.Email Email, P.Username Username, A.Password Password, A.PersonID PersonID
-	FROM [Person] P INNER JOIN [AuthLocalPassword] A ON P.ID = A.PersonID;
+	FROM [Person] P INNER JOIN [AuthBasicPassword] A ON P.ID = A.PersonID;
 GO
 
 -- Google oAuth

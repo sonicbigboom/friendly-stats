@@ -85,9 +85,9 @@ GO
 
 SET IDENTITY_INSERT [Game] ON
 INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [Name], [ForCash], [AccumulateScore], [NetScoreChange], [StartDate], [EndDate]) VALUES
-	('1', '1', '1', '0', '1', 'Mistake', '0', '2024-08-09 20:00:00.000', '2024-08-09 20:03:00.000'),
-	('2', '1', '1', '1', '1', 'Poker Game', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000'),
-	('3', '2', '5', '1', '1', 'Football League', '0', '2024-08-15 19:12:00.000', NULL);
+	('1', '1', '1', 'Mistake', '0', '1', '0', '2024-08-09 20:00:00.000', '2024-08-09 20:03:00.000'),
+	('2', '1', '1', 'Poker Game', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000'),
+	('3', '2', '5', 'Football League', '1', '1', '0', '2024-08-15 19:12:00.000', NULL);
 SET IDENTITY_INSERT [Game] OFF
 GO
 
@@ -145,7 +145,7 @@ INSERT INTO [BankCashTransaction] ([ID], [PersonID], [ClubID], [Deposit], [Creat
 SET IDENTITY_INSERT [BankCashTransaction] OFF
 GO
 
-INSERT INTO [AuthLocalPassword] ([PersonID], [Password]) VALUES
+INSERT INTO [AuthBasicPassword] ([PersonID], [Password]) VALUES
 	('1', '{bcrypt}$2a$10$vXIWdLRXFH4YH0zztb58vOFVs6nkasFft7Obtuuenj5qQMvwtN0fa'),
 	('2', '{bcrypt}$2a$10$5HDXyKXZexXLfGj9pZUUKeQbinMfW8tVIBa28VYlBs6jjYhrbuaVK'),
 	('3', '{bcrypt}$2a$10$..R2MPVWkOrdQ338uLp9R.9MstPCWrvmQmbzJ3EQvNAm3wMpdQyfa'),

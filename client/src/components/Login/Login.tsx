@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
     const token: { accessToken: string, tokenType: string } = await loginUser({
       "loginName": username,
       "code": password,
-      "authType": "local"
+      "authType": "basic"
     });
     setToken(`${token.tokenType} ${token.accessToken}`);
   }

@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.local;
+package com.potrt.stats.security.auth.basic;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.auth.AuthService;
@@ -18,34 +18,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthLocalService implements UserDetailsService, AuthService {
+public class AuthBasicService implements UserDetailsService, AuthService {
 
-  private AuthLocalRepository authLocalRepository;
+  private AuthBasicRepository authBasicRepository;
   private PersonService personService;
-  private AuthLocalPasswordRepository authLocalPasswordRepository;
+  private AuthBasicPasswordRepository authBasicPasswordRepository;
 
   @Autowired
-  public AuthLocalService(
-      AuthLocalRepository authLocalRepository,
-      AuthLocalPasswordRepository authLocalPasswordRepository,
+  public AuthBasicService(
+      AuthBasicRepository authBasicRepository,
+      AuthBasicPasswordRepository authBasicPasswordRepository,
       PersonService personService) {
-    this.authLocalRepository = authLocalRepository;
+    this.authBasicRepository = authBasicRepository;
     this.personService = personService;
-    this.authLocalPasswordRepository = authLocalPasswordRepository;
+    this.authBasicPasswordRepository = authBasicPasswordRepository;
   }
 
   @Override
-  public AuthLocalPrincipal loadUserByUsername(String loginName) {
-    AuthLocal authLocal = authLocalRepository.findByUsername(loginName);
-    if (authLocal == null) {
-      authLocal = authLocalRepository.findByEmail(loginName);
+  public AuthBasicPrincipal loadUserByUsername(String loginName) {
+    AuthBasic authBasic = authBasicRepository.findByUsername(loginName);
+    if (authBasic == null) {
+      authBasic = authBasicRepository.findByEmail(loginName);
     }
-    if (authLocal == null) {
+    if (authBasic == null) {
       throw new UsernameNotFoundException(loginName);
     }
 
-    authLocal.setPerson(personService.getPerson(authLocal.getPersonID()));
-    return new AuthLocalPrincipal(authLocal);
+    authBasic.setPerson(personService.getPerson(authBasic.getPersonID()));
+    return new AuthBasicPrincipal(authBasic);
   }
 
   @Override
@@ -54,8 +54,8 @@ public class AuthLocalService implements UserDetailsService, AuthService {
     person = personService.register(person);
     String encodedPassword =
         "{bcrypt}" + new BCryptPasswordEncoder(14).encode(registerDto.getCode());
-    AuthLocalPassword authLocalPassword = new AuthLocalPassword(person.getId(), encodedPassword);
-    authLocalPasswordRepository.save(authLocalPassword);
+    AuthBasicPassword authBasicPassword = new AuthBasicPassword(person.getId(), encodedPassword);
+    authBasicPasswordRepository.save(authBasicPassword);
     return person;
   }
 

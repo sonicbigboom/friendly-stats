@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.security.auth.local;
+package com.potrt.stats.security.auth.basic;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.PersonPrincipal;
@@ -9,11 +9,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class AuthLocalPrincipal implements UserDetails, CredentialsContainer, PersonPrincipal {
-  private transient AuthLocal authLocal;
+public class AuthBasicPrincipal implements UserDetails, CredentialsContainer, PersonPrincipal {
+  private transient AuthBasic authBasic;
 
-  public AuthLocalPrincipal(AuthLocal authLocal) {
-    this.authLocal = authLocal;
+  public AuthBasicPrincipal(AuthBasic authBasic) {
+    this.authBasic = authBasic;
   }
 
   @Override
@@ -23,21 +23,21 @@ public class AuthLocalPrincipal implements UserDetails, CredentialsContainer, Pe
 
   @Override
   public String getPassword() {
-    return authLocal.getPassword();
+    return authBasic.getPassword();
   }
 
   @Override
   public String getUsername() {
-    return authLocal.getUsername();
+    return authBasic.getUsername();
   }
 
   @Override
   public void eraseCredentials() {
-    authLocal.eraseCredentials();
+    authBasic.eraseCredentials();
   }
 
   @Override
   public Person getPerson() {
-    return authLocal.getPerson();
+    return authBasic.getPerson();
   }
 }

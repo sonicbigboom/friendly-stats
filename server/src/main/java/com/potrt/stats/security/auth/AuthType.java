@@ -1,13 +1,13 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security.auth;
 
+import com.potrt.stats.security.auth.basic.AuthBasicService;
 import com.potrt.stats.security.auth.google.AuthGoogleService;
-import com.potrt.stats.security.auth.local.AuthLocalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 public enum AuthType {
-  LOCAL("local", AuthLocalService.class),
+  BASIC("basic", AuthBasicService.class),
   GOOGLE("google", AuthGoogleService.class);
 
   private String name;

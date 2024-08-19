@@ -1,8 +1,8 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
+import com.potrt.stats.security.auth.basic.AuthBasicService;
 import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
-import com.potrt.stats.security.auth.local.AuthLocalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,12 +23,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private AuthLocalService authLocalService;
+  private AuthBasicService authLocalService;
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Autowired
   public SecurityConfig(
-      AuthLocalService authLocalService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+      AuthBasicService authLocalService, JwtAuthenticationFilter jwtAuthenticationFilter) {
     this.authLocalService = authLocalService;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
