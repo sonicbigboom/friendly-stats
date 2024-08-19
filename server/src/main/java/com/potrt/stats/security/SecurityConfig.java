@@ -1,7 +1,6 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.security.auth.google.AuthGoogleFilter;
 import com.potrt.stats.security.auth.google.AuthGoogleService;
 import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
 import com.potrt.stats.security.auth.local.AuthLocalService;
@@ -49,8 +48,6 @@ public class SecurityConfig {
         .formLogin(chain -> chain.disable())
         .sessionManagement(chain -> chain.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(
-            new AuthGoogleFilter(authGoogleService), UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager);
 
     return http.build();
