@@ -13,15 +13,20 @@ function App() {
     return <Login setToken={setToken} />
   }
 
+  function logout() {
+    setToken(null);
+  }
+
   return (
     <TokenContext.Provider value={token}>
       <div className="wrapper">
-        <h1>Application</h1>
+        <h1>Friendly Stats</h1>
         <BrowserRouter>
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </BrowserRouter>
+        <button onClick={logout}>Logout</button>
       </div>
     </TokenContext.Provider>
   );
