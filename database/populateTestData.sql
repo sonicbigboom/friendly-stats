@@ -38,11 +38,11 @@ SET IDENTITY_INSERT [Person] OFF
 GO
 
 SET IDENTITY_INSERT [Club] ON
-INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash], [IsDeleted]) VALUES
-	('1', 'Egyptians', '6', '0', '0'),
-	('2', 'Book', '7', '0', '0'),
-	('3', 'Card/Board Games', '25', '0', '0'),
-	('4', 'Gambling', '11', '0', '0');
+INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash], [CurrentSeasonID], [IsDeleted]) VALUES
+	('1', 'Egyptians', '6', '0', '1', '0'),
+	('2', 'Book', '7', '0', '1', '0'),
+	('3', 'Card/Board Games', '25', '0', '1', '0'),
+	('4', 'Gambling', '11', '0', '1', '0');
 SET IDENTITY_INSERT [Club] OFF
 GO
 

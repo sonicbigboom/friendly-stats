@@ -29,11 +29,26 @@ CREATE TABLE [Club] (
 	Name VARCHAR(255) NOT NULL,
 	OwnerPersonID INT NOT NULL,
 	StoredCash INT DEFAULT 0 NOT NULL,
+	CurrentSeasonID INT DEFAULT 1 NOT NULL,
 	IsDeleted INT DEFAULT 0 NOT NULL
 	PRIMARY KEY (ID),
 	FOREIGN KEY (OwnerPersonID) REFERENCES [Person](ID)
 );
 GO
+
+-- Season 
+-- Represents a season/year of games.
+CREATE TABLE [Season] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	Name VARCHAR(255) NOT NULL,
+	ClubID INT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
+);
+GO
+
+ALTER TABLE Club
+ADD FOREIGN KEY (CurrentSeasonID) REFERENCES [Season](ID); 
 
 -- PersonRole
 -- Represents the permissions for a person in a club.
@@ -67,7 +82,8 @@ CREATE TABLE [GameScoringType] (
 	IsDeleted BIT DEFAULT 0,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
-)
+);
+GO
 
 -- GameType
 -- Represents a single game like: Poker, Mahjong, or Fantasy Football.
@@ -82,14 +98,6 @@ CREATE TABLE [GameType] (
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
 );
 GO
-
-CREATE TABLE [Season] (
-	ID INT IDENTITY(1,1) NOT NULL,
-	Name VARCHAR(255) NOT NULL,
-	ClubID INT NULL,
-	PRIMARY KEY (ID),
-	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
-)
 
 -- Score
 CREATE TABLE [Score] (
