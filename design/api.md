@@ -1,6 +1,15 @@
+## Permissions
+
+All permissions have prior permissions: \
+`NULL`        - Not a member of the group. \
+`Player`      - A member of the group. \
+`Game Admin`  - Can make games, make game/scoring types, and add members. \
+`Cash Admin`  - Can add bank transactions, and remove users.\
+`Co-Owner`    - Can grant other users permissions up to `Cash Admin`.
+
 ## Bibiliography
 
-## Terms
+### Terms
 `cash balance`      - The total (or per-club total) amount of money (in cents) that a person has in their account.
 
 ### Actions

@@ -2,6 +2,7 @@
 package com.potrt.stats.entities;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.NumericBooleanConverter;
 
 /** A {@link Person} represents a user of the application. */
 @Table
@@ -40,4 +42,12 @@ public class Person {
 
   @Column(nullable = true)
   private String nickname;
+
+  @Column(nullable = false)
+  @Convert(converter = NumericBooleanConverter.class)
+  private Boolean isDisabled;
+
+  @Column(nullable = false)
+  @Convert(converter = NumericBooleanConverter.class)
+  private Boolean isDeleted;
 }

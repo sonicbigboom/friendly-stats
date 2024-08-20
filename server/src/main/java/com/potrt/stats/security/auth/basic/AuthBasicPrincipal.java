@@ -40,4 +40,10 @@ public class AuthBasicPrincipal implements UserDetails, CredentialsContainer, Pe
   public Person getPerson() {
     return authBasic.getPerson();
   }
+
+  @Override
+  public boolean isEnabled() {
+    Person person = getPerson();
+    return !person.getIsDisabled() && !person.getIsDeleted();
+  }
 }

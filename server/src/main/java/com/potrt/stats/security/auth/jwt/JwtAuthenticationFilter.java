@@ -2,6 +2,7 @@
 package com.potrt.stats.security.auth.jwt;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.services.PersonService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       Integer id = jwtTokenProvider.getId(token);
 
       Person person = personService.getPerson(id);
+
+      AuthService.checkAccountStatus(person);
 
       UsernamePasswordAuthenticationToken authenticationToken =
           new UsernamePasswordAuthenticationToken(person, null, AuthorityUtils.NO_AUTHORITIES);

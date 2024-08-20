@@ -54,6 +54,9 @@ public class AuthGoogleService implements AuthService {
       String idToken = loginDto.getCode();
       String googleID = getGoogleID(idToken);
       Person person = getPerson(googleID);
+
+      AuthService.checkAccountStatus(person);
+
       return new AuthGoogleAuthentication(idToken, person);
     } catch (Exception e) {
       throw new BadCredentialsException("Invalid Google Key");

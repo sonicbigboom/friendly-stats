@@ -13,7 +13,9 @@ CREATE TABLE [Person] (
 	Username VARCHAR(255) NOT NULL,
 	FirstName VARCHAR(255) NULL,
 	LastName VARCHAR(255) NULL,
-	Nickname VARCHAR(255) NULL, 
+	Nickname VARCHAR(255) NULL,
+	IsDisabled BIT DEFAULT 1 NOT NULL,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (ID),
 	CONSTRAINT AK_Person_Email UNIQUE(Email),
 	CONSTRAINT AK_Person_Username UNIQUE(Username)
@@ -27,8 +29,17 @@ CREATE TABLE [Club] (
 	Name VARCHAR(255) NOT NULL,
 	OwnerPersonID INT NOT NULL,
 	StoredCash INT DEFAULT 0 NOT NULL,
+	IsDeleted INT DEFAULT 0 NOT NULL
 	PRIMARY KEY (ID),
 	FOREIGN KEY (OwnerPersonID) REFERENCES [Person](ID)
+);
+GO
+
+-- PersonRole
+-- Represents the permissions for a person in a club.
+CREATE TABLE [PersonRole] (
+	Name VARCHAR(255),
+	PRIMARY KEY (Name)
 );
 GO
 
@@ -38,38 +49,61 @@ CREATE TABLE [Membership] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	CashBalance INT DEFAULT 0 NOT NULL,
-	IsMember INT DEFAULT 1 NOT NULL,
-	IsCashAdmin BIT DEFAULT 0 NOT NULL,
-	IsGameAdmin BIT DEFAULT 0 NOT NULL,
+	PersonRole VARCHAR (255) NULL,
 	PRIMARY KEY (PersonID, ClubID),
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
+	FOREIGN KEY (PersonRole) REFERENCES [PersonRole](Name)
 );
 GO
+
+-- GameScoringType
+-- Represents the manner in which to score a game, like: ZeroSum where any gain/loss is immediately reflected.  
+CREATE TABLE [GameScoringType] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	Name VARCHAR(255) NOT NULL,
+	ScoringCode VARCHAR(MAX) NULL,
+	ClubID INT NULL,
+	IsDeleted BIT DEFAULT 0,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
+)
 
 -- GameType
 -- Represents a single game like: Poker, Mahjong, or Fantasy Football.
 CREATE TABLE [GameType] (
 	ID INT IDENTITY(1,1) NOT NULL,
 	Name VARCHAR(255) NOT NULL,
-	IsZeroSum BIT NOT NULL,
+	GameScoringTypeID INT NOT NULL,
 	ClubID INT NULL,
+	IsDeleted BIT DEFAULT 0,
 	PRIMARY KEY (ID),
+	FOREIGN KEY (GameScoringTypeID) REFERENCES [GameScoringType](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
 );
 GO
+
+CREATE TABLE [Season] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	Name VARCHAR(255) NOT NULL,
+	ClubID INT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (ClubID) REFERENCES [Club](ID)
+)
 
 -- Score
 CREATE TABLE [Score] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	GameTypeID INT NOT NULL,
+	SeasonID INT NOT NULL,
 	ForCash BIT NOT NULL,
 	Total INT NOT NULL,
-	PRIMARY KEY (PersonID, ClubID, GameTypeID, ForCash),
+	PRIMARY KEY (PersonID, ClubID, GameTypeID, SeasonID, ForCash),
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
-	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
+	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID),
+	FOREIGN KEY (SeasonID) REFERENCES [Season](ID)
 );
 GO
 
@@ -82,13 +116,16 @@ CREATE TABLE [Game] (
 	GameTypeID INT NOT NULL,
 	Name VARCHAR(255) NULL,
 	ForCash BIT DEFAULT 0 NOT NULL,
-	AccumulateScore BIT DEFAULT 0 NOT NULL,
+	SeasonID INT NULL,
 	NetScoreChange INT DEFAULT 0 NOT NULL,
+	Metadata VARCHAR(MAX) NULL,
 	StartDate DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	EndDate DATETIME NULL,
+	IsDeleted BIT DEFAULT 0,
 	PRIMARY KEY (ID),
 	FOREIGN KEY (ClubID) REFERENCES [Club](ID),
-	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID)
+	FOREIGN KEY (GameTypeID) REFERENCES [GameType](ID),
+	FOREIGN KEY (SeasonID) REFERENCES [Season](ID)
 );
 GO
 
@@ -96,9 +133,17 @@ GO
 CREATE TABLE [GamePlayer] (
 	GameID INT NOT NULL,
 	PersonID INT NOT NULL,
+	Metadata VARCHAR(MAX) NULL,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
+	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CreatedByPersonID INT NOT NULL,
+	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	ModifiedByPersonID INT NOT NULL,
 	PRIMARY KEY (GameID, PersonID),
 	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
-	FOREIGN KEY (GameID) REFERENCES [Game](ID)
+	FOREIGN KEY (GameID) REFERENCES [Game](ID),
+	FOREIGN KEY (CreatedByPersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
 )
 
 -- GameRecord
@@ -108,6 +153,7 @@ CREATE TABLE [GameRecord] (
 	GameID INT NOT NULL,
 	PersonID INT NOT NULL,
 	ScoreChange INT NOT NULL,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CreatedByPersonID INT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -128,6 +174,7 @@ CREATE TABLE [CashTransaction] (
 	TargetPersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	Amount INT NOT NULL,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CreatedByPersonID INT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -148,6 +195,7 @@ CREATE TABLE [BankCashTransaction] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	Deposit INT NOT NULL,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	CreatedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	CreatedByPersonID INT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -197,10 +245,10 @@ CREATE TRIGGER [GAME_PLAYER_SCORE_TRIGGER]
 	ON [GamePlayer]
 	AFTER INSERT
 AS
-	INSERT INTO [Score] (PersonID, ClubID, GameTypeID, ForCash, Total)
-	SELECT I.PersonID, G.ClubID, G.GameTypeID, G.ForCash, 0
+	INSERT INTO [Score] (PersonID, ClubID, GameTypeID, SeasonID, ForCash, Total)
+	SELECT I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash, 0
 	FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-	WHERE G.AccumulateScore = 1;
+	WHERE G.SeasonID IS NOT NULL;
 GO
 
 -- Game Record Trigger
@@ -238,12 +286,12 @@ AS
 		SET S.Total = S.Total - R.Total
 		FROM [Score] S INNER JOIN 
 		(
-			SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.ForCash ForCash, SUM(I.ScoreChange) Total
+			SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.SeasonID SeasonID, G.ForCash ForCash, SUM(I.ScoreChange) Total
 			FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-			WHERE G.AccumulateScore = 1
-			GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.ForCash
+			WHERE G.SeasonID IS NOT NULL
+			GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash
 		) R
-		ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.ForCash = R.ForCash;
+		ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash;
 	END
 
 	-- Update player cash balance.
@@ -274,12 +322,12 @@ AS
 	SET S.Total = S.Total + R.Total
 	FROM [Score] S INNER JOIN 
 	(
-		SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.ForCash ForCash, SUM(I.ScoreChange) Total
+		SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.SeasonID SeasonID, G.ForCash ForCash, SUM(I.ScoreChange) Total
 		FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-		WHERE G.AccumulateScore = 1
-		GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.ForCash
+		WHERE G.SeasonID IS NOT NULL
+		GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash
 	) R
-	ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.ForCash = R.ForCash;
+	ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash;
 GO
 
 -- Cash Transaction Trigger
@@ -297,6 +345,7 @@ AS
 		(
 			SELECT ClubID, SourcePersonID, SUM(Amount) Total
 			FROM [Deleted]
+			WHERE IsDeleted = 0
 			GROUP BY ClubID, SourcePersonID
 		) D  
 		ON M.ClubID = D.ClubID AND M.PersonID = D.SourcePersonID;
@@ -308,6 +357,7 @@ AS
 		(
 			SELECT ClubID, TargetPersonID, SUM(Amount) Total
 			FROM [Deleted]
+			WHERE IsDeleted = 0
 			GROUP BY ClubID, TargetPersonID
 		) D  
 		ON M.ClubID = D.ClubID AND M.PersonID = D.TargetPersonID;
@@ -320,6 +370,7 @@ AS
 	(
 		SELECT ClubID, SourcePersonID, SUM(Amount) Total
 		FROM [Inserted]
+		WHERE IsDeleted = 0
 		GROUP BY ClubID, SourcePersonID
 	) I 
 	ON M.ClubID = I.ClubID AND M.PersonID = I.SourcePersonID;
@@ -331,6 +382,7 @@ AS
 	(
 		SELECT ClubID, TargetPersonID, SUM(Amount) Total
 		FROM [Inserted]
+		WHERE IsDeleted = 0
 		GROUP BY ClubID, TargetPersonID
 	) I 
 	ON M.ClubID = I.ClubID AND M.PersonID = I.TargetPersonID;
@@ -351,6 +403,7 @@ AS
 		(
 			SELECT ClubID, PersonID, SUM(Deposit) Total
 			FROM [Deleted]
+			WHERE IsDeleted = 0
 			GROUP BY ClubID, PersonID
 		) D 
 		ON M.ClubID = D.ClubID AND M.PersonID = D.PersonID;
@@ -362,6 +415,7 @@ AS
 		(
 			SELECT ClubID, SUM(Deposit) Total
 			FROM [Deleted]
+			WHERE IsDeleted = 0
 			GROUP BY ClubID
 		) D
 		ON C.ID = D.ClubID;
@@ -374,6 +428,7 @@ AS
 	(
 		SELECT ClubID, PersonID, SUM(Deposit) Total
 		FROM [Inserted]
+		WHERE IsDeleted = 0
 		GROUP BY ClubID, PersonID
 	) I 
 	ON M.ClubID = I.ClubID AND M.PersonID = I.PersonID;
@@ -385,6 +440,7 @@ AS
 	(
 		SELECT ClubID, SUM(Deposit) Total
 		FROM [Inserted]
+		WHERE IsDeleted = 0
 		GROUP BY ClubID
 	) I
 	ON C.ID = I.ClubID;
@@ -401,6 +457,7 @@ CREATE TABLE [GameRecordAudit] (
 	GameID INT NOT NULL,
 	PersonID INT NOT NULL,
 	ScoreChange INT NOT NULL,
+	IsDeleted BIT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	ModifiedByPersonID INT NOT NULL,
 	PRIMARY KEY (ID),
@@ -416,8 +473,33 @@ CREATE TRIGGER [GAME_RECORD_AUDIT_TRIGGER]
 	ON [GameRecord]
 	AFTER INSERT, UPDATE
 AS
-	INSERT INTO [GameRecordAudit] (GameRecordID, GameID, PersonID, ScoreChange, ModifiedTime, ModifiedByPersonID)
-	SELECT I.ID, I.GameID, I.PersonID, I.ScoreChange, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
+	INSERT INTO [GameRecordAudit] (GameRecordID, GameID, PersonID, ScoreChange, IsDeleted, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.GameID, I.PersonID, I.ScoreChange, I.IsDeleted, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
+GO
+
+-- Game Player Audit
+CREATE TABLE [GamePlayerAudit] (
+	ID INT IDENTITY(1,1) NOT NULL,
+	GameID INT NOT NULL,
+	PersonID INT NOT NULL,
+	Metadata VARCHAR(MAX) NULL,
+	IsDeleted BIT NOT NULL,
+	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	ModifiedByPersonID INT NOT NULL,
+	PRIMARY KEY (ID),
+	FOREIGN KEY (GameID) REFERENCES [Game](ID),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID),
+	FOREIGN KEY (ModifiedByPersonID) REFERENCES [Person](ID)
+);
+GO
+
+-- Game Player Audit Trigger
+CREATE TRIGGER [GAME_PLAYER_AUDIT_TRIGGER]
+	ON [GamePlayer]
+	AFTER INSERT, UPDATE
+AS
+	INSERT INTO [GamePlayerAudit] (GameID, PersonID, Metadata, IsDeleted, ModifiedTime, ModifiedByPersonID)
+	SELECT I.GameID, I.PersonID, I.Metadata, I.IsDeleted, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO
 
 -- Cash Transaction Audit
@@ -428,6 +510,7 @@ CREATE TABLE [CashTransactionAudit] (
 	TargetPersonID INT NULL,
 	ClubID INT NOT NULL,
 	Amount INT NOT NULL,
+	IsDeleted BIT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	ModifiedByPersonID INT NOT NULL,
 	PRIMARY KEY (ID),
@@ -444,8 +527,8 @@ CREATE TRIGGER [CASH_TRANSACTION_AUDIT_TRIGGER]
 	ON [CashTransaction]
 	AFTER INSERT, UPDATE
 AS
-	INSERT INTO [CashTransactionAudit] (CashTransactionID, SourcePersonID, TargetPersonID, ClubID, Amount, ModifiedTime, ModifiedByPersonID)
-	SELECT I.ID, I.SourcePersonID, I.TargetPersonID, I.ClubID, I.Amount, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
+	INSERT INTO [CashTransactionAudit] (CashTransactionID, SourcePersonID, TargetPersonID, ClubID, Amount, IsDeleted, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.SourcePersonID, I.TargetPersonID, I.ClubID, I.Amount, I.IsDeleted, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO
 
 -- Bank Cash Transaction Audit
@@ -455,6 +538,7 @@ CREATE TABLE [BankCashTransactionAudit] (
 	PersonID INT NOT NULL,
 	ClubID INT NOT NULL,
 	Deposit INT NOT NULL,
+	IsDeleted BIT NOT NULL,
 	ModifiedTime DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	ModifiedByPersonID INT NOT NULL,
 	PRIMARY KEY (ID),
@@ -470,6 +554,6 @@ CREATE TRIGGER [BANK_CASH_TRANSACTION_AUDIT_TRIGGER]
 	ON [BankCashTransaction]
 	AFTER INSERT, UPDATE
 AS
-	INSERT INTO [BankCashTransactionAudit] (BankCashTransactionID, PersonID, ClubID, Deposit, ModifiedTime, ModifiedByPersonID)
-	SELECT I.ID, I.PersonID, I.ClubID, I.Deposit, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
+	INSERT INTO [BankCashTransactionAudit] (BankCashTransactionID, PersonID, ClubID, Deposit, IsDeleted, ModifiedTime, ModifiedByPersonID)
+	SELECT I.ID, I.PersonID, I.ClubID, I.Deposit, I.IsDeleted, I.ModifiedTime, I.ModifiedByPersonID FROM [Inserted] I;
 GO

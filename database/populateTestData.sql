@@ -2,146 +2,136 @@ USE [stats];
 GO
 
 SET IDENTITY_INSERT [Person] ON
-INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname]) VALUES
-	('1', 'jane@gmail.com', 'janedoe', 'Jane ', 'Doe', NULL),
-	('2', 'wizardgwyn@gmail.com', 'Gwynndolyn', 'Gwydristopher', 'Bagwen', 'Gwynn'),
-	('3', 'horuso@yahoo.com', 'horuso1', 'Horus', 'Owens', NULL),
-	('4', 'jesuscolumbo14@gmail.com', 'ColumnJ', 'Jesus', 'Columbo', 'Column'),
-	('5', 'anubismiller@gmail.com', 'AnubyMil', 'Anubis', 'Miller', NULL),
-	('6', 'sungod@outlook.com', 'xXsungodraXx', 'Ra', 'Rodriguez', NULL),
-	('7', 'irisgarc@outlook.com', 'iris.garcia7', 'Iris', 'Garcia', NULL),
-	('8', 'hathorm@yahoo.com', 'hathormurphy', 'Hathor', 'Murphy', NULL),
-	('9', 'jb1301@gmail.com', 'memehub', 'Jack ', 'Brown', NULL),
-	('10', 'swilliams6@outlook.com', 'stevewwills', 'Steve', 'Williams', 'stevie'),
-	('11', 'lili@yahoo.com', 'sillycattos', 'Li', 'Li', NULL),
-	('12', 'lwilson99@yahoo.com', 'winter.lew13', 'Lewis', 'Wilson', 'Rod'),
-	('13', 'jessiebrown10@hotmail.com', 'Jessie_brownn', 'Jessica ', 'Brown', 'Jessie'),
-	('14', 'spatel@gmail.com', 'soph.patel202', 'Sophia', 'Patel', 'Sophia'),
-	('15', 'charbrooks@yahoo.com', 'charlottebrooks', 'Charlotte', 'Brooks', 'Charlie'),
-	('16', 'emolucy@gmail.com', 'grayworld', 'Lucy', 'Gray', NULL),
-	('17', 'oliviaprice44@outlook.com', 'Olivia_price', 'Olivia', 'Price', 'Liv'),
-	('18', 'livysmiths@gmail.com', 'Livylifelove', 'Olivia', 'Smith', 'Livy'),
-	('19', 'sophierogers@yahoo.com', 'sophierogers', 'Sophie', 'Rogers', 'Soph'),
-	('20', 'chloeanderson69@yahoo.com', 'chloeanderson', 'Chloe', 'Anderson', NULL),
-	('21', 'alexanderkim@outlook.com', 'alexwiththehat', 'Alexander', 'Kim', NULL),
-	('22', 'longthedragon@gmail.com', 'longthedragon', 'Charles', 'Long', 'Long'),
-	('23', 'alexnakamura7@hotmail.com', 'Betteralex', 'Alexander', 'Nakamura', 'Alex'),
-	('24', 'jameswang@yahoo.com', 'jameswang', 'James', 'Wang', NULL),
-	('25', 'andrewpark88@hotmail.com', 'koreanpotato', 'Andrew', 'Park', NULL),
-	('26', 'noahgoodwin10@gmail.com', 'n.goodwin56', 'Noah', 'Goodwin', NULL),
-	('27', 'kev_whittaker@outlook.com', 'kev_whittaker', 'Kevin', 'Whittaker', NULL),
-	('28', 'jackomoore@hotmail.com', 'JackWithAnM', 'Jack ', 'Moore', 'Jack M'),
-	('29', 'ilovetomholland@gmail.com', 'tomhollandfanpage49401', 'Megan', 'Holland', NULL),
-	('30', 'Rebecca1hacther@gmail.com', 'BeccaThatch', 'Rebecca', 'Thatcher', NULL),
-	('31', 'clown@gmail.com', 'clown', NULL, NULL, NULL);
+INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsDisabled], [IsDeleted]) VALUES
+	('1', 'jane@gmail.com', 'janedoe', 'Jane ', 'Doe', NULL, '0', '0'),
+	('2', 'wizardgwyn@gmail.com', 'Gwynndolyn', 'Gwydristopher', 'Bagwen', 'Gwynn', '0', '0'),
+	('3', 'horuso@yahoo.com', 'horuso1', 'Horus', 'Owens', NULL, '0', '0'),
+	('4', 'jesuscolumbo14@gmail.com', 'ColumnJ', 'Jesus', 'Columbo', 'Column', '0', '0'),
+	('5', 'anubismiller@gmail.com', 'AnubyMil', 'Anubis', 'Miller', NULL, '0', '0'),
+	('6', 'sungod@outlook.com', 'xXsungodraXx', 'Ra', 'Rodriguez', NULL, '0', '0'),
+	('7', 'irisgarc@outlook.com', 'iris.garcia7', 'Iris', 'Garcia', NULL, '0', '0'),
+	('8', 'hathorm@yahoo.com', 'hathormurphy', 'Hathor', 'Murphy', NULL, '0', '0'),
+	('9', 'jb1301@gmail.com', 'memehub', 'Jack ', 'Brown', NULL, '0', '0'),
+	('10', 'swilliams6@outlook.com', 'stevewwills', 'Steve', 'Williams', 'stevie', '0', '0'),
+	('11', 'lili@yahoo.com', 'sillycattos', 'Li', 'Li', NULL, '0', '0'),
+	('12', 'lwilson99@yahoo.com', 'winter.lew13', 'Lewis', 'Wilson', 'Rod', '0', '0'),
+	('13', 'jessiebrown10@hotmail.com', 'Jessie_brownn', 'Jessica ', 'Brown', 'Jessie', '0', '0'),
+	('14', 'spatel@gmail.com', 'soph.patel202', 'Sophia', 'Patel', 'Sophia', '0', '0'),
+	('15', 'charbrooks@yahoo.com', 'charlottebrooks', 'Charlotte', 'Brooks', 'Charlie', '0', '0'),
+	('16', 'emolucy@gmail.com', 'grayworld', 'Lucy', 'Gray', NULL, '0', '0'),
+	('17', 'oliviaprice44@outlook.com', 'Olivia_price', 'Olivia', 'Price', 'Liv', '0', '0'),
+	('18', 'livysmiths@gmail.com', 'Livylifelove', 'Olivia', 'Smith', 'Livy', '0', '0'),
+	('19', 'sophierogers@yahoo.com', 'sophierogers', 'Sophie', 'Rogers', 'Soph', '0', '0'),
+	('20', 'chloeanderson69@yahoo.com', 'chloeanderson', 'Chloe', 'Anderson', NULL, '0', '0'),
+	('21', 'alexanderkim@outlook.com', 'alexwiththehat', 'Alexander', 'Kim', NULL, '0', '0'),
+	('22', 'longthedragon@gmail.com', 'longthedragon', 'Charles', 'Long', 'Long', '0', '0'),
+	('23', 'alexnakamura7@hotmail.com', 'Betteralex', 'Alexander', 'Nakamura', 'Alex', '0', '0'),
+	('24', 'jameswang@yahoo.com', 'jameswang', 'James', 'Wang', NULL, '0', '0'),
+	('25', 'andrewpark88@hotmail.com', 'koreanpotato', 'Andrew', 'Park', NULL, '0', '0'),
+	('26', 'noahgoodwin10@gmail.com', 'n.goodwin56', 'Noah', 'Goodwin', NULL, '0', '0'),
+	('27', 'kev_whittaker@outlook.com', 'kev_whittaker', 'Kevin', 'Whittaker', NULL, '0', '0'),
+	('28', 'jackomoore@hotmail.com', 'JackWithAnM', 'Jack ', 'Moore', 'Jack M', '0', '0'),
+	('29', 'ilovetomholland@gmail.com', 'tomhollandfanpage49401', 'Megan', 'Holland', NULL, '0', '0'),
+	('30', 'Rebecca1hacther@gmail.com', 'BeccaThatch', 'Rebecca', 'Thatcher', NULL, '0', '0'),
+	('31', 'clown@gmail.com', 'clown', NULL, NULL, NULL, '0', '0');
 SET IDENTITY_INSERT [Person] OFF
 GO
 
 SET IDENTITY_INSERT [Club] ON
-INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash]) VALUES
-	('1', 'Egyptians', '6', '0'),
-	('2', 'Book', '7', '0'),
-	('3', 'Card/Board Games', '25', '0'),
-	('4', 'Gambling', '11', '0');
+INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash], [IsDeleted]) VALUES
+	('1', 'Egyptians', '6', '0', '0'),
+	('2', 'Book', '7', '0', '0'),
+	('3', 'Card/Board Games', '25', '0', '0'),
+	('4', 'Gambling', '11', '0', '0');
 SET IDENTITY_INSERT [Club] OFF
 GO
 
-INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [IsMember], [IsCashAdmin], [IsGameAdmin]) VALUES
-	('6', '1', '0', '1', '1', '1'),
-	('3', '1', '0', '1', '0', '0'),
-	('5', '1', '0', '1', '0', '0'),
-	('8', '1', '0', '1', '0', '0'),
-	('7', '2', '0', '1', '1', '1'),
-	('13', '2', '0', '1', '0', '0'),
-	('15', '2', '0', '1', '0', '0'),
-	('17', '2', '0', '1', '1', '0'),
-	('18', '2', '0', '1', '0', '0'),
-	('25', '3', '0', '1', '1', '1'),
-	('2', '3', '0', '1', '0', '0'),
-	('10', '3', '0', '1', '0', '0'),
-	('3', '3', '0', '1', '0', '0'),
-	('4', '3', '0', '1', '0', '0'),
-	('1', '3', '0', '1', '0', '0'),
-	('12', '3', '0', '1', '0', '0'),
-	('11', '4', '0', '1', '1', '1'),
-	('24', '4', '0', '1', '0', '0'),
-	('9', '4', '0', '1', '0', '0'),
-	('30', '4', '0', '1', '0', '0'),
-	('16', '4', '0', '1', '0', '0'),
-	('22', '4', '0', '1', '0', '0'),
-	('6', '3', '0', '1', '0', '0'),
-	('21', '1', '0', '1', '0', '0');
-GO
-
-SET IDENTITY_INSERT [GameType] ON
-INSERT INTO [GameType] ([ID], [Name], [IsZeroSum]) VALUES
-	('1', 'Poker', '1'),
-	('2', 'Mahjong', '1'),
-	('3', 'Gin Rummy', '0'),
-	('4', 'Black Jack', '0'),
-	('5', 'Fantasy Football', '1');
-SET IDENTITY_INSERT [GameType] OFF
+INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [PersonRole]) VALUES
+	('6', '1', '0', 'Co-Owner'),
+	('3', '1', '0', 'Player'),
+	('5', '1', '0', 'Game Admin'),
+	('8', '1', '0', 'Cash Admin'),
+	('7', '2', '0', 'Co-Owner'),
+	('13', '2', '0', 'Player'),
+	('15', '2', '0', 'Game Admin'),
+	('17', '2', '0', 'Cash Admin'),
+	('18', '2', '0', 'Game Admin'),
+	('25', '3', '0', 'Co-Owner'),
+	('2', '3', '0', 'Player'),
+	('10', '3', '0', 'Player'),
+	('3', '3', '0', 'Cash Admin'),
+	('4', '3', '0', 'Player'),
+	('1', '3', '0', 'Game Admin'),
+	('12', '3', '0', 'Player'),
+	('11', '4', '0', 'Co-Owner'),
+	('24', '4', '0', 'Player'),
+	('9', '4', '0', 'Cash Admin'),
+	('30', '4', '0', 'Game Admin'),
+	('16', '4', '0', 'Game Admin'),
+	('22', '4', '0', NULL),
+	('6', '3', '0', 'Player'),
+	('21', '1', '0', 'Player');
 GO
 
 SET IDENTITY_INSERT [Game] ON
-INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [Name], [ForCash], [AccumulateScore], [NetScoreChange], [StartDate], [EndDate]) VALUES
-	('1', '1', '1', 'Mistake', '0', '1', '0', '2024-08-09 20:00:00.000', '2024-08-09 20:03:00.000'),
-	('2', '1', '1', 'Poker Game', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000'),
-	('3', '2', '5', 'Football League', '1', '1', '0', '2024-08-15 19:12:00.000', NULL);
+INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [Name], [ForCash], [SeasonID], [NetScoreChange], [StartDate], [EndDate], [IsDeleted]) VALUES
+	('1', '1', '1', 'Mistake', '0', '1', '0', '2024-08-09 20:00:00.000', NULL, '1'),
+	('2', '1', '1', 'Poker Game', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000', '0'),
+	('3', '2', '4', 'Football League', '1', '1', '0', '2024-08-15 19:12:00.000', NULL, '0');
 SET IDENTITY_INSERT [Game] OFF
 GO
 
-INSERT INTO [GamePlayer] ([GameID], [PersonID]) VALUES
-	('2', '6'),
-	('2', '5'),
-	('2', '3'),
-	('2', '8'),
-	('3', '7'),
-	('3', '13'),
-	('3', '15'),
-	('3', '17'),
-	('3', '18');
+INSERT INTO [GamePlayer] ([GameID], [PersonID], [Metadata], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
+	('2', '6', NULL, '0', '2024-08-06 20:23:00.000', '6', '2024-08-06 20:23:00.000', '6'),
+	('2', '5', NULL, '0', '2024-08-06 20:23:00.000', '6', '2024-08-06 20:23:00.000', '6'),
+	('2', '3', NULL, '0', '2024-08-06 20:23:00.000', '6', '2024-08-06 20:23:00.000', '6'),
+	('2', '8', NULL, '0', '2024-08-06 20:23:00.000', '6', '2024-08-06 20:23:00.000', '6'),
+	('3', '7', NULL, '0', '2024-08-06 20:23:00.000', '17', '2024-08-06 20:23:00.000', '17'),
+	('3', '13', NULL, '0', '2024-08-06 20:23:00.000', '17', '2024-08-06 20:23:00.000', '17'),
+	('3', '15', NULL, '0', '2024-08-06 20:23:00.000', '17', '2024-08-06 20:23:00.000', '17'),
+	('3', '17', NULL, '0', '2024-08-06 20:23:00.000', '17', '2024-08-06 20:23:00.000', '17'),
+	('3', '18', NULL, '0', '2024-08-06 20:23:00.000', '17', '2024-08-06 20:23:00.000', '17');
 GO
 
 SET IDENTITY_INSERT [GameRecord] ON
-INSERT INTO [GameRecord] ([ID], [GameID], [PersonID], [ScoreChange], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
-	('1', '2', '6', '-500', '2024-08-09 20:05:00.000', '6', '2024-08-09 20:05:00.000', '6'),
-	('2', '2', '5', '-500', '2024-08-09 20:05:01.000', '6', '2024-08-09 20:05:01.000', '6'),
-	('3', '2', '3', '-500', '2024-08-09 20:05:02.000', '6', '2024-08-09 20:05:02.000', '6'),
-	('4', '2', '8', '-500', '2024-08-09 20:05:03.000', '6', '2024-08-09 20:05:03.000', '6'),
-	('5', '2', '3', '-500', '2024-08-09 20:25:00.000', '6', '2024-08-09 20:25:00.000', '6'),
-	('6', '2', '6', '-500', '2024-08-09 20:40:00.000', '6', '2024-08-09 20:40:00.000', '6'),
-	('7', '2', '5', '250', '2024-08-09 21:11:00.000', '6', '2024-08-09 21:11:00.000', '6'),
-	('8', '2', '3', '-500', '2024-08-09 22:03:00.000', '6', '2024-08-09 22:03:00.000', '6'),
-	('9', '2', '8', '1750', '2024-08-09 23:31:00.000', '6', '2024-08-09 23:31:00.000', '6'),
-	('10', '2', '6', '750', '2024-08-09 23:31:01.000', '6', '2024-08-09 23:31:01.000', '6'),
-	('11', '2', '3', '750', '2024-08-09 23:31:02.000', '6', '2024-08-09 23:31:02.000', '6'),
-	('12', '3', '7', '-1000', '2024-08-13 17:00:00.000', '17', '2024-08-13 17:00:00.000', '7'),
-	('13', '3', '13', '-1000', '2024-08-13 17:00:00.001', '17', '2024-08-13 17:00:00.001', '7'),
-	('14', '3', '15', '-1000', '2024-08-13 17:00:00.002', '17', '2024-08-13 17:00:00.002', '7'),
-	('15', '3', '17', '-1000', '2024-08-13 17:00:00.003', '17', '2024-08-13 17:00:00.003', '7'),
-	('16', '3', '18', '-1000', '2024-08-13 17:00:00.004', '17', '2024-08-13 17:00:00.004', '7');
+INSERT INTO [GameRecord] ([ID], [GameID], [PersonID], [ScoreChange], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
+	('1', '2', '6', '-500', '0', '2024-08-09 20:05:00.000', '6', '2024-08-09 20:05:00.000', '6'),
+	('2', '2', '5', '-500', '0', '2024-08-09 20:05:01.000', '6', '2024-08-09 20:05:01.000', '6'),
+	('3', '2', '3', '-500', '0', '2024-08-09 20:05:02.000', '6', '2024-08-09 20:05:02.000', '6'),
+	('4', '2', '8', '-500', '0', '2024-08-09 20:05:03.000', '6', '2024-08-09 20:05:03.000', '6'),
+	('5', '2', '3', '-500', '0', '2024-08-09 20:25:00.000', '6', '2024-08-09 20:25:00.000', '6'),
+	('6', '2', '6', '-500', '0', '2024-08-09 20:40:00.000', '6', '2024-08-09 20:40:00.000', '6'),
+	('7', '2', '5', '250', '0', '2024-08-09 21:11:00.000', '6', '2024-08-09 21:11:00.000', '6'),
+	('8', '2', '3', '-500', '0', '2024-08-09 22:03:00.000', '6', '2024-08-09 22:03:00.000', '6'),
+	('9', '2', '8', '1750', '0', '2024-08-09 23:31:00.000', '6', '2024-08-09 23:31:00.000', '6'),
+	('10', '2', '6', '750', '0', '2024-08-09 23:31:01.000', '6', '2024-08-09 23:31:01.000', '6'),
+	('11', '2', '3', '750', '0', '2024-08-09 23:31:02.000', '6', '2024-08-09 23:31:02.000', '6'),
+	('12', '3', '7', '-1000', '0', '2024-08-13 17:00:00.000', '17', '2024-08-13 17:00:00.000', '17'),
+	('13', '3', '13', '-1000', '0', '2024-08-13 17:00:00.001', '17', '2024-08-13 17:00:00.001', '17'),
+	('14', '3', '15', '-1000', '0', '2024-08-13 17:00:00.002', '17', '2024-08-13 17:00:00.002', '17'),
+	('15', '3', '17', '-1000', '0', '2024-08-13 17:00:00.003', '17', '2024-08-13 17:00:00.003', '17'),
+	('16', '3', '18', '-1000', '0', '2024-08-13 17:00:00.004', '17', '2024-08-13 17:00:00.004', '17');
 SET IDENTITY_INSERT [GameRecord] OFF
 GO
 
 SET IDENTITY_INSERT [CashTransaction] ON
-INSERT INTO [CashTransaction] ([ID], [SourcePersonID], [TargetPersonID], [ClubID], [Amount], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
-	('1', '5', '3', '1', '500', '2024-08-09 20:23:00.000', '6', '2024-08-09 20:23:00.000', '6');
+INSERT INTO [CashTransaction] ([ID], [SourcePersonID], [TargetPersonID], [ClubID], [Amount], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
+	('1', '5', '3', '1', '500', '0', '2024-08-09 20:23:00.000', '6', '2024-08-09 20:23:00.000', '6');
 SET IDENTITY_INSERT [CashTransaction] OFF
 GO
 
 SET IDENTITY_INSERT [BankCashTransaction] ON
-INSERT INTO [BankCashTransaction] ([ID], [PersonID], [ClubID], [Deposit], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
-	('1', '5', '1', '1000', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
-	('2', '3', '1', '500', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
-	('3', '8', '1', '500', '2024-08-09 20:05:00.100', '6', '2024-08-09 20:05:00.100', '6'),
-	('4', '7', '2', '1000', '2024-08-06 14:00:00.000', '7', '2024-08-06 14:00:00.000', '7'),
-	('5', '13', '2', '1000', '2024-08-06 14:00:00.001', '7', '2024-08-06 14:00:00.001', '7'),
-	('6', '15', '2', '1000', '2024-08-06 14:00:00.002', '7', '2024-08-06 14:00:00.002', '7'),
-	('7', '17', '2', '1000', '2024-08-06 14:00:00.003', '7', '2024-08-06 14:00:00.003', '7'),
-	('8', '18', '2', '1000', '2024-08-06 14:00:00.004', '7', '2024-08-06 14:00:00.004', '7'),
-	('9', '3', '1', '500', '2024-08-09 22:01:00.000', '6', '2024-08-09 22:01:00.000', '6'),
-	('10', '8', '1', '-1500', '2024-08-09 23:32:00.000', '6', '2024-08-09 23:32:00.000', '6');
+INSERT INTO [BankCashTransaction] ([ID], [PersonID], [ClubID], [Deposit], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
+	('1', '5', '1', '1000', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
+	('2', '3', '1', '500', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
+	('3', '8', '1', '500', '0', '2024-08-09 20:05:00.100', '6', '2024-08-09 20:05:00.100', '6'),
+	('4', '7', '2', '1000', '0', '2024-08-06 14:00:00.000', '7', '2024-08-06 14:00:00.000', '7'),
+	('5', '13', '2', '1000', '0', '2024-08-06 14:00:00.001', '7', '2024-08-06 14:00:00.001', '7'),
+	('6', '15', '2', '1000', '0', '2024-08-06 14:00:00.002', '7', '2024-08-06 14:00:00.002', '7'),
+	('7', '17', '2', '1000', '0', '2024-08-06 14:00:00.003', '7', '2024-08-06 14:00:00.003', '7'),
+	('8', '18', '2', '1000', '0', '2024-08-06 14:00:00.004', '7', '2024-08-06 14:00:00.004', '7'),
+	('9', '3', '1', '500', '0', '2024-08-09 22:01:00.000', '6', '2024-08-09 22:01:00.000', '6'),
+	('10', '8', '1', '-1500', '0', '2024-08-09 23:32:00.000', '6', '2024-08-09 23:32:00.000', '6');
 SET IDENTITY_INSERT [BankCashTransaction] OFF
 GO
 
