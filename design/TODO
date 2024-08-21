@@ -1,5 +1,6 @@
 - Last Login / Login History
 - Add private to user. (Should not be searchable)
 - Add settings table for client applications to insert json.
-- Game SeasonID change / deleted chang trigger
 - Game audit
+- Consider replacing game and game record cash triggers with a single score trigger (that only activates when for cash).
+- Consider splitting the game and game record triggers.
