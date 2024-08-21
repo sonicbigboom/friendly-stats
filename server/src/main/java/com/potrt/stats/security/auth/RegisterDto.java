@@ -40,7 +40,6 @@ public class RegisterDto {
       nickname = null;
     }
 
-    // TODO: Disable account on creation, and use verification email.
-    return new Person(null, email, username, firstName, lastName, nickname, false, false);
+    return new Person(null, email, username, firstName, lastName, nickname, true, false);
   }
 }

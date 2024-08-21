@@ -30,4 +30,8 @@ public class PersonService {
     // TODO: Check for username and email duplicates, and throw error as necessary.
     return personRepository.save(person);
   }
+
+  public void enable(Integer personID) {
+    personRepository.enable(personID);
+  }
 }
