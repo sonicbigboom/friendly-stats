@@ -1,3 +1,21 @@
+SET IDENTITY_INSERT [Person] ON
+INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsDisabled], [IsDeleted]) VALUES
+	('1', '', 'System', NULL, NULL, NULL, '0', '0');
+SET IDENTITY_INSERT [Person] OFF
+GO
+
+SET IDENTITY_INSERT [Season] ON
+INSERT INTO [Season] ([ID], [Name], [ClubID], [IsDeleted]) VALUES
+	('1', 'Season 0', NULL, '0');
+SET IDENTITY_INSERT [Season] OFF
+GO
+
+SET IDENTITY_INSERT [Club] ON
+INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash], [CurrentSeasonID], [IsDeleted]) VALUES
+	('1', 'System Club', '1', '0', '1', '0');
+SET IDENTITY_INSERT [Club] OFF
+GO
+
 INSERT INTO [PersonRole] ([Name]) VALUES
 	('Player'),
 	('Game Admin'),
@@ -21,10 +39,4 @@ INSERT INTO [GameType] ([ID], [Name], [GameScoringTypeID], [ClubID], [IsDeleted]
 	('3', 'Gin Rummy', '2', NULL, '0'),
 	('4', 'Fantasy Football', '4', NULL, '0');
 SET IDENTITY_INSERT [GameType] OFF
-GO
-
-SET IDENTITY_INSERT [Season] ON
-INSERT INTO [Season] ([ID], [Name], [ClubID]) VALUES
-	('1', 'Season 0', NULL);
-SET IDENTITY_INSERT [Season] OFF
 GO

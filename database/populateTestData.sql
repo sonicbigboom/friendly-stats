@@ -3,7 +3,7 @@ GO
 
 SET IDENTITY_INSERT [Person] ON
 INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsDisabled], [IsDeleted]) VALUES
-	('1', 'jane@gmail.com', 'janedoe', 'Jane ', 'Doe', NULL, '0', '0'),
+	('32', 'jane@gmail.com', 'janedoe', 'Jane ', 'Doe', NULL, '0', '0'),
 	('2', 'wizardgwyn@gmail.com', 'Gwynndolyn', 'Gwydristopher', 'Bagwen', 'Gwynn', '0', '0'),
 	('3', 'horuso@yahoo.com', 'horuso1', 'Horus', 'Owens', NULL, '0', '0'),
 	('4', 'jesuscolumbo14@gmail.com', 'ColumnJ', 'Jesus', 'Columbo', 'Column', '0', '0'),
@@ -39,7 +39,7 @@ GO
 
 SET IDENTITY_INSERT [Club] ON
 INSERT INTO [Club] ([ID], [Name], [OwnerPersonID], [StoredCash], [CurrentSeasonID], [IsDeleted]) VALUES
-	('1', 'Egyptians', '6', '0', '1', '0'),
+	('5', 'Egyptians', '6', '0', '1', '0'),
 	('2', 'Book', '7', '0', '1', '0'),
 	('3', 'Card/Board Games', '25', '0', '1', '0'),
 	('4', 'Gambling', '11', '0', '1', '0');
@@ -47,10 +47,10 @@ SET IDENTITY_INSERT [Club] OFF
 GO
 
 INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [PersonRole]) VALUES
-	('6', '1', '0', 'Co-Owner'),
-	('3', '1', '0', 'Player'),
-	('5', '1', '0', 'Game Admin'),
-	('8', '1', '0', 'Cash Admin'),
+	('6', '5', '0', 'Co-Owner'),
+	('3', '5', '0', 'Player'),
+	('5', '5', '0', 'Game Admin'),
+	('8', '5', '0', 'Cash Admin'),
 	('7', '2', '0', 'Co-Owner'),
 	('13', '2', '0', 'Player'),
 	('15', '2', '0', 'Game Admin'),
@@ -61,7 +61,7 @@ INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [PersonRole]) VAL
 	('10', '3', '0', 'Player'),
 	('3', '3', '0', 'Cash Admin'),
 	('4', '3', '0', 'Player'),
-	('1', '3', '0', 'Game Admin'),
+	('32', '3', '0', 'Game Admin'),
 	('12', '3', '0', 'Player'),
 	('11', '4', '0', 'Co-Owner'),
 	('24', '4', '0', 'Player'),
@@ -70,13 +70,13 @@ INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [PersonRole]) VAL
 	('16', '4', '0', 'Game Admin'),
 	('22', '4', '0', NULL),
 	('6', '3', '0', 'Player'),
-	('21', '1', '0', 'Player');
+	('21', '5', '0', 'Player');
 GO
 
 SET IDENTITY_INSERT [Game] ON
 INSERT INTO [Game] ([ID], [ClubID], [GameTypeID], [Name], [ForCash], [SeasonID], [NetScoreChange], [StartDate], [EndDate], [IsDeleted]) VALUES
-	('1', '1', '1', 'Mistake', '0', '1', '0', '2024-08-09 20:00:00.000', NULL, '1'),
-	('2', '1', '1', 'Poker Game', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000', '0'),
+	('1', '5', '1', 'Mistake', '0', '1', '0', '2024-08-09 20:00:00.000', NULL, '1'),
+	('2', '5', '1', 'Poker Game', '1', '1', '0', '2024-08-09 20:04:00.000', '2024-08-09 23:31:00.000', '0'),
 	('3', '2', '4', 'Football League', '1', '1', '0', '2024-08-15 19:12:00.000', NULL, '0');
 SET IDENTITY_INSERT [Game] OFF
 GO
@@ -116,22 +116,22 @@ GO
 
 SET IDENTITY_INSERT [CashTransaction] ON
 INSERT INTO [CashTransaction] ([ID], [SourcePersonID], [TargetPersonID], [ClubID], [Amount], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
-	('1', '5', '3', '1', '500', '0', '2024-08-09 20:23:00.000', '6', '2024-08-09 20:23:00.000', '6');
+	('1', '5', '3', '5', '500', '0', '2024-08-09 20:23:00.000', '6', '2024-08-09 20:23:00.000', '6');
 SET IDENTITY_INSERT [CashTransaction] OFF
 GO
 
 SET IDENTITY_INSERT [BankCashTransaction] ON
 INSERT INTO [BankCashTransaction] ([ID], [PersonID], [ClubID], [Deposit], [IsDeleted], [CreatedTime], [CreatedByPersonID], [ModifiedTime], [ModifiedByPersonID]) VALUES
-	('1', '5', '1', '1000', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
-	('2', '3', '1', '500', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
-	('3', '8', '1', '500', '0', '2024-08-09 20:05:00.100', '6', '2024-08-09 20:05:00.100', '6'),
+	('1', '5', '5', '1000', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
+	('2', '3', '5', '500', '0', '2024-08-09 20:05:00.050', '6', '2024-08-09 20:05:00.050', '6'),
+	('3', '8', '5', '500', '0', '2024-08-09 20:05:00.100', '6', '2024-08-09 20:05:00.100', '6'),
 	('4', '7', '2', '1000', '0', '2024-08-06 14:00:00.000', '7', '2024-08-06 14:00:00.000', '7'),
 	('5', '13', '2', '1000', '0', '2024-08-06 14:00:00.001', '7', '2024-08-06 14:00:00.001', '7'),
 	('6', '15', '2', '1000', '0', '2024-08-06 14:00:00.002', '7', '2024-08-06 14:00:00.002', '7'),
 	('7', '17', '2', '1000', '0', '2024-08-06 14:00:00.003', '7', '2024-08-06 14:00:00.003', '7'),
 	('8', '18', '2', '1000', '0', '2024-08-06 14:00:00.004', '7', '2024-08-06 14:00:00.004', '7'),
-	('9', '3', '1', '500', '0', '2024-08-09 22:01:00.000', '6', '2024-08-09 22:01:00.000', '6'),
-	('10', '8', '1', '-1500', '0', '2024-08-09 23:32:00.000', '6', '2024-08-09 23:32:00.000', '6');
+	('9', '3', '5', '500', '0', '2024-08-09 22:01:00.000', '6', '2024-08-09 22:01:00.000', '6'),
+	('10', '8', '5', '-1500', '0', '2024-08-09 23:32:00.000', '6', '2024-08-09 23:32:00.000', '6');
 SET IDENTITY_INSERT [BankCashTransaction] OFF
 GO
 
