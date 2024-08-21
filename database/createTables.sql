@@ -248,17 +248,6 @@ GO
 -- ======== Triggers ======== --
 -- ========================== -- 
 
--- Game Score Trigger
-CREATE TRIGGER [GAME_PLAYER_SCORE_TRIGGER]
-	ON [GamePlayer]
-	AFTER INSERT
-AS
-	INSERT INTO [Score] (PersonID, ClubID, GameTypeID, SeasonID, ForCash, Total)
-	SELECT I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash, 0
-	FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-	WHERE G.SeasonID IS NOT NULL;
-GO
-
 -- Game Record Trigger
 CREATE TRIGGER [GAME_RECORD_TRIGGER]
 	ON [GameRecord]
@@ -273,7 +262,7 @@ AS
 		(
 			SELECT G.ClubID ClubID, D.PersonID PersonID, SUM(D.ScoreChange) Total
 			FROM [Deleted] D INNER JOIN [Game] G ON D.GameID = G.ID
-			WHERE G.ForCash = 1
+			WHERE D.IsDeleted = 0 AND G.ForCash = 1
 			GROUP BY G.ClubID, D.PersonID
 		) R
 		ON M.ClubID = R.ClubID AND M.PersonID = R.PersonID;
@@ -285,21 +274,25 @@ AS
 		(
 			SELECT GameID, SUM(ScoreChange) Total
 			FROM [Deleted]
+			WHERE IsDeleted = 0
 			GROUP BY GameID
 		) R
 		ON G.ID = R.GameID;
 
 		-- Undo player score update.
-		UPDATE S
-		SET S.Total = S.Total - R.Total
-		FROM [Score] S INNER JOIN 
+		MERGE [Score] S USING 
 		(
-			SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.SeasonID SeasonID, G.ForCash ForCash, SUM(I.ScoreChange) Total
-			FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-			WHERE G.SeasonID IS NOT NULL
-			GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash
+			SELECT D.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.SeasonID SeasonID, G.ForCash ForCash, SUM(D.ScoreChange) Total
+			FROM [Deleted] D INNER JOIN [Game] G ON D.GameID = G.ID
+			WHERE D.IsDeleted = 0 AND G.SeasonID IS NOT NULL
+			GROUP BY D.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash
 		) R
-		ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash;
+		ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash
+		WHEN MATCHED THEN
+			UPDATE SET S.Total = S.Total - R.Total
+		WHEN NOT MATCHED THEN 
+			INSERT (PersonID, ClubID, GameTypeID, SeasonID, ForCash, Total) VALUES 
+				(R.PersonID, R.ClubID, R.GameTypeID, R.SeasonID, R.ForCash, -R.Total);
 	END
 
 	-- Update player cash balance.
@@ -309,7 +302,7 @@ AS
 	(
 		SELECT G.ClubID ClubID, I.PersonID PersonID, SUM(I.ScoreChange) Total
 		FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-		WHERE G.ForCash = 1
+		WHERE I.IsDeleted = 0 AND G.ForCash = 1
 		GROUP BY G.ClubID, I.PersonID
 	) R
 	ON M.ClubID = R.ClubID AND M.PersonID = R.PersonID;
@@ -321,21 +314,25 @@ AS
 	(
 		SELECT GameID, SUM(ScoreChange) Total
 		FROM [Inserted]
+		WHERE IsDeleted = 0
 		GROUP BY GameID
 	) R
 	ON G.ID = R.GameID;
 
 	-- Update player score.
-	UPDATE S
-	SET S.Total = S.Total + R.Total
-	FROM [Score] S INNER JOIN 
+	MERGE [Score] S USING 
 	(
 		SELECT I.PersonID PersonID, G.ClubID ClubID, G.GameTypeID GameTypeID, G.SeasonID SeasonID, G.ForCash ForCash, SUM(I.ScoreChange) Total
 		FROM [Inserted] I INNER JOIN [Game] G ON I.GameID = G.ID
-		WHERE G.SeasonID IS NOT NULL
+		WHERE I.IsDeleted = 0 AND G.SeasonID IS NOT NULL
 		GROUP BY I.PersonID, G.ClubID, G.GameTypeID, G.SeasonID, G.ForCash
 	) R
-	ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash;
+	ON S.PersonID = R.PersonID AND S.ClubID = R.ClubID AND S.GameTypeID = R.GameTypeID AND S.SeasonID = R.SeasonID AND S.ForCash = R.ForCash
+	WHEN MATCHED THEN
+		UPDATE SET S.Total = S.Total + R.Total
+	WHEN NOT MATCHED THEN 
+		INSERT (PersonID, ClubID, GameTypeID, SeasonID, ForCash, Total) VALUES 
+			(R.PersonID, R.ClubID, R.GameTypeID, R.SeasonID, R.ForCash, R.Total);
 GO
 
 -- Cash Transaction Trigger
