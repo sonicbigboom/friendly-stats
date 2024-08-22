@@ -1,8 +1,9 @@
 import React, { ChangeEvent, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import './Register.css';
-import Dropdown, { Option } from 'react-dropdown';
+import './RegisterPage.css';
+import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import { useNavigate } from 'react-router-dom';
 
 async function registerUser(userInfo: UserInfo, authType: string, code: string) {
   return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register?verificationUrl=http://${process.env.REACT_APP_FRIENDLY_STATS_CLIENT_HOST}/verify?token=`, {
@@ -27,7 +28,8 @@ const authTypes = [
   'basic', 'google'
 ];
 
-export default function Register() {
+export default function RegisterPage() {
+  const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState<UserInfo>({ username: "", email: "", firstName: "", lastName: "", nickname: "" });
   const [authType, setAuthType] = useState<string>(authTypes[0])
   const [code, setCode] = useState<string>("");
@@ -43,10 +45,6 @@ export default function Register() {
     const { name, value }: any = event.target;
     setUserInfo((userInfo) => ({ ...userInfo, [name]: value }));
   };
-
-  function handleAuthTypeChange(option: Option) {
-    setAuthType(option.value);
-  }
 
   return (
     <div className="register-wrapper">
@@ -74,13 +72,15 @@ export default function Register() {
         </label>
         <label>
           <h3>Credentials Method</h3>
-          <Dropdown options={authTypes} onChange={handleAuthTypeChange} value={authType} placeholder="Select a authentication type." />
+          <Dropdown options={authTypes} onChange={option => setAuthType(option.value)} value={authType} placeholder="Select a authentication type." />
           <CredentialMechanism authType={authType} setCode={setCode} />
         </label>
         <div>
           <button type="submit">Submit</button>
         </div>
       </form>
+      <br />
+      <button name="login" onClick={() => navigate("/login")}> Login </button>
     </div>
   )
 }
@@ -90,17 +90,12 @@ interface CredentialMechanismProps {
   setCode: ((value: string) => void)
 }
 
-function CredentialMechanism({ authType, setCode }: CredentialMechanismProps) {
-  function handleCodeChange(event: ChangeEvent) {
-    const { name, value }: any = event.target;
-    setCode(value);
-  };
-
+export function CredentialMechanism({ authType, setCode }: CredentialMechanismProps) {
   if (authType === "basic") {
     return (
       <label>
         <p>Password</p>
-        <input type="password" name="code" onChange={handleCodeChange} />
+        <input type="password" name="code" onChange={e => setCode(e.target.value)} />
       </label>
     );
   } else if (authType === "google") {

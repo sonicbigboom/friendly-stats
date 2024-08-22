@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './Login.css';
+import './LoginPage.css';
 import PropTypes from 'prop-types';
 import { GoogleLogin } from '@react-oauth/google';
-import Register from '../Register/Register';
+import { useNavigate } from 'react-router-dom';
 
 async function loginUser(credentials: { loginName: string; code: string; authType: string; }) {
   return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`, {
@@ -20,24 +20,10 @@ interface LoginProps {
   setToken: (token: string) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ setToken }) => {
-  const [isRegistering, setIsRegistering] = useState(false)
+export default function LoginPage({ setToken }: LoginProps) {
+  const navigate = useNavigate();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
-
-  function flipIsRegistering() {
-    setIsRegistering(isRegistering => !isRegistering)
-  }
-
-  if (isRegistering) {
-    return (
-      <div className="login-wrapper">
-        <Register/>
-        <br/>
-        <button onClick={flipIsRegistering}> Login </button>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,14 +68,13 @@ const Login: React.FC<LoginProps> = ({ setToken }) => {
           console.log('Login Failed');
         }}
       />
-      <br/>
-      <button onClick={flipIsRegistering}> Register </button>
+      <br />
+      <button name="register" onClick={() => navigate("/register")}> Register New Account </button>
+      <button name="reset" onClick={() => navigate("/reset")}> Reset Account </button>
     </div>
   )
 }
 
-Login.propTypes = {
+LoginPage.propTypes = {
   setToken: PropTypes.func.isRequired
 }
-
-export default Login;

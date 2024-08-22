@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { TokenContext } from '../Token/TokenContext';
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const token = useContext(TokenContext);
 
   const [userInfo, setUserInfo] = useState("");
