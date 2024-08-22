@@ -70,6 +70,7 @@ Create a new user with a strong password for the server to connect to the databa
 Set the following environment variables appropriately, based on the database.
 
 **Client:** \
+`REACT_APP_FRIENDLY_STATS_CLIENT_HOST` - The base client application url. For example: `localhost:3000`
 `REACT_APP_FRIENDLY_STATS_SERVER_HOST` - The base server application url. For example: `localhost:8080`
 
 **Server:** \

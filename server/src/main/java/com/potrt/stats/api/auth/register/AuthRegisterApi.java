@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthRegisterApi {
@@ -37,12 +38,12 @@ public class AuthRegisterApi {
   @PostMapping("/auth/register")
   @Transactional
   public ResponseEntity<Void> registerUserAccount(
-      @RequestBody @Valid RegisterDto registerDto, HttpServletRequest request) {
+      @RequestBody @Valid RegisterDto registerDto, @RequestParam(value = "verificationUrl") String verificationUrl, HttpServletRequest request) {
 
     try {
       AuthService service = AuthType.getAuthService(applicationContext, registerDto.getAuthType());
       Person person = service.registerPerson(registerDto);
-      verificationService.sendVerificationEmail(person);
+      verificationService.sendVerificationEmail(person, verificationUrl);
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);

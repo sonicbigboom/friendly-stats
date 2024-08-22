@@ -5,7 +5,7 @@ import Dropdown, { Option } from 'react-dropdown';
 import 'react-dropdown/style.css';
 
 async function registerUser(userInfo: UserInfo, authType: string, code: string) {
-  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register`, {
+  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register?verificationUrl=http://${process.env.REACT_APP_FRIENDLY_STATS_CLIENT_HOST}/verify?token=`, {
     method: 'POST',
     headers: new Headers({ 'content-type': 'application/json' }),
     body: JSON.stringify({ ...userInfo, authType, code })

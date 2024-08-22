@@ -4,3 +4,4 @@
 - Game audit
 - Consider replacing game and game record cash triggers with a single score trigger (that only activates when for cash).
 - Consider splitting the game and game record triggers.
+- Look at https://blog.logrocket.com/authentication-react-router-v6/ to properly handle login and authenticated routes.

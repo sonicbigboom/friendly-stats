@@ -5,6 +5,7 @@ import './App.css';
 import Login from '../Login/Login';
 import Dashboard from '../Dashboard/Dashboard';
 import Wrapper from '../Wrapper/Wrapper';
+import Verify from '../Verify/Verify';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <h1>Friendly Stats</h1>
         <BrowserRouter>
           <Routes>
+            <Route path="/verify" element={<Verify />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </BrowserRouter>

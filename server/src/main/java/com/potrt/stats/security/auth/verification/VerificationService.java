@@ -37,7 +37,7 @@ public class VerificationService {
     this.personService = personService;
   }
 
-  public void sendVerificationEmail(Person person)
+  public void sendVerificationEmail(Person person, String verificationUrl)
       throws MessagingException, UnsupportedEncodingException {
     String token = UUID.randomUUID().toString();
     createVerificationToken(person, token);
@@ -45,9 +45,16 @@ public class VerificationService {
     String recipientAddress = person.getEmail();
     String subject = "Email Verification";
 
-    String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+    String verificationBaseUrl;
 
-    String confirmationUrl = baseUrl + "/auth/verify?token=" + token;
+    if (verificationUrl != null) {
+      verificationBaseUrl = verificationUrl;
+    } else {
+      String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+      verificationBaseUrl = baseUrl + "/auth/verify?token=";
+    }
+
+    String confirmationUrl = verificationBaseUrl + token;
     String message =
         "Hello "
             + person.getUsername()
