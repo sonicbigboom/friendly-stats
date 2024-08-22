@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { TokenContext } from '../Token/TokenContext';
+import React, { useContext, useEffect, useState } from "react";
+import { TokenContext } from "../Token/TokenContext";
 
 export default function DashboardPage() {
   const token = useContext(TokenContext);
@@ -8,25 +8,23 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/me`, {
-      method: 'GET',
-      headers: new Headers({ 'Authorization': token }),
-    }).then(async response => {
-      if (!response.ok) { throw response }
+      method: "GET",
+      headers: new Headers({ Authorization: token }),
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw response;
+      }
 
       const json = await response.json();
 
       setUserInfo(JSON.stringify(json));
     });
-  }, [token])
+  }, [token]);
 
   return (
     <>
-      <h2>
-        Dashboard
-      </h2>
-      <p>
-        {userInfo}
-      </p>
+      <h2>Dashboard</h2>
+      <p>{userInfo}</p>
     </>
   );
 }

@@ -6,18 +6,20 @@ export default function VerifyPage() {
   const [status, setStatus] = useState("Verifying...");
 
   async function verifyUser(token: string) {
-    return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/verify?token=${token}`, {
-      method: 'GET'
-    })
-      .then(response => {
-        if (!response.ok) { 
-          setStatus("Verification failed :(");
-          throw response 
-        }
-        setStatus("User was verified!")
-      });
+    return fetch(
+      `http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/verify?token=${token}`,
+      {
+        method: "GET",
+      }
+    ).then((response) => {
+      if (!response.ok) {
+        setStatus("Verification failed :(");
+        throw response;
+      }
+      setStatus("User was verified!");
+    });
   }
-  
+
   useEffect(() => {
     const token = searchParams.get("token");
     if (token === null) {
@@ -26,7 +28,5 @@ export default function VerifyPage() {
     verifyUser(token);
   }, []);
 
-  return (
-    <p>{status}</p>
-  );
+  return <p>{status}</p>;
 }
