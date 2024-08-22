@@ -90,4 +90,12 @@ public class AuthGoogleService implements AuthService {
 
     return personService.getPerson(id);
   }
+
+  @Override
+  public void setAuthentication(Integer personID, String code) {
+    String idToken = code;
+    String googleID = getGoogleID(idToken);
+    AuthGoogle authGoogle = new AuthGoogle(googleID, personID);
+    authGoogleRepository.save(authGoogle);
+  }
 }

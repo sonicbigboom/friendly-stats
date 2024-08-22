@@ -26,6 +26,16 @@ public class PersonService {
     return person.get();
   }
 
+  public Person getPerson(String email) throws PersonDoesNotExistException {
+    Optional<Person> person = personRepository.findByEmail(email);
+
+    if (person.isEmpty()) {
+      throw new PersonDoesNotExistException("Email not found: " + email);
+    }
+
+    return person.get();
+  }
+
   public Person register(Person person) {
     // TODO: Check for username and email duplicates, and throw error as necessary.
     return personRepository.save(person);

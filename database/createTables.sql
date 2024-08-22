@@ -231,6 +231,16 @@ CREATE TABLE [Verification] (
 );
 GO
 
+-- Reset
+CREATE TABLE [Reset] (
+	Token VARCHAR(255) NOT NULL,
+	PersonID INT NOT NULL,
+	ExpirationDate DATETIME NOT NULL,
+	PRIMARY KEY (Token),
+	FOREIGN KEY (PersonID) REFERENCES [Person](ID)
+);
+GO
+
 -- Username + Password
 CREATE TABLE [AuthBasicPassword] (
 	PersonID INT NOT NULL,

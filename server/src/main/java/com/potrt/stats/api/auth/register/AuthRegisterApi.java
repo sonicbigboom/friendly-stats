@@ -38,7 +38,9 @@ public class AuthRegisterApi {
   @PostMapping("/auth/register")
   @Transactional
   public ResponseEntity<Void> registerUserAccount(
-      @RequestBody @Valid RegisterDto registerDto, @RequestParam(value = "verificationUrl") String verificationUrl, HttpServletRequest request) {
+      @RequestBody @Valid RegisterDto registerDto,
+      @RequestParam(value = "verificationUrl") String verificationUrl,
+      HttpServletRequest request) {
 
     try {
       AuthService service = AuthType.getAuthService(applicationContext, registerDto.getAuthType());

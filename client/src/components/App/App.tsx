@@ -6,6 +6,7 @@ import Login from '../Login/Login';
 import Dashboard from '../Dashboard/Dashboard';
 import Wrapper from '../Wrapper/Wrapper';
 import Verify from '../Verify/Verify';
+import Reset from '../Reset/Reset';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <h1>Friendly Stats</h1>
         <BrowserRouter>
           <Routes>
+            <Route path="/reset" element={<Reset />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>

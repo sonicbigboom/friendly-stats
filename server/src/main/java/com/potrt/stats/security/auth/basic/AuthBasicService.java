@@ -70,4 +70,11 @@ public class AuthBasicService implements UserDetailsService, AuthService {
 
     return authentication;
   }
+
+  @Override
+  public void setAuthentication(Integer personID, String code) {
+    String encodedPassword = "{bcrypt}" + new BCryptPasswordEncoder(14).encode(code);
+    AuthBasicPassword authBasicPassword = new AuthBasicPassword(personID, encodedPassword);
+    authBasicPasswordRepository.save(authBasicPassword);
+  }
 }

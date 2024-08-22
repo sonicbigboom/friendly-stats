@@ -1,26 +1,27 @@
 import React, { ChangeEvent, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import './Register.css';
+import './Reset.css';
 import Dropdown, { Option } from 'react-dropdown';
 import 'react-dropdown/style.css';
 
-async function registerUser(userInfo: UserInfo, authType: string, code: string) {
-  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register?verificationUrl=http://${process.env.REACT_APP_FRIENDLY_STATS_CLIENT_HOST}/verify?token=`, {
+async function resetUser(email:string, token: string, authType: string, code: string) {
+  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/reset`, {
     method: 'POST',
     headers: new Headers({ 'content-type': 'application/json' }),
-    body: JSON.stringify({ ...userInfo, authType, code })
+    body: JSON.stringify({email, token, authType, code })
   })
     .then(response => {
       if (!response.ok) { throw response }
     });
 }
 
-interface UserInfo {
-  username: string,
-  email: string,
-  firstName: string,
-  lastName: string,
-  nickname: string
+async function sendToken(email: string) {
+  return fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/reset?email=` + email, {
+    method: 'GET'
+  })
+    .then(response => {
+      if (!response.ok) { throw response }
+    });
 }
 
 const authTypes = [
@@ -28,49 +29,46 @@ const authTypes = [
 ];
 
 export default function Register() {
-  const [userInfo, setUserInfo] = useState<UserInfo>({ username: "", email: "", firstName: "", lastName: "", nickname: "" });
-  const [authType, setAuthType] = useState<string>(authTypes[0])
+  const [email, setEmail] = useState<string>("");
+  const [token, setToken] = useState<string>("");
+  const [authType, setAuthType] = useState<string>(authTypes[0]);
   const [code, setCode] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    /* const token: { accessToken: string, tokenType: string } = await */ registerUser(userInfo, authType, code);
-    // setToken(`${token.tokenType} ${token.accessToken}`);
+    resetUser(email, token, authType, code);
   }
 
-  function handleUserInfoChange(event: ChangeEvent) {
-    const { name, value }: any = event.target;
-    setUserInfo((userInfo) => ({ ...userInfo, [name]: value }));
+  const handleSendToken = async (e: React.FormEvent) => {
+    sendToken(email);
+  }
+
+  function handleEmailChange(event: ChangeEvent) {
+    const element = event.target as HTMLInputElement;
+    setEmail(element.value);
   };
+
+  function handleTokenChange(event: ChangeEvent) {
+    const element = event.target as HTMLInputElement;
+    setToken(element.value);
+  }
 
   function handleAuthTypeChange(option: Option) {
     setAuthType(option.value);
   }
 
   return (
-    <div className="register-wrapper">
+    <div className="reset-wrapper">
       <h1>Create an account!</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          <p>Username</p>
-          <input type="text" name="username" value={userInfo.username} onChange={handleUserInfoChange} />
-        </label>
-        <label>
           <p>Email</p>
-          <input type="text" name="email" value={userInfo.email} onChange={handleUserInfoChange} />
+          <input type="text" name="email" value={email} onChange={handleEmailChange} />
+          <button type="button" onClick={handleSendToken}>Send Token</button>
         </label>
         <label>
-          <p>First Name</p>
-          <input type="text" name="firstName" value={userInfo.firstName} onChange={handleUserInfoChange} />
-        </label>
-        <label>
-          <p>Last Name</p>
-          <input type="text" name="lastName" value={userInfo.lastName} onChange={handleUserInfoChange} />
-        </label>
-        <label>
-          <p>Nickname</p>
-          <input type="text" name="nickname" value={userInfo.nickname} onChange={handleUserInfoChange} />
+          <p>Token</p>
+          <input type="text" name="token" value={token} onChange={handleTokenChange} />
         </label>
         <label>
           <h3>Credentials Method</h3>

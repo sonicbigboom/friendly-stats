@@ -27,4 +27,6 @@ public interface AuthService {
       throw new BadCredentialsException("Account is deleted.");
     }
   }
+
+  public void setAuthentication(Integer personID, String code);
 }
