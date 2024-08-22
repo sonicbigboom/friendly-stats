@@ -1,0 +1,12 @@
+openapi: 3.1.0
+info:
+  title: Friendly Stats - OpenAPI 3.1
+  description: "An api that lets friends track stats with one another. (Poker games, silly bets, gin rummy score, etc...)"
+  contact:
+    email: friendly-stats@potrt.com
+  license:
+    name: MIT License
+    url: https://opensource.org/license/MIT
+  version: 1.0.0
+servers:
+  - url: https://localhost:8080
