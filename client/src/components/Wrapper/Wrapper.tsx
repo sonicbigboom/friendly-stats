@@ -1,6 +1,7 @@
 import { ReactNode, useContext } from 'react';
 import { TokenContext } from '../Token/TokenContext';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { BrowserRouter } from 'react-router-dom';
 
 type Props = {
   children: ReactNode
@@ -16,7 +17,9 @@ export default function Wrapper({children, token}: Props) {
   return (
     <TokenContext.Provider value={token}>
       <GoogleOAuthProvider clientId={clientId}>
-        {children}
+        <BrowserRouter>
+          {children}
+        </BrowserRouter>
       </GoogleOAuthProvider>
     </TokenContext.Provider>
   )
