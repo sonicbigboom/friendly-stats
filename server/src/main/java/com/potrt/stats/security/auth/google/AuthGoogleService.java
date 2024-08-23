@@ -1,6 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security.auth.google;
 
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.auth.AuthService;
@@ -8,6 +9,7 @@ import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.services.PersonService;
 import jakarta.validation.Valid;
+import java.util.Date;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -74,7 +76,27 @@ public class AuthGoogleService implements AuthService {
     ResponseEntity<String> response =
         new RestTemplate().exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
     String info = response.getBody();
-    return JsonParser.parseString(info).getAsJsonObject().get("sub").getAsString();
+
+    JsonObject jsonObject = JsonParser.parseString(info).getAsJsonObject();
+
+    String aud = jsonObject.get("aud").getAsString();
+    if (!aud.equals(System.getenv("REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID"))
+        && !aud.equals(System.getenv("FRIENDLY_STATS_GOOGLE_CLIENT_ID"))) {
+      throw new BadCredentialsException("Wrong client authenticator.");
+    }
+
+    String iss = jsonObject.get("iss").getAsString();
+    if (!iss.equals("accounts.google.com") && !iss.equals("https://accounts.google.com")) {
+      throw new BadCredentialsException("Wrong issuer.");
+    }
+
+    Date expirationDate = new Date(Long.parseLong(jsonObject.get("exp").getAsString()) * 1000);
+    Date currentDate = new Date();
+    if (!expirationDate.after(currentDate)) {
+      throw new BadCredentialsException("Credential expired.");
+    }
+
+    return jsonObject.get("sub").getAsString();
   }
 
   private Person getPerson(String googleID) {

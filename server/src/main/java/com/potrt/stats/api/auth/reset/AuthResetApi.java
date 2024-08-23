@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-
 import java.io.UnsupportedEncodingException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -67,7 +66,7 @@ public class AuthResetApi {
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (ValidationException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }  catch (PersonDoesNotExistException e) {
+    } catch (PersonDoesNotExistException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (VerificationDoesNotExistException | VerificationExpiredException e) {
       return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
