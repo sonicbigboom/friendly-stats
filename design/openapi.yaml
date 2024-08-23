@@ -17,6 +17,8 @@ tags:
     description: Authentication methods.
   - name: Me
     description: Logged-in user info.
+  - name: Group
+    description: Group info.
 security:
   - bearerAuth: []
 paths:
@@ -270,7 +272,7 @@ paths:
     get:
       tags:
         - Me
-      summary: Gets the client's user info.
+      summary: Gets the caller's user info.
       description: Gets the logged in user's info.
       responses:
         '200':
@@ -285,7 +287,7 @@ paths:
     get:
       tags:
         - Me
-      summary: Gets the client's cash balance.
+      summary: Gets the caller's cash balance.
       description: Gets the logged in user's total cash balance, and total cash balance for groups the user is still a member of. Ideally, the user is not removed from groups that still owe/are owed money by the user. In this ideal, these values would be equal.
       responses:
         '200':
@@ -320,13 +322,86 @@ paths:
                     membered: 1000
         '401':
           description: Unauthorized user.
+  /groups:
+    get:
+      tags:
+        - Me
+        - Group
+      summary:  Gets the caller's groups.
+      description: Gets all of the groups that the caller is a member of.
+      responses:
+        '200':
+          description: Successfully got the groups. NOTE&#58; This endpoint will never return storedCash.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+              examples:
+                friends:
+                  summary: Friends
+                  description: Sam's friends.
+                  value:
+                    - id: 3
+                      name: My Friends
+                      ownerPersonID: 5
+                      storedCash: null
+                    - id: 7
+                      name: Joe's Friends
+                      ownerPersonID: 9
+                      storedCash: null
+        '204':
+          description: Succesful call, but the caller is not a member of any groups.
+        '401':
+          description: Unauthorized user.
+    post:
+      tags:
+        - Me
+        - Group
+      summary: Creates a new group.
+      description: Creates a new group with the caller as the owner.
+      parameters:
+        - name: name
+          in: query
+          description: The name of the new group.
+          required: true
+          schema:
+            type: string
+          examples:
+            buddies:
+              summary: Buddies
+              description: Creates a new group called "Buddies".
+              value: "Buddies"
+      responses:
+        '201':
+          description: Successfully created the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+              examples:
+                buddies:
+                  summary: Buddies
+                  description: Created a new group called "Buddies".
+                  value:
+                    id: 23
+                    name: Buddies
+                    ownerPersonID: 2
+                    storedCash: 0
+        '401':
+          description: Unauthorized user.
+
 components:
   schemas:
     User:
       type: object
       properties:
+        id:
+          type: integer
         email:
-          type: string
+          type: [string, 'null']
+          description: This field may be security trimmed. Contains `null` if the caller is not the user.
         username:
           type: string
         firstName:
@@ -336,11 +411,29 @@ components:
         nickname:
           type: [string, 'null']
       example:
+        id: 5
         email: "sam13579@gmail.com"
         username: "sam13579"
         firstName: "Sam"
         lastName: "Peterson"
         nickname: null
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        ownerPersonID:
+          type: integer
+        storedCash:
+          type: [integer, 'null']
+          description: This field may be security trimmed. Contains `null` if the caller is not a `Cash Admin` for the group.
+      example:
+        id: 3
+        name: My Friends
+        ownerPersonID: 5
+        storedCash: 2000
   securitySchemes:
     bearerAuth:
       type: http

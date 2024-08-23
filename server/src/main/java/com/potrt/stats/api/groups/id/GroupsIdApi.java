@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.api.group.id;
+package com.potrt.stats.api.groups.id;
 
 import com.potrt.stats.entities.Club.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;

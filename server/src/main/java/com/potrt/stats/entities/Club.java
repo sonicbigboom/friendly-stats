@@ -33,7 +33,7 @@ public class Club {
   private Integer ownerPersonID;
 
   @Column(nullable = false)
-  private String storedCash;
+  private Integer storedCash;
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
@@ -47,11 +47,19 @@ public class Club {
     private Integer id;
     private String name;
     private Integer ownerPersonID;
+    private Integer storedCash;
 
     public MaskedClub(Club club) {
+      this(club, false);
+    }
+
+    public MaskedClub(Club club, boolean showStoredCash) {
       this.id = club.getId();
       this.name = club.getName();
       this.ownerPersonID = club.getOwnerPersonID();
+      if (showStoredCash) {
+        this.storedCash = club.storedCash;
+      }
     }
   }
 }

@@ -9,6 +9,7 @@ import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.repositories.ClubRepository;
 import com.potrt.stats.repositories.MembershipRepository;
 import com.potrt.stats.security.SecurityService;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class ClubService {
 
   SecurityService securityService;
@@ -37,6 +39,10 @@ public class ClubService {
 
     List<MaskedClub> clubs = new ArrayList<>();
     for (Club club : clubRepository.findAllById(clubIDs)) {
+      if (Boolean.TRUE.equals(club.getIsDeleted())) {
+        continue;
+      }
+
       clubs.add(new MaskedClub(club));
     }
 
@@ -56,9 +62,16 @@ public class ClubService {
     }
 
     Optional<Club> club = clubRepository.findById(clubID);
-    if (club.isEmpty()) {
+    if (club.isEmpty() || Boolean.TRUE.equals(club.get().getIsDeleted())) {
       throw new NoResourceException();
     }
     return new MaskedClub(club.get());
+  }
+
+  public MaskedClub createClub(String name) throws UnauthenticatedException {
+    Integer personID = securityService.getPersonID();
+    Club club = new Club(null, name, personID, 0, false);
+    club = clubRepository.save(club);
+    return new MaskedClub(club, true);
   }
 }
