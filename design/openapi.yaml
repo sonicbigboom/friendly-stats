@@ -391,7 +391,61 @@ paths:
                     storedCash: 0
         '401':
           description: Unauthorized user.
-
+  /users:
+    get:
+      tags:
+        - Me
+        - User
+      summary:  Gets the application users.
+      description: Gets all of the application users, filtered on the query parameter.
+      parameters:
+        - name: filter
+          in: query
+          description: The filter to search the users by.
+          required: true
+          schema:
+            type: string
+          examples:
+            sam:
+              summary: Sam
+              description: Gets all users with 'sam' in their name.
+              value: "sam"
+      responses:
+        '200':
+          description: Successfully got the users. NOTE&#58; This endpoint will never return a user's email.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+              examples:
+                sam:
+                  summary: Sam
+                  description: All the users with 'sam' in their name.
+                  value:
+                    - id: 5
+                      email: null
+                      username: "sam13579"
+                      firstName: "Sam"
+                      lastName: "Peterson"
+                      nickname: null
+                    - id: 15
+                      email: null
+                      username: "mcdonald44"
+                      firstName: "Samuel"
+                      lastName: "Mcdonald"
+                      nickname: null
+                    - id: 91
+                      email: null
+                      username: "sirsirsir"
+                      firstName: "Swampson"
+                      lastName: null
+                      nickname: "Sammy"
+        '204':
+          description: Succesful call, but no users matched the filter.
+        '401':
+          description: Unauthorized user.
 components:
   schemas:
     User:

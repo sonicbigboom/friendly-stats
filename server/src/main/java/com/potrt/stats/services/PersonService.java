@@ -2,17 +2,25 @@
 package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.entities.Person.MaskedPerson;
+import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.repositories.PersonRepository;
+import com.potrt.stats.security.SecurityService;
 import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PersonService {
 
+  private SecurityService securityService;
   private PersonRepository personRepository;
 
-  public PersonService(PersonRepository personRepository) {
+  public PersonService(SecurityService securityService, PersonRepository personRepository) {
+    this.securityService = securityService;
     this.personRepository = personRepository;
   }
 
@@ -43,5 +51,28 @@ public class PersonService {
 
   public void enable(Integer personID) {
     personRepository.enable(personID);
+  }
+
+  public List<MaskedPerson> getPersons(Optional<String> filter)
+      throws UnauthenticatedException, NoResourceException {
+    securityService.getPerson();
+
+    Iterable<Person> persons;
+    if (filter.isEmpty()) {
+      persons = personRepository.findAll();
+    } else {
+      persons = personRepository.findAllThatContain("%" + filter.get() + "%");
+    }
+
+    List<MaskedPerson> maskedPersons = new ArrayList<>();
+    for (Person person : persons) {
+      maskedPersons.add(new MaskedPerson(person));
+    }
+
+    if (maskedPersons.isEmpty()) {
+      throw new NoResourceException();
+    }
+
+    return maskedPersons;
   }
 }

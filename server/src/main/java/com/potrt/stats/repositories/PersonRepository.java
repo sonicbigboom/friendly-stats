@@ -13,4 +13,8 @@ public interface PersonRepository extends CrudRepository<Person, Integer> {
   public void enable(Integer personID);
 
   public Optional<Person> findByEmail(String email);
+
+  @Query(
+      "SELECT P FROM Person P WHERE username LIKE :filter OR firstName LIKE :filter OR lastName LIKE :filter OR nickname LIKE :filter")
+  public Iterable<Person> findAllThatContain(String filter);
 }
