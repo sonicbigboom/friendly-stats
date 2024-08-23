@@ -2,7 +2,7 @@
 package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.masked.MaskedClub;
+import com.potrt.stats.entities.Club.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;

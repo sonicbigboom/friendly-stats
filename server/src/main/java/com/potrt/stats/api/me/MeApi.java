@@ -2,6 +2,7 @@
 package com.potrt.stats.api.me;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.SecurityService;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,10 @@ public class MeApi {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<Person> getMe() {
+  public ResponseEntity<MaskedPerson> getMe() {
     try {
       Person person = securityService.getPerson();
-      return new ResponseEntity<>(person, HttpStatus.OK);
+      return new ResponseEntity<>(new MaskedPerson(person, true), HttpStatus.OK);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }

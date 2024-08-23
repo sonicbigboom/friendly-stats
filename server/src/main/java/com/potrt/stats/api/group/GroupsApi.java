@@ -1,7 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.group;
 
-import com.potrt.stats.entities.masked.MaskedClub;
+import com.potrt.stats.entities.Club.MaskedClub;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.services.ClubService;

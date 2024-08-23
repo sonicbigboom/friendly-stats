@@ -15,11 +15,16 @@ servers:
 tags:
   - name: Authentication
     description: Authentication methods.
+  - name: Me
+    description: Logged-in user info.
+security:
+  - bearerAuth: []
 paths:
   /auth/login:
     post:
       tags:
         - Authentication
+      security: []
       summary: Returns a JWT token.
       description: Logs in a user and returns a JWT token.
       requestBody:
@@ -81,6 +86,7 @@ paths:
     post:
       tags:
         - Authentication
+      security: []
       summary: Registers a user account.
       description: Registers a user account with a user's info and credentials.
       parameters:
@@ -163,6 +169,7 @@ paths:
     get:
       tags:
         - Authentication
+      security: []
       summary: Verifies an email.
       description: Verifies a user's email and the associated account, allowing future authentication.
       parameters:
@@ -186,6 +193,7 @@ paths:
     get:
       tags:
         - Authentication
+      security: []
       summary: Emails a token to reset credentials.
       description: Sends a token to the given email that can be used for resetting the associated user's credentials. Note that this token only lasts 10 minutes.
       parameters:
@@ -210,6 +218,7 @@ paths:
     post:
       tags:
         - Authentication
+      security: []
       summary: Resets a user's credentials.
       description: Reset a user's credentials with the given credentials and reset token.
       requestBody:
@@ -257,3 +266,44 @@ paths:
           description: The email is not associated with a user.
         '422':
           description: Received a bad or expired reset token. Note that the reset token only lasts 10 minutes.
+  /me:
+    get:
+      tags:
+        - Me
+      summary: Gets the client's user info.
+      description: Gets the logged in user's info.
+      responses:
+        '200':
+          description: Successfully got the user info.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized user.
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        firstName:
+          type: [string, 'null']
+        lastName:
+          type: [string, 'null']
+        nickname:
+          type: [string, 'null']
+      example:
+        email: "sam13579@gmail.com"
+        username: "sam13579"
+        firstName: "Sam"
+        lastName: "Peterson"
+        nickname: null
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

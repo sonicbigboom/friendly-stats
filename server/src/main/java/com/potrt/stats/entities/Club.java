@@ -38,4 +38,20 @@ public class Club {
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
   private Boolean isDeleted;
+
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Getter
+  @Setter
+  public static class MaskedClub {
+    private Integer id;
+    private String name;
+    private Integer ownerPersonID;
+
+    public MaskedClub(Club club) {
+      this.id = club.getId();
+      this.name = club.getName();
+      this.ownerPersonID = club.getOwnerPersonID();
+    }
+  }
 }
