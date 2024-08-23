@@ -12,9 +12,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResetDto {
-  private String email;
-
   private String token;
+
+  private String email;
 
   @AuthExists private String authType;
 

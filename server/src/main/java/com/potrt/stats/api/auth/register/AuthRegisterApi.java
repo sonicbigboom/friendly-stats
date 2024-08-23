@@ -12,6 +12,8 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+
 import java.io.UnsupportedEncodingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -46,11 +48,13 @@ public class AuthRegisterApi {
       AuthService service = AuthType.getAuthService(applicationContext, registerDto.getAuthType());
       Person person = service.registerPerson(registerDto);
       verificationService.sendVerificationEmail(person, verificationUrl);
-      return new ResponseEntity<>(HttpStatus.OK);
+      return new ResponseEntity<>(HttpStatus.CREATED);
+    } catch (ValidationException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     } catch (MessagingException | UnsupportedEncodingException e) {
-      return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -27,7 +27,7 @@ public class AuthVerifyApi {
       verificationService.verify(token);
       return new ResponseEntity<>("Successfully verified!", HttpStatus.OK);
     } catch (VerificationDoesNotExistException | VerificationExpiredException e) {
-      return new ResponseEntity<>(HttpStatus.CONFLICT);
+      return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

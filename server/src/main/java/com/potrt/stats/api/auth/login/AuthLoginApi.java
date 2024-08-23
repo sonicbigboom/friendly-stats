@@ -1,6 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.auth.login;
 
+import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
@@ -8,11 +9,14 @@ import com.potrt.stats.security.auth.jwt.JwtAuthResponse;
 import com.potrt.stats.security.auth.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,8 +53,10 @@ public class AuthLoginApi {
       jwtAuthResponse.setAccessToken(token);
 
       return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
-    } catch (Exception e) {
+    } catch (ValidationException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } catch (BadCredentialsException | UnauthenticatedException e) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
   }
 }

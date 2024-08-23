@@ -14,6 +14,8 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
+
 import java.io.UnsupportedEncodingException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -41,16 +43,16 @@ public class AuthResetApi {
 
   @GetMapping("/auth/reset")
   @Transactional
-  public ResponseEntity<String> sendResetToken(
+  public ResponseEntity<Void> sendResetToken(
       @RequestParam String email, HttpServletRequest request) {
     try {
       Person person = personService.getPerson(email);
       resetService.sendResetEmail(person);
-      return new ResponseEntity<>("Sent reset code!", HttpStatus.OK);
+      return new ResponseEntity<>(HttpStatus.OK);
     } catch (PersonDoesNotExistException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (UnsupportedEncodingException | MessagingException e) {
-      return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -62,11 +64,13 @@ public class AuthResetApi {
       Person person = resetService.checkToken(resetDto.getEmail(), resetDto.getToken());
       AuthService service = AuthType.getAuthService(applicationContext, resetDto.getAuthType());
       service.setAuthentication(person.getId(), resetDto.getCode());
-      return new ResponseEntity<>(HttpStatus.OK);
-    } catch (PersonDoesNotExistException e) {
+      return new ResponseEntity<>(HttpStatus.CREATED);
+    } catch (ValidationException e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }  catch (PersonDoesNotExistException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (VerificationDoesNotExistException | VerificationExpiredException e) {
-      return new ResponseEntity<>(HttpStatus.CONFLICT);
+      return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

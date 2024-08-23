@@ -1,7 +1,9 @@
 openapi: 3.1.0
 info:
   title: Friendly Stats - OpenAPI 3.1
-  description: "An api that lets friends track stats with one another. (Poker games, silly bets, gin rummy score, etc...)"
+  description: |-
+    An api that lets friends track stats with one another. (Poker games, silly bets, gin rummy score, etc...)
+
   contact:
     email: friendly-stats@potrt.com
   license:
@@ -10,3 +12,248 @@ info:
   version: 1.0.0
 servers:
   - url: https://localhost:8080
+tags:
+  - name: Authentication
+    description: Authentication methods.
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Returns a JWT token.
+      description: Logs in a user and returns a JWT token.
+      requestBody:
+        required: true
+        description: The user's credentials.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                loginName:
+                  type: string
+                authType:
+                  type: string
+                  enum:
+                    - basic
+                    - google
+                code:
+                  type: string
+            examples:
+              basic:
+                summary: Basic
+                description: Username + password authentication.
+                value:
+                  loginName: "sam13579@gmail.com"
+                  authType: "basic"
+                  code: "my$ecretPassw0rd"
+              google:
+                summary: Google
+                description: Google authentication.
+                value:
+                  loginName: "joeistheman"
+                  authType: "google"
+                  code: "<google id token>"
+      responses:
+        '200':
+          description: Successfully logged in.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  tokenType:
+                    type: string
+              examples:
+                jwt:
+                  summary: JWT Token
+                  description: Returns a JWT authentication token to be used in the authentication header.
+                  value:
+                    accessToken: "<jwt authentication token>"
+                    tokenType: "Bearer"
+        '400':
+          description: Received invalid data (loginName, authenticationType, etc...).
+        '401':
+          description: The credentials did not authenticate an account. This could mean either the username/email does not exist, or that authentication was incorrect.
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Registers a user account.
+      description: Registers a user account with a user's info and credentials.
+      parameters:
+        - name: verificationUrl
+          in: query
+          description: A client url that will be emailed to the user with a verification code added to the end. This may be used to verify accounts through the client. If this is empty, the user will be directed directl to the api verification link.
+          required: false
+          schema:
+            type: string
+          examples:
+            client:
+              summary: Client
+              description: Verify through client.
+              value: "localhost:3000/verify?token="
+      requestBody:
+        required: true
+        description: The user's info and credentials.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                firstName:
+                  type: [string, 'null']
+                lastName:
+                  type: [string, 'null']
+                nickname:
+                  type: [string, 'null']
+                authType:
+                  type: string
+                  enum:
+                    - basic
+                    - google
+                code:
+                  type: string
+            examples:
+              basic:
+                summary: Basic
+                description: Username + password registration.
+                value:
+                  email: "sam13579@gmail.com"
+                  username: "sam13579"
+                  firstName: "Sam"
+                  lastName: "Peterson"
+                  authType: "basic"
+                  code: "my$ecretPassw0rd"
+              google:
+                summary: Google
+                description: Google authentication.
+                value:
+                  email: "joe.anderson2001@gmail.com"
+                  username: "joeistheman"
+                  firstName: "Joe"
+                  lastName: "Anderson"
+                  nickName: "Joey"
+                  authType: "google"
+                  code: "<google id token>"
+              minimum:
+                summary: Minimum
+                description: Simplest registration.
+                value:
+                  email: "anonymous891705@yahoo.com"
+                  username: "anonymous891705"
+                  authType: "basic"
+                  code: "e%z]b6dwj9Y[@8hW*5!<Zv"
+      responses:
+        '201':
+          description: Successfully registered. Note that this account's email must be verified to enable the account.
+        '400':
+          description: Received invalid data (username, email, authenticationType, etc...).
+        '409':
+          description: Account already exists.
+        '500':
+          description: Failed to send the verification email.
+  /auth/verify:
+    get:
+      tags:
+        - Authentication
+      summary: Verifies an email.
+      description: Verifies a user's email and the associated account, allowing future authentication.
+      parameters:
+        - name: token
+          in: query
+          description: The verification token for the email.
+          required: true
+          schema:
+            type: string
+          examples:
+            verify:
+              summary: Verify
+              description: Verify an account.
+              value: "<verification token>"
+      responses:
+        '201':
+          description: Successfully registered. Note that this account's email must be verified to enable the account.
+        '422':
+          description: Received a bad or expired verification token.
+  /auth/reset:
+    get:
+      tags:
+        - Authentication
+      summary: Emails a token to reset credentials.
+      description: Sends a token to the given email that can be used for resetting the associated user's credentials. Note that this token only lasts 10 minutes.
+      parameters:
+        - name: email
+          in: query
+          description: The email 
+          required: true
+          schema:
+            type: string
+          examples:
+            reset:
+              summary: Reset
+              description: Send a reset email.
+              value: "sam13579@gmail.com"
+      responses:
+        '200':
+          description: Sent the reset email.
+        '404':
+          description: The email is not associated with a user.
+        '500':
+          description: Failed to send the reset email.
+    post:
+      tags:
+        - Authentication
+      summary: Resets a user's credentials.
+      description: Reset a user's credentials with the given credentials and reset token.
+      requestBody:
+        required: true
+        description: The user's token and new credentials.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                email:
+                  type: string
+                authType:
+                  type: string
+                  enum:
+                    - basic
+                    - google
+                code:
+                  type: string
+            examples:
+              basic:
+                summary: Basic
+                description: Username + password reset authentication.
+                value:
+                  token: "<reset token>"
+                  email: "sam13579@gmail.com"
+                  authType: "basic"
+                  code: "myNEW$ecretPassw0rd"
+              google:
+                summary: Google
+                description: Google reset authentication.
+                value:
+                  token: "<reset token>"
+                  email: "joe.anderson2001@gmail.com"
+                  authType: "google"
+                  code: "<different google account's id token>"
+      responses:
+        '201':
+          description: Successfully reset credentials.
+        '400':
+          description: Received invalid data (email, authenticationType, etc...).
+        '404':
+          description: The email is not associated with a user.
+        '422':
+          description: Received a bad or expired reset token. Note that the reset token only lasts 10 minutes.
