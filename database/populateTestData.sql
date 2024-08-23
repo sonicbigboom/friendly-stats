@@ -47,30 +47,30 @@ SET IDENTITY_INSERT [Club] OFF
 GO
 
 INSERT INTO [Membership] ([PersonID], [ClubID], [CashBalance], [PersonRole]) VALUES
-	('6', '5', '0', 'Co-Owner'),
-	('3', '5', '0', 'Player'),
+	('6', '5', '0', 'Owner'),
+	('3', '5', '0', 'Person'),
 	('5', '5', '0', 'Game Admin'),
 	('8', '5', '0', 'Cash Admin'),
-	('7', '2', '0', 'Co-Owner'),
-	('13', '2', '0', 'Player'),
+	('7', '2', '0', 'Owner'),
+	('13', '2', '0', 'Person'),
 	('15', '2', '0', 'Game Admin'),
 	('17', '2', '0', 'Cash Admin'),
 	('18', '2', '0', 'Game Admin'),
-	('25', '3', '0', 'Co-Owner'),
-	('2', '3', '0', 'Player'),
-	('10', '3', '0', 'Player'),
+	('25', '3', '0', 'Owner'),
+	('2', '3', '0', 'Person'),
+	('10', '3', '0', 'Person'),
 	('3', '3', '0', 'Cash Admin'),
-	('4', '3', '0', 'Player'),
+	('4', '3', '0', 'Person'),
 	('32', '3', '0', 'Game Admin'),
-	('12', '3', '0', 'Player'),
-	('11', '4', '0', 'Co-Owner'),
-	('24', '4', '0', 'Player'),
+	('12', '3', '0', 'Person'),
+	('11', '4', '0', 'Owner'),
+	('24', '4', '0', 'Person'),
 	('9', '4', '0', 'Cash Admin'),
 	('30', '4', '0', 'Game Admin'),
 	('16', '4', '0', 'Game Admin'),
 	('22', '4', '0', NULL),
-	('6', '3', '0', 'Player'),
-	('21', '5', '0', 'Player');
+	('6', '3', '0', 'Person'),
+	('21', '5', '0', 'Person');
 GO
 
 SET IDENTITY_INSERT [Game] ON

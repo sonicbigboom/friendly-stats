@@ -20,7 +20,8 @@ INSERT INTO [PersonRole] ([Name]) VALUES
 	('Player'),
 	('Game Admin'),
 	('Cash Admin'),
-	('Co-Owner');
+	('Co-Owner'),
+	('Owner');
 GO
 
 SET IDENTITY_INSERT [GameScoringType] ON
