@@ -61,7 +61,7 @@ public class Person {
     private String username;
     private String firstName;
     private String lastName;
-    private String nickname;    
+    private String nickname;
 
     public MaskedPerson(Person person) {
       this(person, false);

@@ -281,6 +281,45 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized user.
+  /balance:
+    get:
+      tags:
+        - Me
+      summary: Gets the client's cash balance.
+      description: Gets the logged in user's total cash balance, and total cash balance for groups the user is still a member of. Ideally, the user is not removed from groups that still owe/are owed money by the user. In this ideal, these values would be equal.
+      responses:
+        '200':
+          description: Successfully got the user info.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  membered:
+                    type: integer
+              examples:
+                positive_ideal:
+                  summary: Positive Ideal
+                  description: The user is owed a total of $20 from the various clubs the user is in.
+                  value:
+                    total: 2000
+                    membered: 2000
+                negative_ideal:
+                  summary: Negative Ideal
+                  description: The user owes a total of $10 from the various clubs the user is in.
+                  value:
+                    total: -1000
+                    membered: -1000
+                removed:
+                  summary: Removed
+                  description: The user is owed a total of $15, but the user was removed from a group that owes the user $5.
+                  value:
+                    total: 1500
+                    membered: 1000
+        '401':
+          description: Unauthorized user.
 components:
   schemas:
     User:

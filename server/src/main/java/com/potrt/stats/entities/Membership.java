@@ -2,7 +2,6 @@
 package com.potrt.stats.entities;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -11,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.type.NumericBooleanConverter;
 
 @Table
 @Entity
@@ -32,17 +30,8 @@ public class Membership {
   @Column(nullable = false)
   private Integer cashBalance;
 
-  @Column(nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isMember;
-
-  @Column(nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isCashAdmin;
-
-  @Column(nullable = false)
-  @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isGameAdmin;
+  @Column(nullable = true)
+  private String personRole;
 
   @Getter
   @AllArgsConstructor
