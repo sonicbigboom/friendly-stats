@@ -355,42 +355,46 @@ paths:
           description: Succesful call, but the caller is not a member of any groups.
         '401':
           description: Unauthorized user.
-    post:
+  /groups/{groupID}:
+    get:
       tags:
-        - Me
         - Group
-      summary: Creates a new group.
-      description: Creates a new group with the caller as the owner.
+      summary:  Gets a group by id.
+      description: Gets the info of a group by its ID.
       parameters:
-        - name: name
-          in: query
-          description: The name of the new group.
+        - name: groupID
+          in: path
+          description: The group ID.
           required: true
           schema:
-            type: string
+            type: integer
           examples:
-            buddies:
-              summary: Buddies
-              description: Creates a new group called "Buddies".
-              value: "Buddies"
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
       responses:
-        '201':
-          description: Successfully created the group.
+        '200':
+          description: Successfully got the group.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Group'
               examples:
-                buddies:
-                  summary: Buddies
-                  description: Created a new group called "Buddies".
+                friends:
+                  summary: Friends
+                  description: Sam's friends.
                   value:
-                    id: 23
-                    name: Buddies
-                    ownerPersonID: 2
-                    storedCash: 0
+                    id: 3
+                    name: My Friends
+                    ownerPersonID: 5
+                    storedCash: 2000
         '401':
           description: Unauthorized user.
+        '403':
+          description: User is not a member of this group.
+        '404':
+          description: No group found.
   /users:
     get:
       tags:

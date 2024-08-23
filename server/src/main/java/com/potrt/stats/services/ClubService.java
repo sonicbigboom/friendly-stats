@@ -2,7 +2,9 @@
 package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Club;
+import com.potrt.stats.entities.Membership;
 import com.potrt.stats.entities.Club.MaskedClub;
+import com.potrt.stats.entities.PersonRole;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -57,7 +59,9 @@ public class ClubService {
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
     Integer personID = securityService.getPersonID();
 
-    if (!Boolean.TRUE.equals(membershipRepository.isMember(personID, clubID))) {
+    String role = membershipRepository.getRole(personID, clubID);
+
+    if (role == null) {
       throw new UnauthorizedException();
     }
 
@@ -65,13 +69,16 @@ public class ClubService {
     if (club.isEmpty() || Boolean.TRUE.equals(club.get().getIsDeleted())) {
       throw new NoResourceException();
     }
-    return new MaskedClub(club.get());
+    return new MaskedClub(club.get(), PersonRole.CASH_ADMIN.permits(role));
   }
 
   public MaskedClub createClub(String name) throws UnauthenticatedException {
     Integer personID = securityService.getPersonID();
     Club club = new Club(null, name, personID, 0, false);
     club = clubRepository.save(club);
+
+    Membership membership = new Membership(personID, club.getId(), 0, "Owner");
+    membershipRepository.save(membership);
     return new MaskedClub(club, true);
   }
 }

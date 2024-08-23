@@ -6,7 +6,7 @@ import java.util.Map;
 
 public enum PersonRole {
   NOT_A_MEMBER(0, null),
-  PERSON(1, "Person"),
+  PERSON(1, "Player"),
   GAME_ADMIN(2, "Game Admin"),
   CASH_ADMIN(3, "Cash Admin"),
   CO_OWNER(3, "Co-Owner"),

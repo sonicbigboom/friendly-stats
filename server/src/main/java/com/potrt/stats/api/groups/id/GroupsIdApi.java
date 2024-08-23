@@ -26,10 +26,12 @@ public class GroupsIdApi {
     try {
       MaskedClub club = clubService.getClub(Integer.valueOf(id));
       return new ResponseEntity<>(club, HttpStatus.OK);
-    } catch (UnauthenticatedException | UnauthorizedException e) {
+    } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    } catch (UnauthorizedException e) {
+      return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     } catch (NoResourceException e) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
   }
 }
