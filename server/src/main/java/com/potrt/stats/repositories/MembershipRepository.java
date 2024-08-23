@@ -25,4 +25,7 @@ public interface MembershipRepository extends CrudRepository<Membership, PersonC
   @Query(
       "SELECT ISNULL(SUM(cashBalance), 0) FROM Membership WHERE personID = :personID AND personRole IS NOT NULL")
   public Integer getMemberedCashBalance(Integer personID);
+
+  @Query("SELECT personID FROM Membership WHERE clubID = :clubID AND personRole IS NOT NULL")
+  public Iterable<Integer> getPersonIDs(Integer clubID);
 }

@@ -2,9 +2,11 @@
 package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.Membership;
 import com.potrt.stats.entities.Club.MaskedClub;
+import com.potrt.stats.entities.Membership;
+import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.entities.PersonRole;
+import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -22,20 +24,23 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class ClubService {
 
-  SecurityService securityService;
-  ClubRepository clubRepository;
-  MembershipRepository membershipRepository;
+  private SecurityService securityService;
+  private ClubRepository clubRepository;
+  private MembershipRepository membershipRepository;
+  private PersonService personService;
 
   public ClubService(
       SecurityService securityService,
       ClubRepository clubRepository,
-      MembershipRepository membershipRepository) {
+      MembershipRepository membershipRepository,
+      PersonService personService) {
     this.securityService = securityService;
     this.clubRepository = clubRepository;
     this.membershipRepository = membershipRepository;
+    this.personService = personService;
   }
 
-  public List<MaskedClub> getClubs() throws UnauthenticatedException, NoResourceException {
+  public List<MaskedClub> getClubs() throws UnauthenticatedException, NoContentException {
     Integer personID = securityService.getPersonID();
     Collection<Integer> clubIDs = membershipRepository.getClubIDs(personID);
 
@@ -49,7 +54,7 @@ public class ClubService {
     }
 
     if (clubs.isEmpty()) {
-      throw new NoResourceException();
+      throw new NoContentException();
     }
 
     return clubs;
@@ -80,5 +85,30 @@ public class ClubService {
     Membership membership = new Membership(personID, club.getId(), 0, "Owner");
     membershipRepository.save(membership);
     return new MaskedClub(club, true);
+  }
+
+  public List<MaskedPerson> getPersons(Integer clubID)
+      throws UnauthenticatedException,
+          UnauthorizedException,
+          NoResourceException,
+          NoContentException {
+    Integer personID = securityService.getPersonID();
+
+    String role = membershipRepository.getRole(personID, clubID);
+
+    if (role == null) {
+      throw new UnauthorizedException();
+    }
+
+    Optional<Club> club = clubRepository.findById(clubID);
+    if (club.isEmpty() || Boolean.TRUE.equals(club.get().getIsDeleted())) {
+      throw new NoResourceException();
+    }
+
+    Iterable<Integer> personIDs = membershipRepository.getPersonIDs(clubID);
+
+    List<MaskedPerson> persons = personService.getPersons(personIDs);
+
+    return persons;
   }
 }

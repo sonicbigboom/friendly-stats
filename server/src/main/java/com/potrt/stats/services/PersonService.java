@@ -3,7 +3,7 @@ package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
-import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.SecurityService;
@@ -54,7 +54,7 @@ public class PersonService {
   }
 
   public List<MaskedPerson> getPersons(Optional<String> filter)
-      throws UnauthenticatedException, NoResourceException {
+      throws UnauthenticatedException, NoContentException {
     securityService.getPerson();
 
     Iterable<Person> persons;
@@ -66,11 +66,32 @@ public class PersonService {
 
     List<MaskedPerson> maskedPersons = new ArrayList<>();
     for (Person person : persons) {
+      if (Boolean.TRUE.equals(person.getIsDeleted())) {
+        continue;
+      }
       maskedPersons.add(new MaskedPerson(person));
     }
 
     if (maskedPersons.isEmpty()) {
-      throw new NoResourceException();
+      throw new NoContentException();
+    }
+
+    return maskedPersons;
+  }
+
+  public List<MaskedPerson> getPersons(Iterable<Integer> personIDs) throws NoContentException {
+    Iterable<Person> persons = personRepository.findAllById(personIDs);
+
+    List<MaskedPerson> maskedPersons = new ArrayList<>();
+    for (Person person : persons) {
+      if (Boolean.TRUE.equals(Boolean.TRUE.equals(person.getIsDeleted()))) {
+        continue;
+      }
+      maskedPersons.add(new MaskedPerson(person));
+    }
+
+    if (maskedPersons.isEmpty()) {
+      throw new NoContentException();
     }
 
     return maskedPersons;

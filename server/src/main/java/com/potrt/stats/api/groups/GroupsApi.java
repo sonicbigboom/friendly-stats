@@ -2,7 +2,7 @@
 package com.potrt.stats.api.groups;
 
 import com.potrt.stats.entities.Club.MaskedClub;
-import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.services.ClubService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +28,7 @@ public class GroupsApi {
     try {
       List<MaskedClub> clubs = clubService.getClubs();
       return new ResponseEntity<>(clubs, HttpStatus.OK);
-    } catch (NoResourceException e) {
+    } catch (NoContentException e) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

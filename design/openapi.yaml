@@ -355,46 +355,6 @@ paths:
           description: Succesful call, but the caller is not a member of any groups.
         '401':
           description: Unauthorized user.
-  /groups/{groupID}:
-    get:
-      tags:
-        - Group
-      summary:  Gets a group by id.
-      description: Gets the info of a group by its ID.
-      parameters:
-        - name: groupID
-          in: path
-          description: The group ID.
-          required: true
-          schema:
-            type: integer
-          examples:
-            friends:
-              summary: Friends
-              description: Sam's friends group id.
-              value: 3
-      responses:
-        '200':
-          description: Successfully got the group.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Group'
-              examples:
-                friends:
-                  summary: Friends
-                  description: Sam's friends.
-                  value:
-                    id: 3
-                    name: My Friends
-                    ownerPersonID: 5
-                    storedCash: 2000
-        '401':
-          description: Unauthorized user.
-        '403':
-          description: User is not a member of this group.
-        '404':
-          description: No group found.
   /users:
     get:
       tags:
@@ -450,6 +410,85 @@ paths:
           description: Succesful call, but no users matched the filter.
         '401':
           description: Unauthorized user.
+  /groups/{groupID}:
+    get:
+      tags:
+        - Group
+      summary:  Gets a group by id.
+      description: Gets the info of a group by its ID.
+      parameters:
+        - name: groupID
+          in: path
+          description: The group ID.
+          required: true
+          schema:
+            type: integer
+          examples:
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
+      responses:
+        '200':
+          description: Successfully got the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+              examples:
+                friends:
+                  summary: Friends
+                  description: Sam's friends.
+                  value:
+                    id: 3
+                    name: My Friends
+                    ownerPersonID: 5
+                    storedCash: 2000
+        '400':
+          description: The group id was not a integer.
+        '401':
+          description: Unauthorized user.
+        '403':
+          description: The caller is not a member of this group.
+        '404':
+          description: No group found.
+  /groups/{groupID}/users:
+    get:
+      tags:
+        - Group
+      summary:  Gets the members of a group.
+      description: Gets a list of users who are members of the group.
+      parameters:
+        - name: groupID
+          in: path
+          description: The group ID.
+          required: true
+          schema:
+            type: integer
+          examples:
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
+      responses:
+        '200':
+          description: Successfully got the users. NOTE&#58; This endpoint will never return a user's email.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '204':
+          description: There are no members of this group. (This should not be possible.)
+        '400':
+          description: The group id was not a integer.
+        '401':
+          description: Unauthorized user.
+        '403':
+          description: The caller is not a member of this group.
+        '404':
+          description: No group found.
 components:
   schemas:
     User:

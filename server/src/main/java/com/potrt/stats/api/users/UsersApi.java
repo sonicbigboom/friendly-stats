@@ -2,7 +2,7 @@
 package com.potrt.stats.api.users;
 
 import com.potrt.stats.entities.Person.MaskedPerson;
-import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.services.PersonService;
 import java.util.List;
@@ -28,7 +28,7 @@ public class UsersApi {
     try {
       List<MaskedPerson> persons = personService.getPersons(filter);
       return new ResponseEntity<>(persons, HttpStatus.OK);
-    } catch (NoResourceException e) {
+    } catch (NoContentException e) {
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
