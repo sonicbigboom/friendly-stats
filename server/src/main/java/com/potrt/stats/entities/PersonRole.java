@@ -35,6 +35,10 @@ public enum PersonRole {
     return roleMap.get(identifier);
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
   public boolean permits(String identifier) {
     PersonRole role = getRole(identifier);
     return permits(role);

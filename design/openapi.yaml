@@ -489,6 +489,54 @@ paths:
           description: The caller is not a member of this group.
         '404':
           description: No group found.
+    post:
+      tags:
+        - Group
+      summary:  Adds a user to a group.
+      description: Adds a user to a group as a member.
+      parameters:
+        - name: groupID
+          in: path
+          description: The group ID.
+          required: true
+          schema:
+            type: integer
+          examples:
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
+        - name: userID
+          in: query
+          description: The user id to add.
+          required: true
+          schema:
+            type: integer
+          examples:
+            joe:
+              summary: Joe
+              description: Adds to Joe to Sam's friend group.
+              value: 9
+      responses:
+        '201':
+          description: Successfully added the user.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: The group id or user id was not a integer.
+        '401':
+          description: Unauthorized user.
+        '403':
+          description: The caller is not a `Game Admin` of this group.
+        '404':
+          description: Group or user not found.
+        '409':
+          description: The user is already a member.
+
 components:
   schemas:
     User:
