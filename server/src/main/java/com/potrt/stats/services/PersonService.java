@@ -96,4 +96,8 @@ public class PersonService {
 
     return maskedPersons;
   }
+
+  public Person createPerson(Person person) {
+    return personRepository.save(person);
+  }
 }

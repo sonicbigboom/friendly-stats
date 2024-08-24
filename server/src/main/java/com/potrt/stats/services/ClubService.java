@@ -5,6 +5,7 @@ import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Club.MaskedClub;
 import com.potrt.stats.entities.Membership;
 import com.potrt.stats.entities.Membership.PersonClub;
+import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.entities.PersonRole;
 import com.potrt.stats.exceptions.AlreadyExistsException;
@@ -113,7 +114,7 @@ public class ClubService {
     return personService.getPersons(personIDs);
   }
 
-  public void addUser(Integer clubID, Integer personID)
+  public void addPerson(Integer clubID, Integer personID)
       throws UnauthenticatedException,
           UnauthorizedException,
           NoResourceException,
@@ -142,5 +143,36 @@ public class ClubService {
 
     Membership membership = new Membership(personID, clubID, 0, PersonRole.PERSON.getIdentifier());
     membershipRepository.save(membership);
+  }
+
+  public Person addPerson(Integer clubID, MaskedPerson person)
+      throws UnauthenticatedException,
+          UnauthorizedException,
+          NoResourceException,
+          AlreadyExistsException {
+
+    Person personToAdd;
+    try {
+      personToAdd = personService.getPerson(person.getEmail());
+      if (Boolean.FALSE.equals(personToAdd.getIsDisabled())) {
+        throw new AlreadyExistsException();
+      }
+    } catch (PersonDoesNotExistException e) {
+      personToAdd =
+          new Person(
+              null,
+              person.getEmail(),
+              person.getUsername(),
+              person.getFirstName(),
+              person.getLastName(),
+              person.getNickname(),
+              true,
+              false);
+      personToAdd = personService.createPerson(personToAdd);
+    }
+
+    addPerson(clubID, personToAdd.getId());
+
+    return personToAdd;
   }
 }

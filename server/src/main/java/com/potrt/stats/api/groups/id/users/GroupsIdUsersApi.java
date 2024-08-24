@@ -53,8 +53,8 @@ public class GroupsIdUsersApi {
       @PathVariable(value = "groupID") String groupID,
       @RequestParam(value = "userID") String userID) {
     try {
-      clubService.addUser(Integer.valueOf(groupID), Integer.valueOf(userID));
-      return new ResponseEntity<>(HttpStatus.OK);
+      clubService.addPerson(Integer.valueOf(groupID), Integer.valueOf(userID));
+      return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
