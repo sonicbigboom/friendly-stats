@@ -536,11 +536,11 @@ paths:
           description: Group or user not found.
         '409':
           description: The user is already a member.
-  /groups/{groupID}/users/add:
+  /groups/{groupID}/users/create:
     post:
       tags:
         - Group
-      summary:  Adds a new user to a group.
+      summary:  Creates a new user for the group.
       description: Creates and adds a new user to a group as a member.
       parameters:
         - name: groupID

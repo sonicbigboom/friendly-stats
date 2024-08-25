@@ -1,5 +1,5 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.api.groups.id.users.add;
+package com.potrt.stats.api.groups.id.users.create;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
@@ -17,16 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class GroupsIdUsersAddApi {
+public class GroupsIdUsersCreateApi {
 
   private ClubService clubService;
 
   @Autowired
-  public GroupsIdUsersAddApi(ClubService clubService) {
+  public GroupsIdUsersCreateApi(ClubService clubService) {
     this.clubService = clubService;
   }
 
-  @PostMapping("/groups/{groupID}/users/add")
+  @PostMapping("/groups/{groupID}/users/create")
   public ResponseEntity<Person> addNewGroupUser(
       @PathVariable(value = "groupID") String groupID, @RequestBody MaskedPerson maskedPerson) {
     try {
