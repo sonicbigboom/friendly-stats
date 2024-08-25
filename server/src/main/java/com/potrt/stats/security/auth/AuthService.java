@@ -7,6 +7,7 @@ import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -36,7 +37,8 @@ public interface AuthService {
    * @throws AuthenticationException Thrown if the authentication fails.
    */
   @Transactional
-  public Authentication login(@Valid LoginDto loginDto) throws AuthenticationException;
+  public Authentication login(@Valid LoginDto loginDto)
+      throws BadCredentialsException, DisabledException;
 
   /**
    * Checks that a {@link Person} is not disabled and not deleteed.
@@ -44,13 +46,13 @@ public interface AuthService {
    * @param person The {@link Person} to check.
    * @throws BadCredentialsException Thrown if the account is disabled/deleted.
    */
-  static void checkAccountStatus(Person person) throws BadCredentialsException {
+  static void checkAccountStatus(Person person) throws DisabledException {
     if (Boolean.TRUE.equals(person.getIsDisabled())) {
-      throw new BadCredentialsException("Account is disabled.");
+      throw new DisabledException("Account is disabled.");
     }
 
     if (Boolean.TRUE.equals(person.getIsDeleted())) {
-      throw new BadCredentialsException("Account is deleted.");
+      throw new DisabledException("Account is deleted.");
     }
   }
 

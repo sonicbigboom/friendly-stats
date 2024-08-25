@@ -3,18 +3,22 @@ package com.potrt.stats.security.auth.basic;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.security.auth.AuthService;
+import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.services.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/** The {@link AuthService} for the username + password (basic) {@link AuthType}. */
 @Service
 public class AuthBasicService implements AuthService {
 
@@ -22,6 +26,7 @@ public class AuthBasicService implements AuthService {
   private AuthBasicPasswordRepository authBasicPasswordRepository;
   private AuthenticationManager authenticationManager;
 
+  /** Autowires the {@link AuthBasicService}. */
   @Autowired
   public AuthBasicService(
       AuthBasicPasswordRepository authBasicPasswordRepository,
@@ -44,7 +49,8 @@ public class AuthBasicService implements AuthService {
   }
 
   @Override
-  public Authentication login(@Valid LoginDto loginDto) {
+  public Authentication login(@Valid LoginDto loginDto)
+      throws BadCredentialsException, DisabledException {
     Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginDto.getLoginName(), loginDto.getCode()));

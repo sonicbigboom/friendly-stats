@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.CredentialsContainer;
 
+/** An {@AuthBasic} represent SQL view with a {@link Person}'s username and password credentials. */
 @Entity
 @Data
 @NoArgsConstructor

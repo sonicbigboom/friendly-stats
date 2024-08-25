@@ -9,9 +9,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class AuthBasicPrincipal implements UserDetails, CredentialsContainer, PersonPrincipal {
+/**
+ * An {@link AuthBasicPrincipal} represents a {@link UserDetails} implementation that is also a
+ * {@link PersonPrincipal}.
+ */
+public class AuthBasicPrincipal implements UserDetails, PersonPrincipal, CredentialsContainer {
   private transient AuthBasic authBasic;
 
+  /**
+   * Creates a new {@link AuthBasicPrincipal} with the {@link Person}'s current {@link AuthBasic}
+   * credentials.
+   *
+   * @param authBasic The {@link Person}'s current {@link AuthBasic} credentials.
+   */
   public AuthBasicPrincipal(AuthBasic authBasic) {
     this.authBasic = authBasic;
   }

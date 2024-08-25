@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** An {@AuthBasicPassword} represent a SQL table linking a {@link Person} id with a password. */
 @Entity
 @Data
 @NoArgsConstructor
