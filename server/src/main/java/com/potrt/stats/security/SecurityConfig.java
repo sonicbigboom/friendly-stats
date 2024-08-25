@@ -18,25 +18,36 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * The {@link SecurityConfig} sets the configuration for security and access to endpoints.
+ */
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private AuthBasicService authLocalService;
+  private AuthBasicService authBasicService;
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+  /**
+   * Autowires the security config.
+   */
   @Autowired
   public SecurityConfig(
-      AuthBasicService authLocalService, JwtAuthenticationFilter jwtAuthenticationFilter) {
-    this.authLocalService = authLocalService;
+      AuthBasicService authBasicService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    this.authBasicService = authBasicService;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
+  /**
+   * Configures the security filter chain.
+   * @return The configured {@link SecurityFilterChain}.
+   * @throws Exception
+   */
   @Bean
   public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
-    http.csrf(chain -> chain.disable())
+      HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
+        httpSecurity.csrf(chain -> chain.disable())
         .authorizeHttpRequests(
             chain -> chain.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
         .httpBasic(chain -> chain.disable())
@@ -45,17 +56,25 @@ public class SecurityConfig {
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .authenticationManager(authenticationManager);
 
-    return http.build();
+    return httpSecurity.build();
   }
 
+  /**
+   * Creates the {@link ProviderManager} that is used for authentication.
+   * @return The configured {@link ProviderManager}.
+   */
   @Bean
-  public AuthenticationManager authenticationManager(HttpSecurity http) {
+  public AuthenticationManager authenticationManager() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(authLocalService);
+    authProvider.setUserDetailsService(authBasicService);
 
     return new ProviderManager(authProvider);
   }
 
+  /**
+   * Configures CORS for web security.
+   * @return The configured {@link WebMvcConfigurer}.
+   */
   @Bean
   public WebMvcConfigurer corsConfigurer() {
     return new WebMvcConfigurer() {
