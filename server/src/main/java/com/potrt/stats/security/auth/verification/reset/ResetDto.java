@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** A {@link ResetDto} represents a reset token for an email and new credentials. */
 @Getter
 @Setter
 @NoArgsConstructor

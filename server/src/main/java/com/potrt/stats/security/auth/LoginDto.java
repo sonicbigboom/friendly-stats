@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@LoginDto} represents login credentials. */
+/** A {@link LoginDto} represents login credentials. */
 @Getter
 @Setter
 @NoArgsConstructor

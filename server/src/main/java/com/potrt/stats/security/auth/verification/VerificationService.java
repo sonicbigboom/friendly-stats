@@ -3,8 +3,8 @@ package com.potrt.stats.security.auth.verification;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.exceptions.BadExternalCommunicationException;
-import com.potrt.stats.security.auth.exceptions.VerificationDoesNotExistException;
-import com.potrt.stats.security.auth.exceptions.VerificationExpiredException;
+import com.potrt.stats.security.auth.exceptions.TokenDoesNotExistException;
+import com.potrt.stats.security.auth.exceptions.TokenExpiredException;
 import com.potrt.stats.services.EmailService;
 import com.potrt.stats.services.PersonService;
 import jakarta.mail.MessagingException;
@@ -26,7 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Service
 public class VerificationService {
 
-  private static final int EXPIRATION_TIME_IN_MINUTES = 60 * 24;
+  private static final int EXPIRATION_TIME_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
   private EmailService emailService;
   private VerificationRepository verificationRepository;
@@ -44,12 +44,24 @@ public class VerificationService {
   }
 
   /**
+   * Calculates the expiration time of new verification token.
+   *
+   * @return The expiration {@link Timestamp} of a new verification token.
+   */
+  public static Timestamp calculateExpirationTime(int milliseconds) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(new Timestamp(cal.getTime().getTime()));
+    cal.add(Calendar.MILLISECOND, milliseconds);
+    return new Timestamp(cal.getTimeInMillis());
+  }
+
+  /**
    * Sends a verification email.
    *
    * @param person The {@link Person} to verify.
    * @param verificationUrl The url (when combined with the token) that the {@link Person} will
    *     verify with. If empty, will direct to endpoint.
-   * @throws BadExternalCommunicationException Failure to send the verification email.
+   * @throws BadExternalCommunicationException Thrown when failing to send the verification email.
    */
   public void sendVerificationEmail(Person person, String verificationUrl)
       throws BadExternalCommunicationException {
@@ -85,19 +97,18 @@ public class VerificationService {
    * Verifies an account verification token.
    *
    * @param token The token.
-   * @throws VerificationDoesNotExistException Thrown if the token does not exists.
-   * @throws VerificationExpiredException Thrown if the token is expired.
+   * @throws TokenDoesNotExistException Thrown if the token does not exists.
+   * @throws TokenExpiredException Thrown if the token is expired.
    */
   @Transactional
-  public void verify(String token)
-      throws VerificationDoesNotExistException, VerificationExpiredException {
+  public void verify(String token) throws TokenDoesNotExistException, TokenExpiredException {
     Optional<Verification> optionalVerification = verificationRepository.findById(token);
     if (optionalVerification.isEmpty()) {
-      throw new VerificationDoesNotExistException();
+      throw new TokenDoesNotExistException();
     }
     Verification verification = optionalVerification.get();
     if (verification.getExpirationDate().getTime() < (new Date()).getTime()) {
-      throw new VerificationExpiredException();
+      throw new TokenExpiredException();
     }
     personService.enable(verification.getPersonID());
   }
@@ -109,20 +120,10 @@ public class VerificationService {
    */
   private String createVerificationToken(Person person) {
     String token = UUID.randomUUID().toString();
-    Verification verification = new Verification(token, person.getId(), calculateExpirationTime());
+    Verification verification =
+        new Verification(
+            token, person.getId(), calculateExpirationTime(EXPIRATION_TIME_IN_MILLISECONDS));
     verificationRepository.save(verification);
     return token;
-  }
-
-  /**
-   * Calculates the expiration time of new verification token.
-   *
-   * @return The expiration {@link Timestamp} of a new verification token.
-   */
-  private Timestamp calculateExpirationTime() {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(new Timestamp(cal.getTime().getTime()));
-    cal.add(Calendar.MINUTE, EXPIRATION_TIME_IN_MINUTES);
-    return new Timestamp(cal.getTimeInMillis());
   }
 }

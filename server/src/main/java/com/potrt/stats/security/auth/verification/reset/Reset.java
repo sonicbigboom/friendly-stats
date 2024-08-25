@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/** Represents a reset token for a {@link Person}. */
 @Entity
 @Data
 @NoArgsConstructor
