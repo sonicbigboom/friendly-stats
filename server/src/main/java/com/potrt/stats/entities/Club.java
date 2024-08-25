@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.type.NumericBooleanConverter;
 
+/** A {@link Club} represents a group in the application. */
 @Table
 @Entity
 @NoArgsConstructor
@@ -37,8 +38,9 @@ public class Club {
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isDeleted;
+  private boolean isDeleted;
 
+  /** A {@link Club} with private information hidden. */
   @NoArgsConstructor
   @AllArgsConstructor
   @Getter
@@ -49,10 +51,21 @@ public class Club {
     private Integer ownerPersonID;
     private Integer storedCash;
 
+    /**
+     * A {@link MaskedClub} with only public information.
+     *
+     * @param club The {@link Club} to mask.
+     */
     public MaskedClub(Club club) {
       this(club, false);
     }
 
+    /**
+     * A {@link MaskedClub} with public information and potentially email.
+     *
+     * @param club The {@link Club} to mask.
+     * @param showStoredCash Whether the stored cash is included, or masked.
+     */
     public MaskedClub(Club club, boolean showStoredCash) {
       this.id = club.getId();
       this.name = club.getName();

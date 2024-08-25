@@ -34,6 +34,7 @@ public class Membership {
   @Column(nullable = true)
   private String personRole;
 
+  /** A {@link PersonClub} represents the compounded id for a {@link Membership}. */
   @Getter
   @AllArgsConstructor
   @NoArgsConstructor

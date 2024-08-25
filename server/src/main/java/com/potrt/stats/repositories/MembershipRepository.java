@@ -1,8 +1,10 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.repositories;
 
+import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Membership;
 import com.potrt.stats.entities.Membership.PersonClub;
+import com.potrt.stats.entities.Person;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -17,7 +19,9 @@ public interface MembershipRepository extends CrudRepository<Membership, PersonC
    * @return Whether the {@link Person} is a member of the {@link Club}.
    */
   @Query(
-      "SELECT personRole IS NOT NULL FROM Membership WHERE personID = :personID AND clubID = :clubID")
+      "SELECT CASE WHEN EXISTS \n"
+          + "\t(SELECT personRole FROM Membership WHERE personID = :personID AND clubID = :clubID AND personRole IS NOT NULL) \n"
+          + "THEN true ELSE false END")
   public boolean isMember(Integer personID, Integer clubID);
 
   /**
