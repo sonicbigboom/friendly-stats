@@ -60,7 +60,7 @@ public class ResetService {
             + "\"";
 
     try {
-      emailService.sendMessage(recipientAddress, subject, message);
+      emailService.sendEmail(recipientAddress, subject, message);
     } catch (MessagingException | UnsupportedEncodingException | MailException e) {
       throw new BadExternalCommunicationException(e);
     }
