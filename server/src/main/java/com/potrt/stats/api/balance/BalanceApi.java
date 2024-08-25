@@ -14,22 +14,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class BalanceApi {
 
-  private SecurityService securityService;
   private MembershipService membershipService;
 
   @Autowired
   public BalanceApi(SecurityService securityService, MembershipService membershipService) {
-    this.securityService = securityService;
     this.membershipService = membershipService;
   }
 
   @GetMapping("/balance")
   public ResponseEntity<Balance> getBalance() {
     try {
-      Integer personID = securityService.getPersonID();
-
-      Integer total = membershipService.getCashBalance(personID);
-      Integer membered = membershipService.getMemberedCashBalance(personID);
+      Integer total = membershipService.getCashBalance();
+      Integer membered = membershipService.getMemberedCashBalance();
 
       return new ResponseEntity<>(new Balance(total, membered), HttpStatus.OK);
     } catch (UnauthenticatedException e) {

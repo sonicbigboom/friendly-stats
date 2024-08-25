@@ -19,7 +19,6 @@ import com.potrt.stats.repositories.MembershipRepository;
 import com.potrt.stats.security.SecurityService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class ClubService {
 
   public List<MaskedClub> getClubs() throws UnauthenticatedException {
     Integer personID = securityService.getPersonID();
-    Collection<Integer> clubIDs = membershipRepository.getClubIDs(personID);
+    Iterable<Integer> clubIDs = membershipRepository.getClubIDs(personID);
 
     List<MaskedClub> clubs = new ArrayList<>();
     for (Club club : clubRepository.findAllById(clubIDs)) {
