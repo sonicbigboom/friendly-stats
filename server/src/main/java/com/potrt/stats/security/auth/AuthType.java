@@ -3,8 +3,11 @@ package com.potrt.stats.security.auth;
 
 import com.potrt.stats.security.auth.basic.AuthBasicService;
 import com.potrt.stats.security.auth.google.AuthGoogleService;
+import jakarta.annotation.PostConstruct;
+import java.util.EnumSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 /** An {@link AuthType} represents a valid authentication type. */
 public enum AuthType {
@@ -33,7 +36,7 @@ public enum AuthType {
    * @return Whether there is a {@link AuthType}.
    */
   public static boolean authExists(String name) {
-    for (AuthType authType : AuthType.values()) {
+    for (AuthType authType : EnumSet.allOf(AuthType.class)) {
       if (authType.name.equalsIgnoreCase(name)) {
         return true;
       }
@@ -49,7 +52,7 @@ public enum AuthType {
    */
   @Autowired
   public static AuthService getAuthService(String name) {
-    for (AuthType authType : AuthType.values()) {
+    for (AuthType authType : EnumSet.allOf(AuthType.class)) {
       if (authType.name.equalsIgnoreCase(name)) {
         return authType.getAuthService();
       }
@@ -66,9 +69,27 @@ public enum AuthType {
     return applicationContext.getBean(authServiceClass);
   }
 
-  /** Autowired injection of an {@link ApplicationContext}. */
-  @Autowired
-  public void injectApplicationContext(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
+  /** Autowires {@link AuthType}s. */
+  @Component
+  public static class AuthTypeInjector {
+    private ApplicationContext applicationContext;
+
+    /**
+     * Autowires the {@link AuthTypeInjector}.
+     *
+     * @param applicationContext
+     */
+    @Autowired
+    public AuthTypeInjector(ApplicationContext applicationContext) {
+      this.applicationContext = applicationContext;
+    }
+
+    /** Injects the autowired beans. */
+    @PostConstruct
+    public void inject() {
+      for (AuthType authType : EnumSet.allOf(AuthType.class)) {
+        authType.applicationContext = applicationContext;
+      }
+    }
   }
 }

@@ -27,7 +27,7 @@ public class SecurityConfig {
   private AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl;
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  /** Autowires the security config. */
+  /** Autowires the {@link SecurityConfig}. */
   @Autowired
   public SecurityConfig(
       AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl,
