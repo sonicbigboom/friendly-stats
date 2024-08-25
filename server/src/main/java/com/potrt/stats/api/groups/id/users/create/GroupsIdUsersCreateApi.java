@@ -3,8 +3,8 @@ package com.potrt.stats.api.groups.id.users.create;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
-import com.potrt.stats.exceptions.AlreadyExistsException;
 import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.services.ClubService;
@@ -40,7 +40,7 @@ public class GroupsIdUsersCreateApi {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     } catch (NoResourceException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (AlreadyExistsException e) {
+    } catch (PersonAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
   }

@@ -2,6 +2,7 @@
 package com.potrt.stats.security.auth.jwt;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.services.PersonService;
 import jakarta.servlet.FilterChain;
@@ -46,7 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       // get username from token
       Integer id = jwtTokenProvider.getId(token);
 
-      Person person = personService.getPerson(id);
+      Person person;
+      try {
+        person = personService.getPerson(id);
+      } catch (PersonDoesNotExistException e) {
+        throw new RuntimeException(e);
+      }
 
       AuthService.checkAccountStatus(person);
 

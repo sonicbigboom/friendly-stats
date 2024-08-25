@@ -8,15 +8,14 @@ import com.potrt.stats.entities.Membership.PersonClub;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.entities.PersonRole;
-import com.potrt.stats.exceptions.AlreadyExistsException;
-import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.PersonAlreadyExistsException;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.repositories.ClubRepository;
 import com.potrt.stats.repositories.MembershipRepository;
 import com.potrt.stats.security.SecurityService;
-import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +43,7 @@ public class ClubService {
     this.personService = personService;
   }
 
-  public List<MaskedClub> getClubs() throws UnauthenticatedException, NoContentException {
+  public List<MaskedClub> getClubs() throws UnauthenticatedException {
     Integer personID = securityService.getPersonID();
     Collection<Integer> clubIDs = membershipRepository.getClubIDs(personID);
 
@@ -55,10 +54,6 @@ public class ClubService {
       }
 
       clubs.add(new MaskedClub(club));
-    }
-
-    if (clubs.isEmpty()) {
-      throw new NoContentException();
     }
 
     return clubs;
@@ -92,10 +87,7 @@ public class ClubService {
   }
 
   public List<MaskedPerson> getPersons(Integer clubID)
-      throws UnauthenticatedException,
-          UnauthorizedException,
-          NoResourceException,
-          NoContentException {
+      throws UnauthenticatedException, UnauthorizedException, NoResourceException {
     Integer personID = securityService.getPersonID();
 
     String role = membershipRepository.getRole(personID, clubID);
@@ -119,7 +111,7 @@ public class ClubService {
           UnauthorizedException,
           NoResourceException,
           PersonDoesNotExistException,
-          AlreadyExistsException {
+          PersonAlreadyExistsException {
     Integer callerID = securityService.getPersonID();
 
     String role = membershipRepository.getRole(callerID, clubID);
@@ -138,7 +130,7 @@ public class ClubService {
     Optional<Membership> optionalMembership =
         membershipRepository.findById(new PersonClub(personID, clubID));
     if (optionalMembership.isPresent() && optionalMembership.get().getPersonRole() != null) {
-      throw new AlreadyExistsException();
+      throw new PersonAlreadyExistsException();
     }
 
     Membership membership = new Membership(personID, clubID, 0, PersonRole.PERSON.getIdentifier());
@@ -149,13 +141,13 @@ public class ClubService {
       throws UnauthenticatedException,
           UnauthorizedException,
           NoResourceException,
-          AlreadyExistsException {
+          PersonAlreadyExistsException {
 
     Person personToAdd;
     try {
       personToAdd = personService.getPerson(person.getEmail());
       if (Boolean.FALSE.equals(personToAdd.getIsDisabled())) {
-        throw new AlreadyExistsException();
+        throw new PersonAlreadyExistsException();
       }
     } catch (PersonDoesNotExistException e) {
       personToAdd =
@@ -171,7 +163,11 @@ public class ClubService {
       personToAdd = personService.createPerson(personToAdd);
     }
 
-    addPerson(clubID, personToAdd.getId());
+    try {
+      addPerson(clubID, personToAdd.getId());
+    } catch (PersonDoesNotExistException e) {
+      throw new RuntimeException(e);
+    }
 
     return personToAdd;
   }

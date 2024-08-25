@@ -2,6 +2,7 @@
 package com.potrt.stats.security.auth.basic;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,9 +26,13 @@ public class AuthBasicUserDetailsServiceImpl implements UserDetailsService {
     this.personService = personService;
   }
 
-  /** Loads a {@link Person} by either their username or email. */
+  /**
+   * Loads a {@link Person} by either their username or email.
+   *
+   * @param loginName The username or password of the {@link Person}.
+   */
   @Override
-  public AuthBasicPrincipal loadUserByUsername(String loginName) {
+  public AuthBasicPrincipal loadUserByUsername(String loginName) throws UsernameNotFoundException {
     AuthBasic authBasic = authBasicRepository.findByUsername(loginName);
     if (authBasic == null) {
       authBasic = authBasicRepository.findByEmail(loginName);
@@ -36,7 +41,11 @@ public class AuthBasicUserDetailsServiceImpl implements UserDetailsService {
       throw new UsernameNotFoundException(loginName);
     }
 
-    authBasic.setPerson(personService.getPerson(authBasic.getPersonID()));
-    return new AuthBasicPrincipal(authBasic);
+    try {
+      authBasic.setPerson(personService.getPerson(authBasic.getPersonID()));
+      return new AuthBasicPrincipal(authBasic);
+    } catch (PersonDoesNotExistException e) {
+      throw new UsernameNotFoundException("Username or password not found.", e);
+    }
   }
 }

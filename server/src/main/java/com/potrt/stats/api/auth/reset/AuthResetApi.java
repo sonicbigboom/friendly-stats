@@ -2,9 +2,9 @@
 package com.potrt.stats.api.auth.reset;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
-import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.VerificationDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.VerificationExpiredException;
 import com.potrt.stats.security.auth.verification.reset.ResetDto;

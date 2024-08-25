@@ -2,12 +2,11 @@
 package com.potrt.stats.api.groups.id.users;
 
 import com.potrt.stats.entities.Person.MaskedPerson;
-import com.potrt.stats.exceptions.AlreadyExistsException;
-import com.potrt.stats.exceptions.NoContentException;
 import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.PersonAlreadyExistsException;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.services.ClubService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +33,12 @@ public class GroupsIdUsersApi {
       @PathVariable(value = "groupID") String id) {
     try {
       List<MaskedPerson> maskedPersons = clubService.getPersons(Integer.valueOf(id));
+
+      if (maskedPersons.isEmpty()) {
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      }
+
       return new ResponseEntity<>(maskedPersons, HttpStatus.OK);
-    } catch (NoContentException e) {
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -63,7 +65,7 @@ public class GroupsIdUsersApi {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     } catch (NoResourceException | PersonDoesNotExistException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (AlreadyExistsException e) {
+    } catch (PersonAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
   }

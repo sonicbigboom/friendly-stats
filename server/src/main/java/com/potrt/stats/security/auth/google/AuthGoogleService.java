@@ -4,6 +4,7 @@ package com.potrt.stats.security.auth.google;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
@@ -108,7 +109,11 @@ public class AuthGoogleService implements AuthService {
       throw new BadCredentialsException("No user with this google account.");
     }
 
-    return personService.getPerson(id);
+    try {
+      return personService.getPerson(id);
+    } catch (PersonDoesNotExistException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

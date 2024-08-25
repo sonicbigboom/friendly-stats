@@ -3,11 +3,10 @@ package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
-import com.potrt.stats.exceptions.NoContentException;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.SecurityService;
-import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,8 +52,7 @@ public class PersonService {
     personRepository.enable(personID);
   }
 
-  public List<MaskedPerson> getPersons(Optional<String> filter)
-      throws UnauthenticatedException, NoContentException {
+  public List<MaskedPerson> getPersons(Optional<String> filter) throws UnauthenticatedException {
     securityService.getPerson();
 
     Iterable<Person> persons;
@@ -72,14 +70,10 @@ public class PersonService {
       maskedPersons.add(new MaskedPerson(person));
     }
 
-    if (maskedPersons.isEmpty()) {
-      throw new NoContentException();
-    }
-
     return maskedPersons;
   }
 
-  public List<MaskedPerson> getPersons(Iterable<Integer> personIDs) throws NoContentException {
+  public List<MaskedPerson> getPersons(Iterable<Integer> personIDs) {
     Iterable<Person> persons = personRepository.findAllById(personIDs);
 
     List<MaskedPerson> maskedPersons = new ArrayList<>();
@@ -88,10 +82,6 @@ public class PersonService {
         continue;
       }
       maskedPersons.add(new MaskedPerson(person));
-    }
-
-    if (maskedPersons.isEmpty()) {
-      throw new NoContentException();
     }
 
     return maskedPersons;

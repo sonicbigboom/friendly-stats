@@ -1,6 +1,9 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security.auth.exceptions;
 
+import com.potrt.stats.entities.Person;
+
+/** An {@link Exception} for registering a {@link Person} with an username that already exists. */
 public class UsernameAlreadyExistsException extends Exception {
   public UsernameAlreadyExistsException() {
     super();

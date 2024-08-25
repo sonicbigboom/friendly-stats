@@ -2,7 +2,7 @@
 package com.potrt.stats.security.auth.verification.reset;
 
 import com.potrt.stats.entities.Person;
-import com.potrt.stats.security.auth.exceptions.PersonDoesNotExistException;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.VerificationDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.VerificationExpiredException;
 import com.potrt.stats.services.EmailService;
