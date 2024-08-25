@@ -12,44 +12,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthBasicService implements UserDetailsService, AuthService {
+public class AuthBasicService implements AuthService {
 
-  private AuthBasicRepository authBasicRepository;
   private PersonService personService;
   private AuthBasicPasswordRepository authBasicPasswordRepository;
+  private AuthenticationManager authenticationManager;
 
   @Autowired
   public AuthBasicService(
-      AuthBasicRepository authBasicRepository,
       AuthBasicPasswordRepository authBasicPasswordRepository,
-      PersonService personService) {
-    this.authBasicRepository = authBasicRepository;
+      PersonService personService,
+      AuthenticationManager authenticationManager) {
     this.personService = personService;
     this.authBasicPasswordRepository = authBasicPasswordRepository;
+    this.authenticationManager = authenticationManager;
   }
 
   @Override
-  public AuthBasicPrincipal loadUserByUsername(String loginName) {
-    AuthBasic authBasic = authBasicRepository.findByUsername(loginName);
-    if (authBasic == null) {
-      authBasic = authBasicRepository.findByEmail(loginName);
-    }
-    if (authBasic == null) {
-      throw new UsernameNotFoundException(loginName);
-    }
-
-    authBasic.setPerson(personService.getPerson(authBasic.getPersonID()));
-    return new AuthBasicPrincipal(authBasic);
-  }
-
-  @Override
-  public Person registerPerson(RegisterDto registerDto) {
+  public Person register(RegisterDto registerDto) {
     Person person = registerDto.getPerson();
     person = personService.register(person);
     String encodedPassword =
@@ -60,8 +44,7 @@ public class AuthBasicService implements UserDetailsService, AuthService {
   }
 
   @Override
-  public Authentication login(
-      @Valid LoginDto loginDto, AuthenticationManager authenticationManager) {
+  public Authentication login(@Valid LoginDto loginDto) {
     Authentication authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginDto.getLoginName(), loginDto.getCode()));
@@ -72,7 +55,7 @@ public class AuthBasicService implements UserDetailsService, AuthService {
   }
 
   @Override
-  public void setAuthentication(Integer personID, String code) {
+  public void updateCredentials(Integer personID, String code) {
     String encodedPassword = "{bcrypt}" + new BCryptPasswordEncoder(14).encode(code);
     AuthBasicPassword authBasicPassword = new AuthBasicPassword(personID, encodedPassword);
     authBasicPasswordRepository.save(authBasicPassword);

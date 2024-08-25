@@ -9,6 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/** This string has to be a recognized authentication type. */
 @Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = AuthExistsValidator.class)

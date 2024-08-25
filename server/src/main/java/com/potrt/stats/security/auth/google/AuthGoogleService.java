@@ -16,7 +16,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public Person registerPerson(RegisterDto registerDto) {
+  public Person register(RegisterDto registerDto) {
     String idToken = registerDto.getCode();
     String googleID = getGoogleID(idToken);
 
@@ -50,8 +49,7 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public Authentication login(
-      @Valid LoginDto loginDto, AuthenticationManager authenticationManager) {
+  public Authentication login(@Valid LoginDto loginDto) {
     try {
       String idToken = loginDto.getCode();
       String googleID = getGoogleID(idToken);
@@ -114,7 +112,7 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public void setAuthentication(Integer personID, String code) {
+  public void updateCredentials(Integer personID, String code) {
     String idToken = code;
     String googleID = getGoogleID(idToken);
     AuthGoogle authGoogle = new AuthGoogle(googleID, personID);

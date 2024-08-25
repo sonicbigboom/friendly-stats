@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** Represents a new {@link Person} and their credentials. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +30,11 @@ public class RegisterDto {
 
   private String code;
 
+  /**
+   * Gets the {@link Person} to insert.
+   *
+   * @return The insertable {@link Person}.
+   */
   public Person getPerson() {
     if (firstName.isBlank()) {
       firstName = null;

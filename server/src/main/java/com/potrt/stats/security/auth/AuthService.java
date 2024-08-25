@@ -6,27 +6,60 @@ import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
+/**
+ * An {@link AuthService} provides registeration and login authentication for a {@link AuthType}.
+ */
+@Transactional
 public interface AuthService {
+
+  /**
+   * Registers a {@link Person}.
+   *
+   * @param registerDto A {@link RegisterDto} with all of the info for a new person.
+   * @return The newly registered {@link Person}.
+   * @throws EmailAlreadyExistsException Thrown when the email already exists.
+   * @throws UsernameAlreadyExistsException Thrown when the username already exists.
+   */
   @Transactional
-  public Person registerPerson(RegisterDto registerDto)
+  public Person register(RegisterDto registerDto)
       throws EmailAlreadyExistsException, UsernameAlreadyExistsException;
 
-  public Authentication login(
-      @Valid LoginDto loginDto, AuthenticationManager authenticationManager);
+  /**
+   * Attempts to login a {@link Person}.
+   *
+   * @param loginDto A {@link LoginDto} with a person's credentials.
+   * @return The logged in {@link Authentication}.
+   * @throws AuthenticationException Thrown if the authentication fails.
+   */
+  @Transactional
+  public Authentication login(@Valid LoginDto loginDto) throws AuthenticationException;
 
+  /**
+   * Checks that a {@link Person} is not disabled and not deleteed.
+   *
+   * @param person The {@link Person} to check.
+   * @throws BadCredentialsException Thrown if the account is disabled/deleted.
+   */
   static void checkAccountStatus(Person person) throws BadCredentialsException {
     if (Boolean.TRUE.equals(person.getIsDisabled())) {
       throw new BadCredentialsException("Account is disabled.");
     }
 
-    if (Boolean.TRUE.equals(person.getIsDisabled())) {
+    if (Boolean.TRUE.equals(person.getIsDeleted())) {
       throw new BadCredentialsException("Account is deleted.");
     }
   }
 
-  public void setAuthentication(Integer personID, String code);
+  /**
+   * Updates the credential for the {@link Person} using the {@link AuthService}'s {@link AuthType}.
+   *
+   * @param personID The {@link Person}'s id.
+   * @param code The code representing the credentials for the {@link AuthService}'s {@link
+   *     AuthType}.
+   */
+  public void updateCredentials(Integer personID, String code);
 }

@@ -16,7 +16,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import java.io.UnsupportedEncodingException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,15 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AuthResetApi {
-  private ApplicationContext applicationContext;
   private ResetService resetService;
   private PersonService personService;
 
-  public AuthResetApi(
-      ApplicationContext applicationContext,
-      ResetService resetService,
-      PersonService personService) {
-    this.applicationContext = applicationContext;
+  public AuthResetApi(ResetService resetService, PersonService personService) {
     this.resetService = resetService;
     this.personService = personService;
   }
@@ -61,8 +55,8 @@ public class AuthResetApi {
       @RequestBody @Valid ResetDto resetDto, HttpServletRequest request) {
     try {
       Person person = resetService.checkToken(resetDto.getEmail(), resetDto.getToken());
-      AuthService service = AuthType.getAuthService(applicationContext, resetDto.getAuthType());
-      service.setAuthentication(person.getId(), resetDto.getCode());
+      AuthService service = AuthType.getAuthService(resetDto.getAuthType());
+      service.updateCredentials(person.getId(), resetDto.getCode());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (ValidationException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

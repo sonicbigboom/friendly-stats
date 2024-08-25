@@ -1,7 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.security.auth.basic.AuthBasicService;
+import com.potrt.stats.security.auth.basic.AuthBasicUserDetailsServiceImpl;
 import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,36 +18,35 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * The {@link SecurityConfig} sets the configuration for security and access to endpoints.
- */
+/** The {@link SecurityConfig} sets the configuration for security and access to endpoints. */
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 public class SecurityConfig {
 
-  private AuthBasicService authBasicService;
+  private AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl;
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-  /**
-   * Autowires the security config.
-   */
+  /** Autowires the security config. */
   @Autowired
   public SecurityConfig(
-      AuthBasicService authBasicService, JwtAuthenticationFilter jwtAuthenticationFilter) {
-    this.authBasicService = authBasicService;
+      AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl,
+      JwtAuthenticationFilter jwtAuthenticationFilter) {
+    this.authBasicUserDetailsServiceImpl = authBasicUserDetailsServiceImpl;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
   /**
    * Configures the security filter chain.
+   *
    * @return The configured {@link SecurityFilterChain}.
    * @throws Exception
    */
   @Bean
   public SecurityFilterChain securityFilterChain(
       HttpSecurity httpSecurity, AuthenticationManager authenticationManager) throws Exception {
-        httpSecurity.csrf(chain -> chain.disable())
+    httpSecurity
+        .csrf(chain -> chain.disable())
         .authorizeHttpRequests(
             chain -> chain.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
         .httpBasic(chain -> chain.disable())
@@ -61,18 +60,20 @@ public class SecurityConfig {
 
   /**
    * Creates the {@link ProviderManager} that is used for authentication.
+   *
    * @return The configured {@link ProviderManager}.
    */
   @Bean
   public AuthenticationManager authenticationManager() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-    authProvider.setUserDetailsService(authBasicService);
+    authProvider.setUserDetailsService(authBasicUserDetailsServiceImpl);
 
     return new ProviderManager(authProvider);
   }
 
   /**
    * Configures CORS for web security.
+   *
    * @return The configured {@link WebMvcConfigurer}.
    */
   @Bean

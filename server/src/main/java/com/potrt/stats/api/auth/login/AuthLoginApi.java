@@ -11,10 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -24,17 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class AuthLoginApi {
 
-  private ApplicationContext applicationContext;
-  private AuthenticationManager authenticationManager;
   private JwtTokenProvider jwtTokenProvider;
 
   @Autowired
-  public AuthLoginApi(
-      ApplicationContext applicationContext,
-      AuthenticationManager authenticationManager,
-      JwtTokenProvider jwtTokenProvider) {
-    this.applicationContext = applicationContext;
-    this.authenticationManager = authenticationManager;
+  public AuthLoginApi(JwtTokenProvider jwtTokenProvider) {
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
@@ -43,9 +34,9 @@ public class AuthLoginApi {
       @RequestBody @Valid LoginDto loginDto, HttpServletRequest request) {
 
     try {
-      AuthService authService = AuthType.getAuthService(applicationContext, loginDto.getAuthType());
+      AuthService authService = AuthType.getAuthService(loginDto.getAuthType());
 
-      Authentication authentication = authService.login(loginDto, authenticationManager);
+      Authentication authentication = authService.login(loginDto);
       String token = jwtTokenProvider.generateToken(authentication);
 
       JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
