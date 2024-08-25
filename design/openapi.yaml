@@ -84,6 +84,8 @@ paths:
           description: Received invalid data (loginName, authenticationType, etc...).
         '401':
           description: The credentials did not authenticate an account. This could mean either the username/email does not exist, or that authentication was incorrect.
+        '500':
+          description: There was an issue communicating with a third party authenticator.
   /auth/register:
     post:
       tags:
@@ -166,7 +168,7 @@ paths:
         '409':
           description: Account already exists.
         '500':
-          description: Failed to send the verification email.
+          description: Failed to send the verification email or failed to communicate with third party authenticator.
   /auth/verify:
     get:
       tags:
@@ -191,6 +193,8 @@ paths:
           description: Successfully registered. Note that this account's email must be verified to enable the account.
         '422':
           description: Received a bad or expired verification token.
+        '500':
+          description: There was an issue communicating with a third party authenticator.
   /auth/reset:
     get:
       tags:

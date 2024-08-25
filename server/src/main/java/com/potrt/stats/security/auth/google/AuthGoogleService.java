@@ -2,8 +2,10 @@
 package com.potrt.stats.security.auth.google;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.LoginDto;
@@ -20,16 +22,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-/** The service for google authentication. */
+/** The {@link AuthService} for google authentication. */
 @Service
 public class AuthGoogleService implements AuthService {
 
   private AuthGoogleRepository authGoogleRepository;
   private PersonService personService;
 
+  /** Autowires an {@link AuthGoogleService}. */
   @Autowired
   public AuthGoogleService(AuthGoogleRepository authGoogleRepository, PersonService personService) {
     this.authGoogleRepository = authGoogleRepository;
@@ -37,7 +41,8 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public Person register(RegisterDto registerDto) {
+  public Person register(RegisterDto registerDto)
+      throws BadCredentialsException, BadExternalCommunicationException {
     String idToken = registerDto.getCode();
     String googleID = getGoogleID(idToken);
 
@@ -50,7 +55,7 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public Authentication login(@Valid LoginDto loginDto) {
+  public Authentication login(@Valid LoginDto loginDto) throws BadCredentialsException {
     try {
       String idToken = loginDto.getCode();
       String googleID = getGoogleID(idToken);
@@ -64,7 +69,16 @@ public class AuthGoogleService implements AuthService {
     }
   }
 
-  private String getGoogleID(String idToken) {
+  /**
+   * Gets a google id from an id token.
+   *
+   * @param idToken The id token.
+   * @return The google id.
+   * @throws BadExternalCommunicationException Thrown if communication with google failed.
+   * @throws BadCredentialsException Thrown if google id token is invalid.
+   */
+  private String getGoogleID(String idToken)
+      throws BadExternalCommunicationException, BadCredentialsException {
     String url = "https://oauth2.googleapis.com/tokeninfo";
     String urlTemplate =
         UriComponentsBuilder.fromHttpUrl(url)
@@ -72,16 +86,29 @@ public class AuthGoogleService implements AuthService {
             .encode()
             .toUriString();
     HttpEntity<String> requestEntity = new HttpEntity<>(new HttpHeaders());
-    ResponseEntity<String> response =
-        new RestTemplate().exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
-    String info = response.getBody();
+    ResponseEntity<String> response;
+    try {
+      response =
+          new RestTemplate().exchange(urlTemplate, HttpMethod.GET, requestEntity, String.class);
+    } catch (RestClientException e) {
+      throw new BadExternalCommunicationException(e);
+    }
+    if (!response.getStatusCode().is2xxSuccessful()) {
+      throw new BadExternalCommunicationException();
+    }
 
-    JsonObject jsonObject = JsonParser.parseString(info).getAsJsonObject();
+    String info = response.getBody();
+    JsonObject jsonObject;
+    try {
+      jsonObject = JsonParser.parseString(info).getAsJsonObject();
+    } catch (JsonParseException | IllegalStateException e) {
+      throw new BadExternalCommunicationException(e);
+    }
 
     String aud = jsonObject.get("aud").getAsString();
     if (!aud.equals(System.getenv("REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID"))
         && !aud.equals(System.getenv("FRIENDLY_STATS_GOOGLE_CLIENT_ID"))) {
-      throw new BadCredentialsException("Wrong client authenticator.");
+      throw new BadCredentialsException("Invalid client authenticator.");
     }
 
     String iss = jsonObject.get("iss").getAsString();
@@ -98,7 +125,14 @@ public class AuthGoogleService implements AuthService {
     return jsonObject.get("sub").getAsString();
   }
 
-  private Person getPerson(String googleID) {
+  /**
+   * Gets a {@link Person} from a google id.
+   *
+   * @param googleID The google id.
+   * @return The {@link Person} linked to the google id.
+   * @throws BadCredentialsException Thrown if there is no {@link Person} linked to this google id.
+   */
+  private Person getPerson(String googleID) throws BadCredentialsException {
     Optional<AuthGoogle> optionalID = authGoogleRepository.findById(googleID);
     if (optionalID.isEmpty()) {
       throw new BadCredentialsException("Google token did not have an id.");
@@ -117,7 +151,8 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public void updateCredentials(Integer personID, String code) {
+  public void updateCredentials(Integer personID, String code)
+      throws BadCredentialsException, BadExternalCommunicationException {
     String idToken = code;
     String googleID = getGoogleID(idToken);
     AuthGoogle authGoogle = new AuthGoogle(googleID, personID);

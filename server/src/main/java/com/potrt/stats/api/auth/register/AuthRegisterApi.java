@@ -2,6 +2,7 @@
 package com.potrt.stats.api.auth.register;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.RegisterDto;
@@ -48,7 +49,9 @@ public class AuthRegisterApi {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
-    } catch (MessagingException | UnsupportedEncodingException e) {
+    } catch (MessagingException
+        | UnsupportedEncodingException
+        | BadExternalCommunicationException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

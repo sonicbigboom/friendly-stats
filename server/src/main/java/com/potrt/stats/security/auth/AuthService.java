@@ -2,6 +2,7 @@
 package com.potrt.stats.security.auth;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import jakarta.transaction.Transactional;
@@ -27,7 +28,9 @@ public interface AuthService {
    */
   @Transactional
   public Person register(RegisterDto registerDto)
-      throws EmailAlreadyExistsException, UsernameAlreadyExistsException;
+      throws EmailAlreadyExistsException,
+          UsernameAlreadyExistsException,
+          BadExternalCommunicationException;
 
   /**
    * Attempts to login a {@link Person}.
@@ -38,7 +41,7 @@ public interface AuthService {
    */
   @Transactional
   public Authentication login(@Valid LoginDto loginDto)
-      throws BadCredentialsException, DisabledException;
+      throws BadCredentialsException, DisabledException, BadExternalCommunicationException;
 
   /**
    * Checks that a {@link Person} is not disabled and not deleteed.
@@ -63,5 +66,6 @@ public interface AuthService {
    * @param code The code representing the credentials for the {@link AuthService}'s {@link
    *     AuthType}.
    */
-  public void updateCredentials(Integer personID, String code);
+  public void updateCredentials(Integer personID, String code)
+      throws BadExternalCommunicationException;
 }

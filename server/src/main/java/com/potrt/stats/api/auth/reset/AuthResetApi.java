@@ -2,6 +2,7 @@
 package com.potrt.stats.api.auth.reset;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
@@ -64,6 +65,8 @@ public class AuthResetApi {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (VerificationDoesNotExistException | VerificationExpiredException e) {
       return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+    } catch (BadExternalCommunicationException e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

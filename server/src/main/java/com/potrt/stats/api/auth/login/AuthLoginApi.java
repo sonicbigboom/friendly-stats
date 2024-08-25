@@ -1,6 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.auth.login;
 
+import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
@@ -47,6 +48,8 @@ public class AuthLoginApi {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (BadCredentialsException | UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    } catch (BadExternalCommunicationException e) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

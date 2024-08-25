@@ -6,10 +6,18 @@ import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 
+/** A {@link AuthGoogleAuthentication} represents a successful google authentication token. */
 public class AuthGoogleAuthentication extends AbstractAuthenticationToken {
   private transient String accessToken;
   private final transient Person person;
 
+  /**
+   * Creates a {@link AuthGoogleAuthentication} with the google access token and the authenticated
+   * {@link Person}.
+   *
+   * @param accessToken The google access token.
+   * @param person The authenticated {@link Person}.
+   */
   public AuthGoogleAuthentication(String accessToken, Person person) {
     super(AuthorityUtils.NO_AUTHORITIES);
     this.accessToken = accessToken;
