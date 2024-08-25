@@ -11,6 +11,8 @@ import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
+import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
+import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import com.potrt.stats.services.PersonService;
 import jakarta.validation.Valid;
 import java.util.Date;
@@ -43,12 +45,14 @@ public class AuthGoogleService implements AuthService {
 
   @Override
   public Person register(RegisterDto registerDto)
-      throws BadCredentialsException, BadExternalCommunicationException {
+      throws BadCredentialsException,
+          BadExternalCommunicationException,
+          EmailAlreadyExistsException,
+          UsernameAlreadyExistsException {
     String idToken = registerDto.getCode();
     String googleID = getGoogleID(idToken);
 
-    Person person = registerDto.getPerson();
-    person = personService.register(person);
+    Person person = personService.register(registerDto);
 
     AuthGoogle authGoogle = new AuthGoogle(googleID, person.getId());
     authGoogleRepository.save(authGoogle);

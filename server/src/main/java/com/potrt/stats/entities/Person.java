@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.type.NumericBooleanConverter;
 
-/** A {@link Person} represents a user of the application. */
+/** A {@link Person} represents a person in the application. */
 @Table
 @Entity
 @NoArgsConstructor
@@ -45,12 +45,13 @@ public class Person {
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isDisabled;
+  private boolean isDisabled;
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
-  private Boolean isDeleted;
+  private boolean isDeleted;
 
+  /** A {@link Person} with private information hidden. */
   @NoArgsConstructor
   @AllArgsConstructor
   @Getter
@@ -63,10 +64,21 @@ public class Person {
     private String lastName;
     private String nickname;
 
+    /**
+     * A {@link MaskedPerson} with only public information.
+     *
+     * @param person The {@link Person} to mask.
+     */
     public MaskedPerson(Person person) {
       this(person, false);
     }
 
+    /**
+     * A {@link MaskedPerson} with public information and potentially email.
+     *
+     * @param person The {@link Person} to mask.
+     * @param includeEmail Whether the email is included, or masked.
+     */
     public MaskedPerson(Person person, boolean includeEmail) {
       this.id = person.id;
       if (includeEmail) {

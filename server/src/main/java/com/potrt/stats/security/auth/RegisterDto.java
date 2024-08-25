@@ -36,13 +36,13 @@ public class RegisterDto {
    * @return The insertable {@link Person}.
    */
   public Person getPerson() {
-    if (firstName.isBlank()) {
+    if (firstName == null || firstName.isBlank()) {
       firstName = null;
     }
-    if (lastName.isBlank()) {
+    if (lastName == null || lastName.isBlank()) {
       lastName = null;
     }
-    if (nickname.isBlank()) {
+    if (nickname == null || nickname.isBlank()) {
       nickname = null;
     }
 

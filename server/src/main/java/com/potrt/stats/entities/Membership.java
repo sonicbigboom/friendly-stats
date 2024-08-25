@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/** A {@link Membership} represents a {@link Person}'s connection to a {@link Club}. */
 @Table
 @Entity
 @NoArgsConstructor

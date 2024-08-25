@@ -38,7 +38,7 @@ public class AuthResetApi {
   public ResponseEntity<Void> sendResetToken(
       @RequestParam String email, HttpServletRequest request) {
     try {
-      Person person = personService.getPerson(email);
+      Person person = personService.getPersonByEmail(email);
       resetService.sendResetEmail(person);
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (PersonDoesNotExistException e) {

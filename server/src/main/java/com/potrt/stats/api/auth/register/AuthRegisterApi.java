@@ -35,7 +35,7 @@ public class AuthRegisterApi {
   @Transactional
   public ResponseEntity<Void> registerUserAccount(
       @RequestBody @Valid RegisterDto registerDto,
-      @RequestParam(value = "verificationUrl") String verificationUrl,
+      @RequestParam(required = false, value = "verificationUrl") String verificationUrl,
       HttpServletRequest request) {
 
     try {

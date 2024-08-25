@@ -25,7 +25,7 @@ public class UsersApi {
   public ResponseEntity<List<MaskedPerson>> getUsers(
       @RequestParam(value = "filter") Optional<String> filter) {
     try {
-      List<MaskedPerson> persons = personService.getPersons(filter);
+      List<MaskedPerson> persons = personService.getPersons(filter.orElseGet(() -> null));
 
       if (persons.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

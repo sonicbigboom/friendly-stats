@@ -6,6 +6,8 @@ import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
+import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
+import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import com.potrt.stats.services.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +40,9 @@ public class AuthBasicService implements AuthService {
   }
 
   @Override
-  public Person register(RegisterDto registerDto) {
-    Person person = registerDto.getPerson();
-    person = personService.register(person);
+  public Person register(RegisterDto registerDto)
+      throws EmailAlreadyExistsException, UsernameAlreadyExistsException {
+    Person person = personService.register(registerDto);
     String encodedPassword =
         "{bcrypt}" + new BCryptPasswordEncoder(14).encode(registerDto.getCode());
     AuthBasicPassword authBasicPassword = new AuthBasicPassword(person.getId(), encodedPassword);

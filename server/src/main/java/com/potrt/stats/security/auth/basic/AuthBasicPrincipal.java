@@ -54,6 +54,6 @@ public class AuthBasicPrincipal implements UserDetails, PersonPrincipal, Credent
   @Override
   public boolean isEnabled() {
     Person person = getPerson();
-    return !person.getIsDisabled() && !person.getIsDeleted();
+    return !person.isDeleted() && !person.isDisabled();
   }
 }

@@ -48,11 +48,11 @@ public interface AuthService {
    * @throws DisabledException Thrown if the account is disabled/deleted.
    */
   static void checkAccountStatus(Person person) throws DisabledException {
-    if (Boolean.TRUE.equals(person.getIsDisabled())) {
+    if (person.isDeleted()) {
       throw new DisabledException("Account is disabled.");
     }
 
-    if (Boolean.TRUE.equals(person.getIsDeleted())) {
+    if (person.isDisabled()) {
       throw new DisabledException("Account is deleted.");
     }
   }

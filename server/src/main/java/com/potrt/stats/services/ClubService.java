@@ -145,8 +145,8 @@ public class ClubService {
 
     Person personToAdd;
     try {
-      personToAdd = personService.getPerson(person.getEmail());
-      if (Boolean.FALSE.equals(personToAdd.getIsDisabled())) {
+      personToAdd = personService.getPersonByEmail(person.getEmail());
+      if (Boolean.FALSE.equals(personToAdd.isDisabled())) {
         throw new PersonAlreadyExistsException();
       }
     } catch (PersonDoesNotExistException e) {
