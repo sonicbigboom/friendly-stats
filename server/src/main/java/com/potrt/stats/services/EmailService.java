@@ -6,6 +6,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class EmailService {
   }
 
   public void sendMessage(String to, String subject, String text)
-      throws MessagingException, UnsupportedEncodingException {
+      throws MessagingException, UnsupportedEncodingException, MailException {
     MimeMessage message = emailSender.createMimeMessage();
 
     MimeMessageHelper helper = new MimeMessageHelper(message, true);

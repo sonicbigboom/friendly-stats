@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtTokenService {
 
-  private String jwtSecret = System.getenv("FRIENDLY_STATS_SIGNATURE");
-  private long jwtExpirationDate = 3600000;
+  private static final long EXPIRATION_TIME_IN_MILLISECONDS = (long) 60 * 60 * 1000;
+  private static final String JWT_SIGNATURE = System.getenv("FRIENDLY_STATS_SIGNATURE");
 
   /**
    * Generates a jwt token for an authenticated {@link Person}.
@@ -43,7 +43,7 @@ public class JwtTokenService {
     }
     Integer id = person.getId();
     Date currentDate = new Date();
-    Date expirationDate = new Date(currentDate.getTime() + jwtExpirationDate);
+    Date expirationDate = new Date(currentDate.getTime() + EXPIRATION_TIME_IN_MILLISECONDS);
 
     return Jwts.builder()
         .subject(id.toString())
@@ -59,7 +59,7 @@ public class JwtTokenService {
    * @return The secret application key.
    */
   private Key key() {
-    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(JWT_SIGNATURE));
   }
 
   /**

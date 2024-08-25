@@ -26,7 +26,6 @@ public interface AuthService {
    * @throws EmailAlreadyExistsException Thrown when the email already exists.
    * @throws UsernameAlreadyExistsException Thrown when the username already exists.
    */
-  @Transactional
   public Person register(RegisterDto registerDto)
       throws EmailAlreadyExistsException,
           UsernameAlreadyExistsException,
@@ -39,7 +38,6 @@ public interface AuthService {
    * @return The logged in {@link Authentication}.
    * @throws AuthenticationException Thrown if the authentication fails.
    */
-  @Transactional
   public Authentication login(@Valid LoginDto loginDto)
       throws BadCredentialsException, DisabledException, BadExternalCommunicationException;
 

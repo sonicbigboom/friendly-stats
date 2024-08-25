@@ -9,12 +9,10 @@ import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import com.potrt.stats.security.auth.verification.VerificationService;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
-import java.io.UnsupportedEncodingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,9 +47,7 @@ public class AuthRegisterApi {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
-    } catch (MessagingException
-        | UnsupportedEncodingException
-        | BadExternalCommunicationException e) {
+    } catch (BadExternalCommunicationException e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
