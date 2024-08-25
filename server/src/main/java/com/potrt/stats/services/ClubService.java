@@ -8,6 +8,7 @@ import com.potrt.stats.entities.Membership.PersonClub;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.entities.PersonRole;
+import com.potrt.stats.exceptions.ImpossibleRuntimeException;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
@@ -166,7 +167,7 @@ public class ClubService {
     try {
       addPerson(clubID, personToAdd.getId());
     } catch (PersonDoesNotExistException e) {
-      throw new RuntimeException(e);
+      throw new ImpossibleRuntimeException(e);
     }
 
     return personToAdd;

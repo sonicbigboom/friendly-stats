@@ -2,6 +2,7 @@
 package com.potrt.stats.security.auth.jwt;
 
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.exceptions.ImpossibleRuntimeException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.services.PersonService;
@@ -59,7 +60,7 @@ public class AuthJwtFilter extends OncePerRequestFilter {
     try {
       person = personService.getPerson(id);
     } catch (PersonDoesNotExistException e) {
-      throw new RuntimeException(e);
+      throw new ImpossibleRuntimeException(e);
     }
 
     AuthService.checkAccountStatus(person);

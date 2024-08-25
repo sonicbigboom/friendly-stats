@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.exceptions.BadExternalCommunicationException;
+import com.potrt.stats.exceptions.ImpossibleRuntimeException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.LoginDto;
@@ -146,7 +147,7 @@ public class AuthGoogleService implements AuthService {
     try {
       return personService.getPerson(id);
     } catch (PersonDoesNotExistException e) {
-      throw new RuntimeException(e);
+      throw new ImpossibleRuntimeException(e);
     }
   }
 
