@@ -2,7 +2,7 @@
 package com.potrt.stats.security;
 
 import com.potrt.stats.security.auth.basic.AuthBasicUserDetailsServiceImpl;
-import com.potrt.stats.security.auth.jwt.JwtAuthenticationFilter;
+import com.potrt.stats.security.auth.jwt.AuthJwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +25,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
   private AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl;
-  private JwtAuthenticationFilter jwtAuthenticationFilter;
+  private AuthJwtFilter jwtAuthenticationFilter;
 
   /** Autowires the {@link SecurityConfig}. */
   @Autowired
   public SecurityConfig(
       AuthBasicUserDetailsServiceImpl authBasicUserDetailsServiceImpl,
-      JwtAuthenticationFilter jwtAuthenticationFilter) {
+      AuthJwtFilter jwtAuthenticationFilter) {
     this.authBasicUserDetailsServiceImpl = authBasicUserDetailsServiceImpl;
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }

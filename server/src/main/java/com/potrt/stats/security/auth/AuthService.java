@@ -44,7 +44,7 @@ public interface AuthService {
    * Checks that a {@link Person} is not disabled and not deleteed.
    *
    * @param person The {@link Person} to check.
-   * @throws BadCredentialsException Thrown if the account is disabled/deleted.
+   * @throws DisabledException Thrown if the account is disabled/deleted.
    */
   static void checkAccountStatus(Person person) throws DisabledException {
     if (Boolean.TRUE.equals(person.getIsDisabled())) {

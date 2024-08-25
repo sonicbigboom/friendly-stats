@@ -5,31 +5,32 @@ import com.potrt.stats.entities.Person;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.services.PersonService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-// Execute Before Executing Spring Security Filters
-// Validate the JWT Token and Provides user details to Spring Security for Authentication
+/**
+ * A {@link AuthJwtFilter} authenticates request with a valid Jwt bearer token in the Authorization
+ * header.
+ */
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class AuthJwtFilter extends OncePerRequestFilter {
 
-  private JwtTokenProvider jwtTokenProvider;
+  private JwtTokenService jwtTokenProvider;
 
   private PersonService personService;
 
+  /** Autowires a {@link AuthJwtFilter} */
   @Autowired
-  public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, PersonService personService) {
+  public AuthJwtFilter(JwtTokenService jwtTokenProvider, PersonService personService) {
     this.jwtTokenProvider = jwtTokenProvider;
     this.personService = personService;
   }
@@ -39,34 +40,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    // Get JWT token from HTTP request
     String token = getTokenFromRequest(request);
 
-    // Validate Token
-    if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-      // get username from token
-      Integer id = jwtTokenProvider.getId(token);
-
-      Person person;
-      try {
-        person = personService.getPerson(id);
-      } catch (PersonDoesNotExistException e) {
-        throw new RuntimeException(e);
-      }
-
-      AuthService.checkAccountStatus(person);
-
-      UsernamePasswordAuthenticationToken authenticationToken =
-          new UsernamePasswordAuthenticationToken(person, null, AuthorityUtils.NO_AUTHORITIES);
-
-      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+    if (!StringUtils.hasText(token)) {
+      filterChain.doFilter(request, response);
+      return;
     }
+
+    try {
+      jwtTokenProvider.validateToken(token);
+    } catch (JwtException e) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
+    Integer id = jwtTokenProvider.getId(token);
+    Person person;
+    try {
+      person = personService.getPerson(id);
+    } catch (PersonDoesNotExistException e) {
+      throw new RuntimeException(e);
+    }
+
+    AuthService.checkAccountStatus(person);
+
+    AuthJwt authenticationToken = new AuthJwt(token, person);
+    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
     filterChain.doFilter(request, response);
   }
 
+  /**
+   * Get the token from the bearer token.
+   *
+   * @param request The http request.
+   * @return The token if the request had a bearer token. Otherwise, null.
+   */
   private String getTokenFromRequest(HttpServletRequest request) {
     String bearerToken = request.getHeader("Authorization");
 

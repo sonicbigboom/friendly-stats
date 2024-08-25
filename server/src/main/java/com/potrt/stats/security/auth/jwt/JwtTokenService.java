@@ -4,7 +4,9 @@ package com.potrt.stats.security.auth.jwt;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.PersonPrincipal;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
@@ -13,13 +15,20 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+/** A {@link JwtTokenService} is a service for creating and validating jwt tokens. */
 @Service
-public class JwtTokenProvider {
+public class JwtTokenService {
 
   private String jwtSecret = System.getenv("FRIENDLY_STATS_SIGNATURE");
   private long jwtExpirationDate = 3600000;
 
-  // generate JWT token
+  /**
+   * Generates a jwt token for an authenticated {@link Person}.
+   *
+   * @param authentication The {@link Authentication} for a {@link Person}.
+   * @return The token.
+   * @throws UnauthenticatedException Thrown if no {@link Person} is authenticated.
+   */
   public String generateToken(Authentication authentication) throws UnauthenticatedException {
 
     Person person;
@@ -33,24 +42,49 @@ public class JwtTokenProvider {
       throw new UnauthenticatedException();
     }
     Integer id = person.getId();
-
     Date currentDate = new Date();
-
-    Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
+    Date expirationDate = new Date(currentDate.getTime() + jwtExpirationDate);
 
     return Jwts.builder()
         .subject(id.toString())
-        .issuedAt(new Date())
-        .expiration(expireDate)
+        .issuedAt(currentDate)
+        .expiration(expirationDate)
         .signWith(key())
         .compact();
   }
 
+  /**
+   * Returns the secret application key.
+   *
+   * @return The secret application key.
+   */
   private Key key() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
-  // get username from JWT token
+  /**
+   * Validates a jwt token.
+   *
+   * @param token The jwt token.
+   * @throws MalformedJwtException Thrown if the token is malformed.
+   * @throws SecurityException Thrown if decryption failed.
+   * @throws ExpiredJwtException Thrown if the token is expired.
+   * @throws IllegalArgumentException Thrown if the token is null or whitespace.
+   */
+  public void validateToken(String token)
+      throws MalformedJwtException,
+          SecurityException,
+          ExpiredJwtException,
+          IllegalArgumentException {
+    Jwts.parser().verifyWith((SecretKey) key()).build().parse(token);
+  }
+
+  /**
+   * Gets the {@link Perosn} id within a jwt token.
+   *
+   * @param token The jwt token.
+   * @return The {@link Person} id within the token.
+   */
   public Integer getId(String token) {
 
     return Integer.parseInt(
@@ -60,11 +94,5 @@ public class JwtTokenProvider {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject());
-  }
-
-  // validate JWT token
-  public boolean validateToken(String token) {
-    Jwts.parser().verifyWith((SecretKey) key()).build().parse(token);
-    return true;
   }
 }

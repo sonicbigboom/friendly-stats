@@ -5,8 +5,8 @@ import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
-import com.potrt.stats.security.auth.jwt.JwtAuthResponse;
-import com.potrt.stats.security.auth.jwt.JwtTokenProvider;
+import com.potrt.stats.security.auth.jwt.AuthJwtResponse;
+import com.potrt.stats.security.auth.jwt.JwtTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -22,15 +22,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 public class AuthLoginApi {
 
-  private JwtTokenProvider jwtTokenProvider;
+  private JwtTokenService jwtTokenProvider;
 
   @Autowired
-  public AuthLoginApi(JwtTokenProvider jwtTokenProvider) {
+  public AuthLoginApi(JwtTokenService jwtTokenProvider) {
     this.jwtTokenProvider = jwtTokenProvider;
   }
 
   @PostMapping("/auth/login")
-  public ResponseEntity<JwtAuthResponse> registerUserAccount(
+  public ResponseEntity<AuthJwtResponse> registerUserAccount(
       @RequestBody @Valid LoginDto loginDto, HttpServletRequest request) {
 
     try {
@@ -39,7 +39,7 @@ public class AuthLoginApi {
       Authentication authentication = authService.login(loginDto);
       String token = jwtTokenProvider.generateToken(authentication);
 
-      JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
+      AuthJwtResponse jwtAuthResponse = new AuthJwtResponse();
       jwtAuthResponse.setAccessToken(token);
 
       return new ResponseEntity<>(jwtAuthResponse, HttpStatus.OK);
