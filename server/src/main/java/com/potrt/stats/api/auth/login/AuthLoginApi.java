@@ -8,7 +8,6 @@ import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.jwt.AuthJwtResponse;
 import com.potrt.stats.security.auth.jwt.JwtTokenService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +19,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/** Creates an endpoint for logging in and getting a JWT authentication token. */
 @Controller
 public class AuthLoginApi {
 
-  private JwtTokenService jwtTokenProvider;
+  private JwtTokenService jwtTokenService;
 
+  /** Autowires the {@link AuthLoginApi}. */
   @Autowired
-  public AuthLoginApi(JwtTokenService jwtTokenProvider) {
-    this.jwtTokenProvider = jwtTokenProvider;
+  public AuthLoginApi(JwtTokenService jwtTokenService) {
+    this.jwtTokenService = jwtTokenService;
   }
 
+  /**
+   * The {@code /auth/login} {@code POST} endpoint receives user credentials and returns a JWT
+   * token.
+   */
   @PostMapping("/auth/login")
   public ResponseEntity<AuthJwtResponse> registerUserAccount(
-      @RequestBody @Valid LoginDto loginDto, HttpServletRequest request) {
+      @RequestBody @Valid LoginDto loginDto) {
 
     try {
       AuthService authService = AuthType.getAuthService(loginDto.getAuthType());
 
       Authentication authentication = authService.login(loginDto);
-      String token = jwtTokenProvider.generateToken(authentication);
+      String token = jwtTokenService.generateToken(authentication);
 
       AuthJwtResponse jwtAuthResponse = new AuthJwtResponse();
       jwtAuthResponse.setAccessToken(token);

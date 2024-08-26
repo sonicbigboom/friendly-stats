@@ -147,6 +147,7 @@ public class PersonService {
    * Enables a {@link Person}.
    *
    * @param personID The {@link Person}'s id.
+   * @implNote This method does not check the caller's authentication/authorization.
    * @apiNote This should only be called by the {@link VerificationService}.
    */
   public void enable(Integer personID) {
@@ -163,6 +164,9 @@ public class PersonService {
    */
   public List<MaskedPerson> getPersons(String filter) throws UnauthenticatedException {
     securityService.getPerson();
+
+    // TODO: Each {@link Person} should have a private field, and should not be included if they are
+    // private.
 
     Iterable<Person> persons;
     if (filter == null) {

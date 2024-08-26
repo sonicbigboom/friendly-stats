@@ -11,7 +11,6 @@ import com.potrt.stats.security.auth.exceptions.TokenExpiredException;
 import com.potrt.stats.security.auth.verification.reset.ResetDto;
 import com.potrt.stats.security.auth.verification.reset.ResetService;
 import com.potrt.stats.services.PersonService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -23,20 +22,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** Creates an endpoint for resetting an accounts credentials. */
 @Controller
 public class AuthResetApi {
   private ResetService resetService;
   private PersonService personService;
 
+  /** Autowires a {@link AuthResetApi}. */
   public AuthResetApi(ResetService resetService, PersonService personService) {
     this.resetService = resetService;
     this.personService = personService;
   }
 
+  /**
+   * The {@code /auth/reset} {@code GET} endpoint receives an email and send an email to with a
+   * token to reset the user's credentials.
+   */
   @GetMapping("/auth/reset")
   @Transactional
-  public ResponseEntity<Void> sendResetToken(
-      @RequestParam String email, HttpServletRequest request) {
+  public ResponseEntity<Void> sendResetToken(@RequestParam String email) {
     try {
       Person person = personService.getPersonByEmail(email);
       resetService.sendResetEmail(person);
@@ -48,10 +52,13 @@ public class AuthResetApi {
     }
   }
 
+  /**
+   * The {@code /auth/reset} {@code POST} endpoint receives a reset token and new user credentials
+   * to reset the user's credentials.
+   */
   @PostMapping("/auth/reset")
   @Transactional
-  public ResponseEntity<Void> resetCredentials(
-      @RequestBody @Valid ResetDto resetDto, HttpServletRequest request) {
+  public ResponseEntity<Void> resetCredentials(@RequestBody @Valid ResetDto resetDto) {
     try {
       Person person = resetService.checkToken(resetDto.getEmail(), resetDto.getToken());
       AuthService service = AuthType.getAuthService(resetDto.getAuthType());

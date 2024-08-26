@@ -13,15 +13,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Creates an endpoint for viewing and creating groups. */
 @RestController
 public class GroupsApi {
 
   private ClubService clubService;
 
+  /** Autowires a {@link GroupsApi}. */
   public GroupsApi(ClubService clubService) {
     this.clubService = clubService;
   }
 
+  /**
+   * The {@code /groups} {@code GET} endpoint returns all of the groups that the caller is a member
+   * of.
+   */
   @GetMapping("/groups")
   public ResponseEntity<List<MaskedClub>> getGroups() {
     try {
@@ -37,6 +43,7 @@ public class GroupsApi {
     }
   }
 
+  /** The {@code /groups} {@code POST} endpoint creates a new group. */
   @PostMapping("/groups")
   public ResponseEntity<MaskedClub> createGroup(
       @RequestParam(value = "name") String name, HttpServletRequest request) {

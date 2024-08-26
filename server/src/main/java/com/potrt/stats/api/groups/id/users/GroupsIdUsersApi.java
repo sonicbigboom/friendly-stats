@@ -18,21 +18,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Creates an endpoint for viewing and adding users to a group. */
 @RestController
 public class GroupsIdUsersApi {
 
   private ClubService clubService;
 
+  /** Autowires a {@link GroupsIdUsersApi}. */
   @Autowired
   public GroupsIdUsersApi(ClubService clubService) {
     this.clubService = clubService;
   }
 
+  /**
+   * The {@code /groups/{groupID}/users} {@code GET} endpoint returns all of the users that are a
+   * member of this group.
+   */
   @GetMapping("/groups/{groupID}/users")
   public ResponseEntity<List<MaskedPerson>> getGroupUsers(
-      @PathVariable(value = "groupID") String id) {
+      @PathVariable(value = "groupID") String groupID) {
     try {
-      List<MaskedPerson> maskedPersons = clubService.getPersons(Integer.valueOf(id));
+      List<MaskedPerson> maskedPersons = clubService.getPersons(Integer.valueOf(groupID));
 
       if (maskedPersons.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -50,6 +56,7 @@ public class GroupsIdUsersApi {
     }
   }
 
+  @Deprecated // TODO: This endpoint should take a new user.
   @PostMapping("/groups/{groupID}/users")
   public ResponseEntity<Void> addGroupUser(
       @PathVariable(value = "groupID") String groupID,

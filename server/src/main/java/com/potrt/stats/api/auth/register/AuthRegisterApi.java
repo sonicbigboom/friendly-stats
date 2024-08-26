@@ -9,7 +9,6 @@ import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
 import com.potrt.stats.security.auth.verification.VerificationService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;
@@ -21,22 +20,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/** Creates an endpoint for registering a new account. */
 @Controller
 public class AuthRegisterApi {
 
   private VerificationService verificationService;
 
+  /** Autowires a {@link AuthRegisterApi} */
   @Autowired
   public AuthRegisterApi(VerificationService verificationService) {
     this.verificationService = verificationService;
   }
 
+  /**
+   * The {@code /auth/register} {@code POST} endpoint receives user details and credentials to
+   * create a new account.
+   */
   @PostMapping("/auth/register")
   @Transactional
   public ResponseEntity<Void> registerUserAccount(
       @RequestBody @Valid RegisterDto registerDto,
-      @RequestParam(required = false, value = "verificationUrl") String verificationUrl,
-      HttpServletRequest request) {
+      @RequestParam(required = false, value = "verificationUrl") String verificationUrl) {
 
     try {
       AuthService service = AuthType.getAuthService(registerDto.getAuthType());
