@@ -29,3 +29,4 @@ sleep 30
 date >> /tmp/log
 echo "About to run createTables.sql" >> /tmp/log 
 /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i createTables.sql
+/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P $MSSQL_SA_PASSWORD -d master -i populateInitialData.sql
