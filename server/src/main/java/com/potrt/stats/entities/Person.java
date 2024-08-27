@@ -45,6 +45,10 @@ public class Person {
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
+  private boolean isPrivate;
+
+  @Column(nullable = false)
+  @Convert(converter = NumericBooleanConverter.class)
   private boolean isDisabled;
 
   @Column(nullable = false)

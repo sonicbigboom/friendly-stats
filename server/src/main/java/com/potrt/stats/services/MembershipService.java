@@ -100,7 +100,8 @@ public class MembershipService {
       membership = oldMembership.get();
       membership.setPersonRole(personRole.getIdentifier());
     } else {
-      membership = new Membership(personID, clubID, 0, personRole.getIdentifier());
+      membership =
+          new Membership(personID, clubID, personRole.getIdentifier(), 0, null, null, null);
     }
     membershipRepository.save(membership);
   }

@@ -28,11 +28,20 @@ public class Membership {
   @Column(nullable = false)
   private Integer clubID;
 
+  @Column(nullable = true)
+  private String personRole;
+
   @Column(nullable = false)
   private Integer cashBalance;
 
   @Column(nullable = true)
-  private String personRole;
+  private String firstName;
+
+  @Column(nullable = true)
+  private String lastName;
+
+  @Column(nullable = true)
+  private String nickname;
 
   /** A {@link PersonClub} represents the compounded id for a {@link Membership}. */
   @Getter

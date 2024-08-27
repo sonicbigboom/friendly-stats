@@ -46,6 +46,6 @@ public class RegisterDto {
       nickname = null;
     }
 
-    return new Person(null, email, username, firstName, lastName, nickname, true, false);
+    return new Person(null, email, username, firstName, lastName, nickname, true, true, false);
   }
 }

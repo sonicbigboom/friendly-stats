@@ -1,6 +1,6 @@
 SET IDENTITY_INSERT [Person] ON
-INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsDisabled], [IsDeleted]) VALUES
-	('1', '', 'System', NULL, NULL, NULL, '0', '0');
+INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsPrivate], [IsDisabled], [IsDeleted]) VALUES
+	('1', '', 'System', NULL, NULL, NULL, '1', '0', '0');
 SET IDENTITY_INSERT [Person] OFF
 GO
 

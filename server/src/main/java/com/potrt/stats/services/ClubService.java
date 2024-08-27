@@ -181,6 +181,7 @@ public class ClubService {
               person.getLastName(),
               person.getNickname(),
               true,
+              true,
               false);
       personToAdd = personService.createPerson(personToAdd);
     }
