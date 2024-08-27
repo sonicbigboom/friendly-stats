@@ -365,7 +365,7 @@ paths:
         - Me
         - User
       summary:  Gets the application users.
-      description: Gets all of the application users, filtered on the query parameter.
+      description: Gets all of the non-private application users, filtered on the query parameter.
       parameters:
         - name: filter
           in: query
@@ -398,18 +398,21 @@ paths:
                       firstName: "Sam"
                       lastName: "Peterson"
                       nickname: null
+                      isPrivate: false
                     - id: 15
                       email: null
                       username: "mcdonald44"
                       firstName: "Samuel"
                       lastName: "Mcdonald"
                       nickname: null
+                      isPrivate: false
                     - id: 91
                       email: null
                       username: "sirsirsir"
                       firstName: "Swampson"
                       lastName: null
                       nickname: "Sammy"
+                      isPrivate: false
         '204':
           description: Succesful call, but no users matched the filter.
         '401':
@@ -510,28 +513,47 @@ paths:
               summary: Friends
               description: Sam's friends group id.
               value: 3
-        - name: userID
-          in: query
-          description: The user id to add.
-          required: true
-          schema:
-            type: integer
-          examples:
-            joe:
-              summary: Joe
-              description: Adds to Joe to Sam's friend group.
-              value: 9
+      requestBody:
+        required: true
+        description: The new membership.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                identifier:
+                  type: string
+                  description: Either a user id or email.
+                personRole:
+                  $ref: '#/components/schemas/PersonRole'
+                firstName:
+                  type: [string, 'null']
+                lastName:
+                  type: [string, 'null']
+                nickname:
+                  type: [string, 'null']
+            examples:
+              id:
+                summary: ID
+                description: Add user by id.
+                value:
+                  identifier: 43
+                  personRole: Player
+                  firstName: Tim
+                  lastName: Gordon
+              email:
+                summary: Email
+                description: Add user by email.
+                value:
+                  identifier: tim1274@gmail.com
+                  personRole: Player
+                  firstName: Timothy
+                  nickname: Tim
       responses:
         '201':
-          description: Successfully added the user.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+          description: Successfully added the user as a member.
         '400':
-          description: The group id or user id was not a integer.
+          description: The group id was not a integer.
         '401':
           description: Unauthorized user.
         '403':
@@ -540,48 +562,6 @@ paths:
           description: Group or user not found.
         '409':
           description: The user is already a member.
-  /groups/{groupID}/users/create:
-    post:
-      tags:
-        - Group
-      summary:  Creates a new user for the group.
-      description: Creates and adds a new user to a group as a member.
-      parameters:
-        - name: groupID
-          in: path
-          description: The group ID.
-          required: true
-          schema:
-            type: integer
-          examples:
-            friends:
-              summary: Friends
-              description: Sam's friends group id.
-              value: 3
-      requestBody:
-        required: true
-        description: The new user's info.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        '201':
-          description: Successfully created and added the user.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: The group id or user id was not a integer.
-        '401':
-          description: Unauthorized user.
-        '403':
-          description: The caller is not a `Game Admin` of this group.
-        '404':
-          description: Group not found.
-        '409':
-          description: The user already exists, or the user is already a member.
 
 components:
   schemas:
@@ -601,6 +581,8 @@ components:
           type: [string, 'null']
         nickname:
           type: [string, 'null']
+        isPrivate:
+          type: boolean 
       example:
         id: 5
         email: "sam13579@gmail.com"
@@ -608,6 +590,7 @@ components:
         firstName: "Sam"
         lastName: "Peterson"
         nickname: null
+        isPrivate: false
     Group:
       type: object
       properties:
@@ -625,6 +608,15 @@ components:
         name: My Friends
         ownerPersonID: 5
         storedCash: 2000
+    PersonRole:
+      type: string
+      description: The permissions a user has in a group.
+      enum: 
+        - Player
+        - Game Admin
+        - Cash Admin 
+        - Co-Owner 
+        - Owner
   securitySchemes:
     bearerAuth:
       type: http
