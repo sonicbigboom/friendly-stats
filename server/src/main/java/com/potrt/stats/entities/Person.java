@@ -67,6 +67,7 @@ public class Person {
     private String firstName;
     private String lastName;
     private String nickname;
+    private boolean isPrivate;
 
     /**
      * A {@link MaskedPerson} with only public information.
@@ -78,20 +79,22 @@ public class Person {
     }
 
     /**
-     * A {@link MaskedPerson} with public information and potentially email.
+     * A {@link MaskedPerson} with public information and potentially sensitive info.
      *
      * @param person The {@link Person} to mask.
-     * @param includeEmail Whether the email is included, or masked.
+     * @param includeSensitive Whether the {@code email} amd {@code isPrivate} is included.
      */
-    public MaskedPerson(Person person, boolean includeEmail) {
+    public MaskedPerson(Person person, boolean includeSensitive) {
       this.id = person.id;
-      if (includeEmail) {
-        this.email = person.email;
-      }
       this.username = person.username;
       this.firstName = person.firstName;
       this.lastName = person.lastName;
       this.nickname = person.nickname;
+
+      if (includeSensitive) {
+        this.email = person.email;
+        this.isPrivate = person.isPrivate;
+      }
     }
   }
 }

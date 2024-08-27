@@ -63,12 +63,5 @@ public interface MembershipRepository extends CrudRepository<Membership, PersonC
   @Query("SELECT clubID FROM Membership WHERE personID = :personID AND personRole IS NOT NULL")
   public Iterable<Integer> getClubIDs(Integer personID);
 
-  /**
-   * Gets all of the {@link Person}s that are members of the {@link Club}.
-   *
-   * @param clubID The {@link Club}'s id.
-   * @return A {@link Iterable} collection of {@link Person} ids.
-   */
-  @Query("SELECT personID FROM Membership WHERE clubID = :clubID AND personRole IS NOT NULL")
-  public Iterable<Integer> getPersonIDs(Integer clubID);
+  public Iterable<Membership> getByClubID();
 }

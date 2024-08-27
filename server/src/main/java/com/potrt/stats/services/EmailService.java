@@ -27,7 +27,7 @@ public class EmailService {
   }
 
   /**
-   * Sends an email as the application.
+   * Sends an email as the application and skips authentication/authorization checks.
    *
    * @param to The email address of the recipient.
    * @param subject The subject line of the email.
@@ -35,8 +35,10 @@ public class EmailService {
    * @throws MessagingException Thrown if the email content creation fails.
    * @throws UnsupportedEncodingException Thrown if the email creation for the sender fails.
    * @throws MailException Thrown if the email failed to send.
+   * @apiNote This method should only be called by the {@code /auth/register} and {@code
+   *     /auth/verify} endpoints.
    */
-  public void sendEmail(String to, String subject, String text)
+  public void sendEmailWithoutAuthorization(String to, String subject, String text)
       throws MessagingException, UnsupportedEncodingException, MailException {
     MimeMessage message = emailSender.createMimeMessage();
 

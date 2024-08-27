@@ -58,7 +58,7 @@ public class AuthJwtFilter extends OncePerRequestFilter {
     Integer id = jwtTokenProvider.getId(token);
     Person person;
     try {
-      person = personService.getPerson(id);
+      person = personService.getPersonWithoutAuthorization(id);
     } catch (PersonDoesNotExistException e) {
       throw new ImpossibleRuntimeException(e);
     }

@@ -149,7 +149,7 @@ public class AuthGoogleService implements AuthService {
     }
 
     try {
-      return personService.getPerson(id);
+      return personService.getPersonWithoutAuthorization(id);
     } catch (PersonDoesNotExistException e) {
       throw new ImpossibleRuntimeException(e);
     }

@@ -9,12 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface PersonRepository extends CrudRepository<Person, Integer> {
 
-  @Query("SELECT P FROM Person P WHERE email = :loginName OR username = :loginName")
-  public Optional<Person> findByUsernameOrEmail(String loginName);
-
   public Optional<Person> findByEmail(String email);
-
-  public Optional<Person> findByUsername(String username);
 
   @Query(
       "SELECT CASE WHEN EXISTS (SELECT P.email FROM Person P WHERE email = :email ) THEN true ELSE false END")

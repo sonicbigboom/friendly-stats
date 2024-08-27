@@ -42,7 +42,7 @@ public class AuthResetApi {
   @Transactional
   public ResponseEntity<Void> sendResetToken(@RequestParam String email) {
     try {
-      Person person = personService.getPersonByEmail(email);
+      Person person = personService.getPersonWithoutAuthorization(email);
       resetService.sendResetEmail(person);
       return new ResponseEntity<>(HttpStatus.OK);
     } catch (PersonDoesNotExistException e) {

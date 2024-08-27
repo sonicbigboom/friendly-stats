@@ -3,13 +3,10 @@ package com.potrt.stats.services;
 
 import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Club.MaskedClub;
+import com.potrt.stats.entities.Membership.MaskedMembership;
 import com.potrt.stats.entities.Person;
-import com.potrt.stats.entities.Person.MaskedPerson;
 import com.potrt.stats.entities.PersonRole;
-import com.potrt.stats.exceptions.ImpossibleRuntimeException;
 import com.potrt.stats.exceptions.NoResourceException;
-import com.potrt.stats.exceptions.PersonAlreadyExistsException;
-import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.repositories.ClubRepository;
@@ -28,7 +25,6 @@ public class ClubService {
   private SecurityService securityService;
   private ClubRepository clubRepository;
   private MembershipService membershipService;
-  private PersonService personService;
 
   /** Autowires a {@link ClubService}. */
   public ClubService(
@@ -39,7 +35,6 @@ public class ClubService {
     this.securityService = securityService;
     this.clubRepository = clubRepository;
     this.membershipService = membershipService;
-    this.personService = personService;
   }
 
   /**
@@ -86,21 +81,19 @@ public class ClubService {
    * Gets all of the members of a {@link Club}.
    *
    * @param clubID The {@link Club}'s id.
-   * @return The {@link List} of {@link Person}s withing the club.
+   * @return The {@link List} of {@link MaskedMembership}s within the club.
    * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
    * @throws UnauthorizedException Thrown if the caller is not authorized to view this club.
    * @throws NoResourceException Thrown if the club does not exist.
    */
-  public List<MaskedPerson> getPersons(Integer clubID)
+  public List<MaskedMembership> getMemberships(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
     Optional<Club> club = clubRepository.findById(clubID);
-    if (club.isEmpty() || Boolean.TRUE.equals(club.get().isDeleted())) {
+    if (club.isEmpty() || club.get().isDeleted()) {
       throw new NoResourceException();
     }
 
-    Iterable<Integer> personIDs = membershipService.getPersonIDs(clubID);
-
-    return personService.getPersons(personIDs);
+    return membershipService.getMemberships(clubID);
   }
 
   /**
@@ -122,76 +115,5 @@ public class ClubService {
     }
 
     return clubs;
-  }
-
-  /**
-   * Adds a {@link Person} to a {@link Club}.
-   *
-   * @param clubID The {@link Club} id.
-   * @param personID The {@link Person} id.
-   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
-   * @throws UnauthorizedException Thrown if the caller does not have permission to add a member.
-   * @throws NoResourceException Thrown if the {@link Club} does not exist.
-   * @throws PersonDoesNotExistException Thrown if the {@link Person} does not exist.
-   * @throws PersonAlreadyExistsException Thrown if the {@link Person} is already a member of the
-   *     {@link Club}.
-   */
-  public void addPerson(Integer clubID, Integer personID)
-      throws UnauthenticatedException,
-          UnauthorizedException,
-          NoResourceException,
-          PersonDoesNotExistException,
-          PersonAlreadyExistsException {
-
-    if (!membershipService.hasRole(securityService.getPersonID(), clubID, PersonRole.GAME_ADMIN)) {
-      throw new UnauthorizedException();
-    }
-    Optional<Club> club = clubRepository.findById(clubID);
-    if (club.isEmpty() || club.get().isDeleted()) {
-      throw new NoResourceException();
-    }
-    personService.getPerson(personID);
-    if (membershipService.isMember(personID, clubID)) {
-      throw new PersonAlreadyExistsException();
-    }
-
-    membershipService.updatePermissions(personID, clubID, PersonRole.PERSON);
-  }
-
-  @Deprecated
-  public Person addPerson(Integer clubID, MaskedPerson person)
-      throws UnauthenticatedException,
-          UnauthorizedException,
-          NoResourceException,
-          PersonAlreadyExistsException {
-
-    Person personToAdd;
-    try {
-      personToAdd = personService.getPersonByEmail(person.getEmail());
-      if (Boolean.FALSE.equals(personToAdd.isDisabled())) {
-        throw new PersonAlreadyExistsException();
-      }
-    } catch (PersonDoesNotExistException e) {
-      personToAdd =
-          new Person(
-              null,
-              person.getEmail(),
-              person.getUsername(),
-              person.getFirstName(),
-              person.getLastName(),
-              person.getNickname(),
-              true,
-              true,
-              false);
-      personToAdd = personService.createPerson(personToAdd);
-    }
-
-    try {
-      addPerson(clubID, personToAdd.getId());
-    } catch (PersonDoesNotExistException e) {
-      throw new ImpossibleRuntimeException(e);
-    }
-
-    return personToAdd;
   }
 }

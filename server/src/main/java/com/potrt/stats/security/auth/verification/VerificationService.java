@@ -87,7 +87,7 @@ public class VerificationService {
             + confirmationUrl;
 
     try {
-      emailService.sendEmail(recipientAddress, subject, message);
+      emailService.sendEmailWithoutAuthorization(recipientAddress, subject, message);
     } catch (MessagingException | UnsupportedEncodingException | MailException e) {
       throw new BadExternalCommunicationException(e);
     }
@@ -110,7 +110,7 @@ public class VerificationService {
     if (verification.getExpirationDate().getTime() < (new Date()).getTime()) {
       throw new TokenExpiredException();
     }
-    personService.enable(verification.getPersonID());
+    personService.enableWithoutAuthorization(verification.getPersonID());
   }
 
   /**

@@ -61,16 +61,16 @@ public class Club {
     }
 
     /**
-     * A {@link MaskedClub} with public information and potentially email.
+     * A {@link MaskedClub} with public information and and potentially sensitive info.
      *
      * @param club The {@link Club} to mask.
-     * @param showStoredCash Whether the stored cash is included, or masked.
+     * @param includeSensitive Whether the {@code storedCash} is included.
      */
-    public MaskedClub(Club club, boolean showStoredCash) {
+    public MaskedClub(Club club, boolean includeSensitive) {
       this.id = club.getId();
       this.name = club.getName();
       this.ownerPersonID = club.getOwnerPersonID();
-      if (showStoredCash) {
+      if (includeSensitive) {
         this.storedCash = club.storedCash;
       }
     }

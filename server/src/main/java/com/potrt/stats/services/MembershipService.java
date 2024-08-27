@@ -1,17 +1,24 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.services;
 
+import com.potrt.stats.api.groups.id.users.MembershipDto;
 import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Membership;
+import com.potrt.stats.entities.Membership.MaskedMembership;
 import com.potrt.stats.entities.Membership.PersonClub;
 import com.potrt.stats.entities.Person;
 import com.potrt.stats.entities.PersonRole;
+import com.potrt.stats.exceptions.PersonAlreadyExistsException;
+import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.repositories.MembershipRepository;
 import com.potrt.stats.security.SecurityService;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +31,17 @@ public class MembershipService {
 
   private MembershipRepository membershipRepository;
   private SecurityService securityService;
+  private PersonService personService;
 
   /** Autowires a {@link MembershipService}. */
   @Autowired
   public MembershipService(
-      MembershipRepository membershipRepository, SecurityService securityService) {
+      MembershipRepository membershipRepository,
+      SecurityService securityService,
+      PersonService personService) {
     this.membershipRepository = membershipRepository;
     this.securityService = securityService;
+    this.personService = personService;
   }
 
   /**
@@ -107,22 +118,33 @@ public class MembershipService {
   }
 
   /**
-   * Gets all of the {@link Person} ids for a {@link Club}.
+   * Gets all of the {@link MaskedMembership}s for a {@link Club}.
    *
    * @param clubID The {@link Club} id.
-   * @return The list of {@link Person} ids.
+   * @return The list of {@link MaskedMembership}.
    * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
    * @throws UnauthorizedException Thrown if the caller is not a member of the {@link Club}.
    */
-  public Iterable<Integer> getPersonIDs(Integer clubID)
+  public List<MaskedMembership> getMemberships(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException {
-    Integer personID = securityService.getPersonID();
-
-    if (!hasRole(personID, clubID, PersonRole.PERSON)) {
+    String role = membershipRepository.getRole(securityService.getPersonID(), clubID);
+    if (!PersonRole.PERSON.permits(role)) {
       throw new UnauthorizedException();
     }
+    boolean isCashAdmin = PersonRole.CASH_ADMIN.permits(role);
 
-    return membershipRepository.getPersonIDs(clubID);
+    Iterable<Membership> memberships = membershipRepository.getByClubID();
+
+    List<MaskedMembership> maskedMemberships = new ArrayList<>();
+    for (Membership membership : memberships) {
+      if (membership.getPersonRole() == null) {
+        continue;
+      }
+
+      maskedMemberships.add(new MaskedMembership(membership, isCashAdmin));
+    }
+
+    return maskedMemberships;
   }
 
   /**
@@ -142,5 +164,60 @@ public class MembershipService {
     }
 
     return membershipRepository.isMember(personID, clubID);
+  }
+
+  /**
+   * Creates a {@link Membership} for a {@link Person} and a {@link Club}.
+   *
+   * @param clubID The {@link Club} id.
+   * @param membershipDto The {@link MembershipDto}.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller does not have permission to add a member.
+   * @throws PersonDoesNotExistException Thrown if the {@link Person} does not exist.
+   * @throws PersonAlreadyExistsException Thrown if the {@link Person} is already a member of the
+   *     {@link Club}.
+   */
+  public void addMember(Integer clubID, MembershipDto membershipDto)
+      throws UnauthenticatedException,
+          UnauthorizedException,
+          PersonDoesNotExistException,
+          PersonAlreadyExistsException {
+    if (!hasRole(securityService.getPersonID(), clubID, PersonRole.GAME_ADMIN)) {
+      throw new UnauthorizedException();
+    }
+
+    Integer personID;
+    if (StringUtils.isNumeric(membershipDto.getIdentifier())) {
+      personID = Integer.parseInt(membershipDto.getIdentifier());
+    } else {
+      personID = personService.getPersonWithoutAuthorization(membershipDto.getIdentifier()).getId();
+    }
+
+    if (isMember(personID, clubID)) {
+      throw new PersonAlreadyExistsException();
+    }
+
+    Optional<Membership> oldMembership =
+        membershipRepository.findById(new PersonClub(personID, clubID));
+    Membership membership;
+    if (oldMembership.isPresent()) {
+      membership = oldMembership.get();
+      membership.setPersonRole(membershipDto.getPersonRole());
+      membership.setFirstName(membershipDto.getFirstName());
+      membership.setLastName(membershipDto.getLastName());
+      membership.setNickname(membershipDto.getNickname());
+    } else {
+      membership =
+          new Membership(
+              personID,
+              clubID,
+              membershipDto.getPersonRole(),
+              0,
+              membershipDto.getFirstName(),
+              membershipDto.getLastName(),
+              membershipDto.getNickname());
+    }
+
+    membershipRepository.save(membership);
   }
 }

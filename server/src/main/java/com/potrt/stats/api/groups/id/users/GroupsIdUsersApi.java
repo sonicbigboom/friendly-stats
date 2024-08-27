@@ -1,13 +1,14 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.api.groups.id.users;
 
-import com.potrt.stats.entities.Person.MaskedPerson;
+import com.potrt.stats.entities.Membership.MaskedMembership;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.services.ClubService;
+import com.potrt.stats.services.MembershipService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Creates an endpoint for viewing and adding users to a group. */
@@ -23,11 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupsIdUsersApi {
 
   private ClubService clubService;
+  private MembershipService membershipService;
 
   /** Autowires a {@link GroupsIdUsersApi}. */
   @Autowired
-  public GroupsIdUsersApi(ClubService clubService) {
+  public GroupsIdUsersApi(ClubService clubService, MembershipService membershipService) {
     this.clubService = clubService;
+    this.membershipService = membershipService;
   }
 
   /**
@@ -35,16 +38,17 @@ public class GroupsIdUsersApi {
    * member of this group.
    */
   @GetMapping("/groups/{groupID}/users")
-  public ResponseEntity<List<MaskedPerson>> getGroupUsers(
+  public ResponseEntity<List<MaskedMembership>> getGroupUsers(
       @PathVariable(value = "groupID") String groupID) {
     try {
-      List<MaskedPerson> maskedPersons = clubService.getPersons(Integer.valueOf(groupID));
+      List<MaskedMembership> maskedMemberships =
+          clubService.getMemberships(Integer.valueOf(groupID));
 
-      if (maskedPersons.isEmpty()) {
+      if (maskedMemberships.isEmpty()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(maskedPersons, HttpStatus.OK);
+      return new ResponseEntity<>(maskedMemberships, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -56,13 +60,11 @@ public class GroupsIdUsersApi {
     }
   }
 
-  @Deprecated // TODO: This endpoint should take a new user.
   @PostMapping("/groups/{groupID}/users")
   public ResponseEntity<Void> addGroupUser(
-      @PathVariable(value = "groupID") String groupID,
-      @RequestParam(value = "userID") String userID) {
+      @PathVariable(value = "groupID") String groupID, @RequestBody MembershipDto membership) {
     try {
-      clubService.addPerson(Integer.valueOf(groupID), Integer.valueOf(userID));
+      membershipService.addMember(Integer.valueOf(groupID), membership);
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -70,7 +72,7 @@ public class GroupsIdUsersApi {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     } catch (UnauthorizedException e) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-    } catch (NoResourceException | PersonDoesNotExistException e) {
+    } catch (PersonDoesNotExistException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (PersonAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);

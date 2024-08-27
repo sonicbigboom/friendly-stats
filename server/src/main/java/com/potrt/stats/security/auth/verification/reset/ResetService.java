@@ -60,7 +60,7 @@ public class ResetService {
             + "\"";
 
     try {
-      emailService.sendEmail(recipientAddress, subject, message);
+      emailService.sendEmailWithoutAuthorization(recipientAddress, subject, message);
     } catch (MessagingException | UnsupportedEncodingException | MailException e) {
       throw new BadExternalCommunicationException(e);
     }
@@ -77,7 +77,7 @@ public class ResetService {
   public Person checkToken(String email, String token)
       throws PersonDoesNotExistException, TokenDoesNotExistException, TokenExpiredException {
 
-    Person person = personService.getPersonByEmail(email);
+    Person person = personService.getPersonWithoutAuthorization(email);
 
     Optional<Reset> optionalReset = resetRepository.findById(token);
     if (optionalReset.isEmpty()) {
