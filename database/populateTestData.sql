@@ -48,29 +48,29 @@ GO
 
 INSERT INTO [Membership] ([PersonID], [ClubID], [PersonRole], [CashBalance], [FirstName], [LastName], [Nickname]) VALUES
 	('6', '5', 'Owner', '0', 'SUN', 'GOD', NULL),
-	('3', '5', 'Person', '0', 'Horus', 'Owens', NULL),
+	('3', '5', 'Player', '0', 'Horus', 'Owens', NULL),
 	('5', '5', 'Game Admin', '0', 'Anubis', 'Miller', NULL),
 	('8', '5', 'Cash Admin', '0', 'Hathor', 'Murphy', NULL),
 	('7', '2', 'Owner', '0', 'Iris', 'Garcia', NULL),
-	('13', '2', 'Person', '0', 'Jessica ', 'Brown', 'Jessie'),
+	('13', '2', 'Player', '0', 'Jessica ', 'Brown', 'Jessie'),
 	('15', '2', 'Game Admin', '0', 'Charlotte', 'Brooks', 'Charlie'),
 	('17', '2', 'Cash Admin', '0', 'Olivia', 'Price', 'Liv'),
 	('18', '2', 'Game Admin', '0', 'Olivia', 'Smith', 'Livy'),
 	('25', '3', 'Owner', '0', 'Andrew', 'Park', NULL),
-	('2', '3', 'Person', '0', 'Gwydristopher', 'Bagwen', 'Gwynn'),
-	('10', '3', 'Person', '0', 'Steve', 'Williams', 'stevie'),
+	('2', '3', 'Player', '0', 'Gwydristopher', 'Bagwen', 'Gwynn'),
+	('10', '3', 'Player', '0', 'Steve', 'Williams', 'stevie'),
 	('3', '3', 'Cash Admin', '0', 'Horus', 'Owens', NULL),
-	('4', '3', 'Person', '0', 'Detective', NULL, NULL),
+	('4', '3', 'Player', '0', 'Detective', NULL, NULL),
 	('32', '3', 'Game Admin', '0', 'Jane', 'Doe', NULL),
-	('12', '3', 'Person', '0', 'Lewis', 'Wilson', 'Rod'),
+	('12', '3', 'Player', '0', 'Lewis', 'Wilson', 'Rod'),
 	('11', '4', 'Owner', '0', 'Li', 'Li', NULL),
-	('24', '4', 'Person', '0', 'James', 'Wang', NULL),
+	('24', '4', 'Player', '0', 'James', 'Wang', NULL),
 	('9', '4', 'Cash Admin', '0', 'Jack ', 'Brown', NULL),
 	('30', '4', 'Game Admin', '0', 'Rebecca', 'Thatcher', NULL),
 	('16', '4', 'Game Admin', '0', 'Lucy', 'Gray', NULL),
 	('22', '4', NULL, '0', 'Charles', 'Long', 'Long'),
-	('6', '3', 'Person', '0', 'Ra', 'Rodriguez', NULL),
-	('21', '5', 'Person', '0', 'Alexander', 'Kim', NULL);
+	('6', '3', 'Player', '0', 'Ra', 'Rodriguez', NULL),
+	('21', '5', 'Player', '0', 'Alexander', 'Kim', NULL);
 GO
 
 SET IDENTITY_INSERT [Game] ON

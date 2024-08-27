@@ -90,10 +90,10 @@ public class Person {
       this.firstName = person.firstName;
       this.lastName = person.lastName;
       this.nickname = person.nickname;
+      this.isPrivate = person.isPrivate;
 
       if (includeSensitive) {
         this.email = person.email;
-        this.isPrivate = person.isPrivate;
       }
     }
   }

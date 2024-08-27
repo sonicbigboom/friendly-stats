@@ -63,5 +63,5 @@ public interface MembershipRepository extends CrudRepository<Membership, PersonC
   @Query("SELECT clubID FROM Membership WHERE personID = :personID AND personRole IS NOT NULL")
   public Iterable<Integer> getClubIDs(Integer personID);
 
-  public Iterable<Membership> getByClubID();
+  public Iterable<Membership> getByClubID(Integer clubID);
 }

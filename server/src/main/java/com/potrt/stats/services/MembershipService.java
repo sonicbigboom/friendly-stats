@@ -133,7 +133,7 @@ public class MembershipService {
     }
     boolean isCashAdmin = PersonRole.CASH_ADMIN.permits(role);
 
-    Iterable<Membership> memberships = membershipRepository.getByClubID();
+    Iterable<Membership> memberships = membershipRepository.getByClubID(clubID);
 
     List<MaskedMembership> maskedMemberships = new ArrayList<>();
     for (Membership membership : memberships) {
