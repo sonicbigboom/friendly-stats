@@ -1,14 +1,12 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.api.groups.id.users;
+package com.potrt.stats.api.groups.id.bank;
 
-import com.potrt.stats.entities.Membership.MaskedMembership;
+import com.potrt.stats.entities.BankCashTransaction.MaskedBankCashTransaction;
 import com.potrt.stats.exceptions.NoResourceException;
-import com.potrt.stats.exceptions.PersonAlreadyExistsException;
-import com.potrt.stats.exceptions.PersonDoesNotExistException;
+import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.ClubService;
-import com.potrt.stats.services.MembershipService;
+import com.potrt.stats.services.BankCashTransactionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,36 +17,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Creates an endpoint for viewing and adding users to a group. */
+/** Creates an endpoint for viewing and editing bank transactions. */
 @RestController
-public class GroupsIdUsersApi {
+public class GroupsIdBankApi {
 
-  private ClubService clubService;
-  private MembershipService membershipService;
+  private BankCashTransactionService bankCashTransactionService;
 
-  /** Autowires a {@link GroupsIdUsersApi}. */
+  /** Autowires a {@link GroupsIdBankApi}. */
   @Autowired
-  public GroupsIdUsersApi(ClubService clubService, MembershipService membershipService) {
-    this.clubService = clubService;
-    this.membershipService = membershipService;
+  public GroupsIdBankApi(BankCashTransactionService bankCashTransactionService) {
+    this.bankCashTransactionService = bankCashTransactionService;
   }
 
   /**
-   * The {@code /groups/{groupID}/users} {@code GET} endpoint returns all of the users that are a
-   * member of this group.
+   * The {@code /groups/{groupID}/bank} {@code GET} endpoint returns the bank transactions the
+   * target group.
    */
-  @GetMapping("/groups/{groupID}/users")
-  public ResponseEntity<List<MaskedMembership>> getGroupUsers(
+  @GetMapping("/groups/{groupID}/bank")
+  public ResponseEntity<List<MaskedBankCashTransaction>> getBankTransactions(
       @PathVariable(value = "groupID") String groupID) {
     try {
-      List<MaskedMembership> maskedMemberships =
-          clubService.getMemberships(Integer.valueOf(groupID));
+      List<MaskedBankCashTransaction> bankCashTransactions =
+          bankCashTransactionService.getBankCashTransactions(Integer.valueOf(groupID));
 
-      if (maskedMemberships.isEmpty()) {
+      if (bankCashTransactions.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(maskedMemberships, HttpStatus.OK);
+      return new ResponseEntity<>(bankCashTransactions, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -60,22 +56,26 @@ public class GroupsIdUsersApi {
     }
   }
 
-  @PostMapping("/groups/{groupID}/users")
-  public ResponseEntity<Void> addGroupUser(
-      @PathVariable(value = "groupID") String groupID, @RequestBody MembershipDto membership) {
+  /**
+   * The {@code /groups/{groupID}/bank} {@code POST} endpoint creates a new bank transaction for the
+   * target group.
+   */
+  @PostMapping("/groups/{groupID}/bank")
+  public ResponseEntity<Void> addBankTransaction(
+      @PathVariable(value = "groupID") String groupID,
+      @RequestBody BankCashTransactionDto bankCashTransactionDto) {
     try {
-      membershipService.addMember(Integer.valueOf(groupID), membership);
+      bankCashTransactionService.addBankCashTransaction(
+          Integer.valueOf(groupID), bankCashTransactionDto);
       return new ResponseEntity<>(HttpStatus.CREATED);
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException | PersonIsNotMemberException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     } catch (UnauthorizedException e) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-    } catch (PersonDoesNotExistException e) {
+    } catch (NoResourceException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (PersonAlreadyExistsException e) {
-      return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
   }
 }

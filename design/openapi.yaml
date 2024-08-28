@@ -16,9 +16,11 @@ tags:
   - name: Authentication
     description: Authentication methods.
   - name: Me
-    description: Logged-in user info.
+    description: Authenticated user methods.
   - name: Group
-    description: Group info.
+    description: Group management methods.
+  - name: Cash
+    description: Group cash and score methods.
 security:
   - bearerAuth: []
 paths:
@@ -562,6 +564,116 @@ paths:
           description: Group or user not found.
         '409':
           description: The user is already a member.
+  /groups/{groupID}/bank:
+    get:
+      tags:
+        - Cash
+      summary:  Gets the bank transactions of the group.
+      description: Gets a list of bank transactions for the group.
+      parameters:
+        - name: groupID
+          in: path
+          description: The group ID.
+          required: true
+          schema:
+            type: integer
+          examples:
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
+      responses:
+        '200':
+          description: Successfully got the bank transactions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    personID:
+                      type: integer
+                    clubID:
+                      type: integer
+                    deposit:
+                      type: integer
+                    createdTime:
+                      type: string
+                      format: date-time
+                    createdByPersonID:
+                      type: integer
+                    modifiedTime:
+                      type: string
+                      format: date-time
+                    modifiedByPersonID:
+                      type: integer
+        '204':
+          description: There are no bank transactions in this group.
+        '400':
+          description: The group id was not a integer.
+        '401':
+          description: Unauthorized user.
+        '403':
+          description: The caller is not a `Cash Admin` of this group.
+        '404':
+          description: No group found.
+    post:
+      tags:
+        - Cash
+      summary: Creates a bank transaction.
+      description: Creats a transaction where a person deposits or withdraws money from a group.
+      parameters:
+        - name: groupID
+          in: path
+          description: The group ID.
+          required: true
+          schema:
+            type: integer
+          examples:
+            friends:
+              summary: Friends
+              description: Sam's friends group id.
+              value: 3
+      requestBody:
+        required: true
+        description: The new bank transaction.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                personID:
+                  type: integer
+                deposit:
+                  type:
+                    integer
+            examples:
+              deposit:
+                summary: Deposit
+                description: User 12 deposits $5.
+                value:
+                  personID: 12
+                  deposit: 500
+              withdraw:
+                summary: Withdraw
+                description: User 16 withdraws $10.
+                value:
+                  personID: 16
+                  deposit: -1000
+      responses:
+        '201':
+          description: Successfully created the bank transaction.
+        '400':
+          description: The group id was not a integer, or the target person was not a member of the group.
+        '401':
+          description: Unauthorized user.
+        '403':
+          description: The caller is not a `Cash Admin` of this group.
+        '404':
+          description: Group or user not found.
 
 components:
   schemas:

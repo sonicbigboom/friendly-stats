@@ -31,7 +31,7 @@ public class UsersApi {
       List<MaskedPerson> persons = personService.getPersons(filter.orElseGet(() -> null));
 
       if (persons.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
       return new ResponseEntity<>(persons, HttpStatus.OK);

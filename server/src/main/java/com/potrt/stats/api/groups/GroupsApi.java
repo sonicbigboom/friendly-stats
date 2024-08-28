@@ -34,7 +34,7 @@ public class GroupsApi {
       List<MaskedClub> clubs = clubService.getClubs();
 
       if (clubs.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
       return new ResponseEntity<>(clubs, HttpStatus.OK);

@@ -5,7 +5,7 @@ import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Club.MaskedClub;
 import com.potrt.stats.entities.Membership.MaskedMembership;
 import com.potrt.stats.entities.Person;
-import com.potrt.stats.entities.PersonRole;
+import com.potrt.stats.entities.desc.PersonRole;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -30,8 +30,7 @@ public class ClubService {
   public ClubService(
       SecurityService securityService,
       ClubRepository clubRepository,
-      MembershipService membershipService,
-      PersonService personService) {
+      MembershipService membershipService) {
     this.securityService = securityService;
     this.clubRepository = clubRepository;
     this.membershipService = membershipService;

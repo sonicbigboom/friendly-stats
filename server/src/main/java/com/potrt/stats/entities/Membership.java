@@ -1,6 +1,7 @@
 /* Copywrite (c) 2024 */
 package com.potrt.stats.entities;
 
+import com.potrt.stats.entities.desc.PersonClub;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@IdClass(com.potrt.stats.entities.Membership.PersonClub.class)
+@IdClass(PersonClub.class)
 public class Membership {
   @Id
   @Column(nullable = false)
@@ -42,15 +43,6 @@ public class Membership {
 
   @Column(nullable = true)
   private String nickname;
-
-  /** A {@link PersonClub} represents the compounded id for a {@link Membership}. */
-  @Getter
-  @AllArgsConstructor
-  @NoArgsConstructor
-  public static class PersonClub {
-    private Integer personID;
-    private Integer clubID;
-  }
 
   /** A {@link Person} with private information hidden. */
   @NoArgsConstructor

@@ -1,6 +1,8 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.entities;
+package com.potrt.stats.entities.desc;
 
+import com.potrt.stats.entities.Club;
+import com.potrt.stats.entities.Person;
 import java.util.HashMap;
 import java.util.Map;
 

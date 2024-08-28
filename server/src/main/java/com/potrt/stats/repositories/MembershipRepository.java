@@ -3,8 +3,8 @@ package com.potrt.stats.repositories;
 
 import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Membership;
-import com.potrt.stats.entities.Membership.PersonClub;
 import com.potrt.stats.entities.Person;
+import com.potrt.stats.entities.desc.PersonClub;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
