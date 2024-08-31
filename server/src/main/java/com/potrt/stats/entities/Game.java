@@ -54,4 +54,30 @@ public class Game {
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
   private boolean isDeleted;
+
+  /** A {@link MaskedGame} with private information hidden. */
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Getter
+  @Setter
+  public static class MaskedGame {
+    private Integer id;
+    private Integer clubID;
+    private Integer gameTypeID;
+    private Integer seasonID;
+    private Integer netScoreChange;
+    private Date startDate;
+    private Date endDate;
+
+    /** A {@link MaskedGame} with public information. */
+    public MaskedGame(Game game) {
+      this.id = game.id;
+      this.clubID = game.clubID;
+      this.gameTypeID = game.gameTypeID;
+      this.seasonID = game.seasonID;
+      this.netScoreChange = game.netScoreChange;
+      this.startDate = game.startDate;
+      this.endDate = game.endDate;
+    }
+  }
 }

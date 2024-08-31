@@ -1,11 +1,12 @@
 /* Copywrite (c) 2024 */
-package com.potrt.stats.api.groups.id.games;
+package com.potrt.stats.api.games.id.record;
 
-import com.potrt.stats.entities.Game.MaskedGame;
+import com.potrt.stats.entities.GameRecord.MaskedGameRecord;
 import com.potrt.stats.exceptions.NoResourceException;
+import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.GameService;
+import com.potrt.stats.services.GameRecordService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +19,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Creates an endpoint for viewing and adding games. */
 @RestController
-public class GroupsIdGamesApi {
+public class GamesIdRecordApi {
 
-  private GameService gameService;
+  private GameRecordService gameRecordService;
 
-  /** Autowires a {@link GroupsIdGamesApi}. */
+  /** Autowires a {@link GamesIdRecordApi}. */
   @Autowired
-  public GroupsIdGamesApi(GameService gameService) {
-    this.gameService = gameService;
+  public GamesIdRecordApi(GameRecordService gameRecordService) {
+    this.gameRecordService = gameRecordService;
   }
 
   /**
-   * The {@code /groups/{groupID}/games} {@code GET} endpoint returns the games for the target
-   * group.
+   * The <code>/games/{gameID}/records</code> {@code GET} endpoint returns the records for the
+   * target games.
    *
-   * <p>TODO: Add query params for types of games, and closed games.
+   * <p>TODO: Add query parameter for user id.
    */
-  @GetMapping("/groups/{groupID}/games")
-  public ResponseEntity<List<MaskedGame>> getGame(@PathVariable(value = "groupID") String groupID) {
+  @GetMapping("/games/{gameID}/records")
+  public ResponseEntity<List<MaskedGameRecord>> getGameRecord(
+      @PathVariable(value = "gameID") String gameID) {
     try {
-      List<MaskedGame> games = gameService.getGames(Integer.valueOf(groupID));
+      List<MaskedGameRecord> gameRecords =
+          gameRecordService.getGameRecords(Integer.valueOf(gameID));
 
-      if (games.isEmpty()) {
+      if (gameRecords.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(games, HttpStatus.OK);
+      return new ResponseEntity<>(gameRecords, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -56,16 +59,16 @@ public class GroupsIdGamesApi {
   }
 
   /**
-   * The {@code /groups/{groupID}/games} {@code POST} endpoint creates a new game for the target
-   * group.
+   * The <code>/games/{gameID}/records</code> {@code POST} endpoint creates a new record for the
+   * target game.
    */
-  @PostMapping("/groups/{groupID}/games")
-  public ResponseEntity<Void> addGame(
-      @PathVariable(value = "groupID") String groupID, @RequestBody GameDto gameDto) {
+  @PostMapping("/games/{gameID}/records")
+  public ResponseEntity<Void> addGameRecord(
+      @PathVariable(value = "gameID") String gameID, @RequestBody GameRecordDto gameRecordDto) {
     try {
-      gameService.addGame(Integer.valueOf(groupID), gameDto);
+      gameRecordService.addGameRecord(Integer.valueOf(gameID), gameRecordDto);
       return new ResponseEntity<>(HttpStatus.CREATED);
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException | PersonIsNotMemberException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

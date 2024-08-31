@@ -4,6 +4,7 @@ package com.potrt.stats.services;
 import com.potrt.stats.api.groups.id.games.GameDto;
 import com.potrt.stats.entities.Club;
 import com.potrt.stats.entities.Game;
+import com.potrt.stats.entities.Game.MaskedGame;
 import com.potrt.stats.entities.desc.PersonRole;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
@@ -13,6 +14,7 @@ import com.potrt.stats.security.SecurityService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ public class GameService {
   private MembershipService membershipService;
   private GameRepository gameRepository;
 
-  /** Autowires a {@link BankCashTransactionService}. */
+  /** Autowires a {@link GameService}. */
   @Autowired
   public GameService(
       SecurityService securityService,
@@ -46,20 +48,18 @@ public class GameService {
    * @throws UnauthorizedException Thrown if the user is not a member of the club.
    * @throws NoResourceException Thrown if the club doesn't exist.
    */
-  public List<Game> getGames(Integer clubID)
+  public List<MaskedGame> getGames(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    Integer personID = securityService.getPersonID();
-    if (!membershipService.isMember(personID, clubID)) {
-      throw new UnauthorizedException();
-    }
-
     clubService.getClub(clubID);
 
     Iterable<Game> games = gameRepository.findByClubID(clubID);
 
-    List<Game> outGames = new ArrayList<>();
+    List<MaskedGame> outGames = new ArrayList<>();
     for (Game game : games) {
-      outGames.add(game);
+      if (game.isDeleted()) {
+        continue;
+      }
+      outGames.add(new MaskedGame(game));
     }
 
     return outGames;
@@ -87,5 +87,22 @@ public class GameService {
     Game game =
         new Game(null, clubID, gameDto.getGameTypeID(), gameDto.getSeasonID(), 0, now, null, false);
     gameRepository.save(game);
+  }
+
+  /**
+   * Gets a {@link Game} with a id.
+   *
+   * @param gameID The {@link Game} id.
+   * @return The {@link Game}.
+   * @throws NoResourceException Thrown if no game with this id exists.
+   */
+  public Game getGameWithoutAuthorization(Integer gameID) throws NoResourceException {
+    Optional<Game> game = gameRepository.findById(gameID);
+
+    if (game.isEmpty()) {
+      throw new NoResourceException();
+    }
+
+    return game.get();
   }
 }
