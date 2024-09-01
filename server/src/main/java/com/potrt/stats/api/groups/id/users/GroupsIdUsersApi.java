@@ -4,7 +4,6 @@ package com.potrt.stats.api.groups.id.users;
 import com.potrt.stats.entities.Membership.MaskedMembership;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
-import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.services.ClubService;
@@ -72,8 +71,6 @@ public class GroupsIdUsersApi {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     } catch (UnauthorizedException e) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-    } catch (PersonDoesNotExistException e) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (PersonAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }

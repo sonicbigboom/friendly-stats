@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 /**
@@ -148,5 +149,11 @@ public class PersonService {
    */
   private boolean isEmailTaken(String email) {
     return personRepository.isEmailTaken(email);
+  }
+
+  /** TODO: CHECK AUTHORIZATION */
+  public Person createPerson(String email) {
+    return personRepository.save(
+        new Person(null, email, UUID.randomUUID().toString(), null, null, null, true, true, false));
   }
 }

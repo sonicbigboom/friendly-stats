@@ -178,10 +178,7 @@ public class MembershipService {
    *     {@link Club}.
    */
   public void addMember(Integer clubID, MembershipDto membershipDto)
-      throws UnauthenticatedException,
-          UnauthorizedException,
-          PersonDoesNotExistException,
-          PersonAlreadyExistsException {
+      throws UnauthenticatedException, UnauthorizedException, PersonAlreadyExistsException {
     if (!hasRole(securityService.getPersonID(), clubID, PersonRole.GAME_ADMIN)) {
       throw new UnauthorizedException();
     }
@@ -190,7 +187,12 @@ public class MembershipService {
     if (StringUtils.isNumeric(membershipDto.getIdentifier())) {
       personID = Integer.parseInt(membershipDto.getIdentifier());
     } else {
-      personID = personService.getPersonWithoutAuthorization(membershipDto.getIdentifier()).getId();
+      String email = membershipDto.getIdentifier();
+      try {
+        personID = personService.getPersonWithoutAuthorization(email).getId();
+      } catch (PersonDoesNotExistException e) {
+        personID = personService.createPerson(email).getId();
+      }
     }
 
     if (isMember(personID, clubID)) {
