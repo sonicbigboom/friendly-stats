@@ -60,7 +60,7 @@ spotless {
 
 		googleJavaFormat()
 		formatAnnotations()
-		licenseHeader '/* Copywrite (c) $YEAR */'
+		licenseHeader '/* Copyright (c) $YEAR */'
 	}
 }
 

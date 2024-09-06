@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import useToken from "../../components/Token/useToken";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import useToken from "../../data/Token/useToken";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LoginPage from "../LoginPage/LoginPage";
-import DashboardPage from "../../components/Dashboard/DashboardPage";
+import DashboardPage from "../DashboardPage/DashboardPage";
 import Wrapper from "../../components/Wrapper/Wrapper";
 import VerifyPage from "../VerifyPage/VerifyPage";
 import RegisterPage from "../RegisterPage/RegisterPage";
 import ResetPage from "../ResetPage/ResetPage";
+import GroupPage from "../GroupPage/GroupPage";
 
 function App() {
   const { token, setToken } = useToken();
@@ -36,6 +36,7 @@ function App() {
         <h1>Friendly Stats</h1>
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/group/:groupID" element={<GroupPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
         <button onClick={logout}>Logout</button>
