@@ -19,7 +19,7 @@ async function registerUser(
     }
   ).then((response) => {
     if (!response.ok) {
-      throw response;
+      throw response.status;
     }
   });
 }

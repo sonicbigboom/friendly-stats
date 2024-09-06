@@ -20,7 +20,7 @@ async function resetUser(
     }
   ).then((response) => {
     if (!response.ok) {
-      throw response;
+      throw response.status;
     }
   });
 }
@@ -34,7 +34,7 @@ async function sendToken(email: string) {
     }
   ).then((response) => {
     if (!response.ok) {
-      throw response;
+      throw response.status;
     }
   });
 }

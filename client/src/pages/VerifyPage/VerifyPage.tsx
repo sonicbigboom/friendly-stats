@@ -14,7 +14,7 @@ export default function VerifyPage() {
     ).then((response) => {
       if (!response.ok) {
         setStatus("Verification failed :(");
-        throw response;
+        throw response.status;
       }
       setStatus("User was verified!");
     });

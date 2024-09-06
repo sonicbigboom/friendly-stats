@@ -15,7 +15,7 @@ export default function DashboardPage() {
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
       if (!response.ok) {
-        throw response;
+        throw response.status;
       }
 
       const json = await response.json();

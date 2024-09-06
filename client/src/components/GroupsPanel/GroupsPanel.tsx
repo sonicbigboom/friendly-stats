@@ -17,7 +17,7 @@ export default function GroupsPanel() {
       );
     } else {
       return (   
-        <li key={group.id}>{group.name}</li>
+        <li>{group.name}</li>
       );
     }
   })
@@ -28,7 +28,7 @@ export default function GroupsPanel() {
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
       if (!response.ok) {
-        throw response;
+        throw response.status;
       }
 
       if (response.status === 204) {
@@ -52,7 +52,7 @@ export default function GroupsPanel() {
     ).then(
       async (response) => {
         if (!response.ok) {
-          throw response;
+          throw response.status;
         }
         setGroups([...groups, new Group(-1, `Loading ${newGroupName}...`, -1, 0)])
       }

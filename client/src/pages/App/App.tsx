@@ -1,5 +1,5 @@
 import useToken from "../../data/Token/useToken";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LoginPage from "../LoginPage/LoginPage";
 import DashboardPage from "../DashboardPage/DashboardPage";
@@ -33,7 +33,7 @@ function App() {
   return (
     <Wrapper token={token}>
       <div className="wrapper">
-        <h1>Friendly Stats</h1>
+        <Link to="/dashboard"><h1>Friendly Stats</h1></Link>
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/group/:groupID" element={<GroupPage />} />

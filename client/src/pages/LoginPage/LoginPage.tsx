@@ -18,7 +18,7 @@ async function loginUser(credentials: {
     }
   ).then((response) => {
     if (!response.ok) {
-      throw response;
+      throw response.status;
     }
     return response.json();
   });
