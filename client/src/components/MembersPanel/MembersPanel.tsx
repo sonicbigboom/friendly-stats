@@ -108,7 +108,7 @@ type BankTransactionProps = {
   isCashAdmin: boolean;
 };
 
-function BankTransaction({ groupID, userID, isCashAdmin }: BankTransactionProps) {
+export function BankTransaction({ groupID, userID, isCashAdmin }: BankTransactionProps) {
   const token = useContext(TokenContext);
   const [deposit, setDeposit] = useState(0);
 

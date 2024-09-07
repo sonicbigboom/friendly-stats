@@ -38,7 +38,7 @@ function App() {
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/group/:groupID" element={<GroupPage />} />
-          <Route path="/game/:gameID" element={<GamePage />} />
+          <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
         <button onClick={logout}>Logout</button>

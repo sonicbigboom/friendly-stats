@@ -23,7 +23,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
 
       return (   
         <li key={game.id}>
-          <Link to={`/game/${game.id}`}>{String(game.name)} ({new Date(game.startDate).toDateString()} - {end})</Link>
+          <Link to={`/group/${groupID}/game/${game.id}`}>{String(game.name)} ({new Date(game.startDate).toDateString()} - {end})</Link>
         </li>
       );
     } else {
