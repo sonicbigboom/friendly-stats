@@ -8,6 +8,7 @@ import VerifyPage from "../VerifyPage/VerifyPage";
 import RegisterPage from "../RegisterPage/RegisterPage";
 import ResetPage from "../ResetPage/ResetPage";
 import GroupPage from "../GroupPage/GroupPage";
+import GamePage from "../GamePage/GamePage";
 
 function App() {
   const { token, setToken } = useToken();
@@ -37,6 +38,7 @@ function App() {
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/group/:groupID" element={<GroupPage />} />
+          <Route path="/game/:gameID" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
         <button onClick={logout}>Logout</button>

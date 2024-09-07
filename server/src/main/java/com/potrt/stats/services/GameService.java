@@ -85,7 +85,7 @@ public class GameService {
 
     Date now = new Date();
     Game game =
-        new Game(null, clubID, gameDto.getGameTypeID(), gameDto.getSeasonID(), 0, now, null, false);
+        new Game(null, clubID, gameDto.getGameTypeID(), gameDto.getName(), gameDto.isForCash(), gameDto.getSeasonID(), 0, now, null, false);
     gameRepository.save(game);
   }
 

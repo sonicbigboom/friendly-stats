@@ -13,7 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameDto {
+  private String name;
   private Integer gameTypeID;
-  private Integer forCash;
+  private boolean forCash;
   private Integer seasonID;
 }

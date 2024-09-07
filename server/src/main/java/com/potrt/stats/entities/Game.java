@@ -38,6 +38,13 @@ public class Game {
   private Integer gameTypeID;
 
   @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  @Convert(converter = NumericBooleanConverter.class)
+  private boolean forCash;
+
+  @Column(nullable = false)
   private Integer seasonID;
 
   @Column(nullable = false)
@@ -64,6 +71,8 @@ public class Game {
     private Integer id;
     private Integer clubID;
     private Integer gameTypeID;
+    private String name;
+    private boolean forCash;
     private Integer seasonID;
     private Integer netScoreChange;
     private Date startDate;
@@ -74,6 +83,8 @@ public class Game {
       this.id = game.id;
       this.clubID = game.clubID;
       this.gameTypeID = game.gameTypeID;
+      this.name = game.name;
+      this.forCash = game.forCash;
       this.seasonID = game.seasonID;
       this.netScoreChange = game.netScoreChange;
       this.startDate = game.startDate;
