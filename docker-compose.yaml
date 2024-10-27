@@ -1,6 +1,5 @@
 services:
-  db:
-    &db
+  db: &db
     profiles:
       - base
     container_name: friendly_stats_db
@@ -9,7 +8,7 @@ services:
       context: ./database/
       dockerfile: Dockerfile
     restart: always
-    environment:
+    environment: &db_environment
       ACCEPT_EULA: Y
       MSSQL_SA_PASSWORD: ${FRIENDLY_STATS_DB_PASSWORD}
       MSSQL_PID: Developer
@@ -26,18 +25,23 @@ services:
       start_period: 10s
       timeout: 3s
   db-dev: 
+    <<: *db
     profiles:
       - dev
       - dev-partial
-    <<: *db
+    environment:
+      <<: *db_environment
+      POPULATE_TEST_DATA: Y
     ports:
       - 1433:1433
   db-prod:
+    <<: *db
     profiles:
       - prod
-    <<: *db
-  api:
-    &api
+    environment:
+      <<: *db_environment
+      POPULATE_TEST_DATA: N
+  api: &api
     profiles:
       - base
     container_name: friendly_stats_api
@@ -64,15 +68,15 @@ services:
     networks:
       - friendly_stats_network
   api-dev: 
+    <<: *api
     profiles:
       - dev
-    <<: *api
     depends_on:
       - db-dev
   api-prod:
+    <<: *api
     profiles:
       - prod
-    <<: *api
     depends_on:
       - db-prod
 volumes:
