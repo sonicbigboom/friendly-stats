@@ -1,85 +1,48 @@
 #  Friendly Stats
-
 A website that lets friends track stats with one another. (Poker games, silly bets, gin rummy score, etc...)
 
 ## Table of Contents
-
 - [Links](#links)
 - [Requirements](#requirements)
-- [Setup](#setup)
+- [Tools](#tools)
+- [Server](#server)
+- [Client](#client)
 - [Goal](#goals)
 
 ## Links
-
 - [Github](https://github.com/sonicbigboom/friendly-stats)
 - [Hosted](https://www.potrt.com/friendly-stats)
 
 ## Requirements
+- Docker - [Instruction](https://docs.docker.com/engine/install/) \
+	Necessary for the database and for runnning production. Also easier to run.
 
-- [Java 21](https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.4+7/OpenJDK21U-jdk_x64_windows_hotspot_21.0.4_7.msi)
-- Linux VM / Machine
-- [Node Package Manager 10.8.1](https://nodejs.org/en/download/package-manager)
+### API Local Requirements
+- Java 21 - [Download](https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.4+7/OpenJDK21U-jdk_x64_windows_hotspot_21.0.4_7.msi) \
+	Necessary for development of the api with gradle. Allows for running the api locally and running spotlessApply.
 
-## Setup
+### Website Local Requirements
+- NPM 10.8.1 - [Instructions](https://nodejs.org/en/download/package-manager)
+	Necessary for developing the React frontend locally. Allows for local deployment and building production.
 
-The setup is split into 3 parts, the [database](#database), the [server](#server), and the [client](#client).
+## Tools
+- DBeaver - [Download](https://dbeaver.io/download/) \
+  Useful for connecting to the database directly. Locally, the database should be a Microsoft SQL Server database at `localhost:1433`.  The database name is `stats`.
 
-### Database
+- Postman - [Download](https://www.postman.com/downloads/) \
+  Useful for testing API endpoints.
 
-The database will be setup on a linux machine, all of the following should be run on linux.
+## Server
+### Setup
+Copy `.env.example` to `.env` and edit variables as needed:
 
-#### Docker
-
-Follow these instructions: https://docs.docker.com/engine/install/
-
-#### SQL Server
-
-Clone this repository `https://github.com/sonicbigboom/friendly-stats.git` and navigate to the database directory.  
-Run `sudo chmod +x create-docker.sh` and `sudo chmod +x delete-container.sh` to give the scripts permissions.
-Use the following commands as admin as needed:
-
-Create container - `sudo create-docker.sh`  
-Start container - `sudo docker start friendly_stats`  
-Stop container - `sudo docker stop friendly_stats`  
-Delete container and image - `sudo delete-container.sh`
-
-> [!CAUTION]  
-> Running the following command will permanently delete all data. Please make a backup first!
-
-Delete volume and data - `sudo docker volume rm friendly_stats_db_volume`
-
-TODO: Expand the following section with detailed instructions.
-
-Change the `sa` password by providing a new secure password to the prompt:
-
-```
-sudo docker exec -it friendly_stats /opt/mssql-tools18/bin/sqlcmd \
- -C \
- -S localhost \
- -U SA \
- -P "DefaultPassword1!" \
- -Q "ALTER LOGIN SA WITH PASSWORD=\"$(read -sp "Enter new SA password: "; echo "${REPLY}")\""
-```
-
-Create a new sysadmin account with a strong password. Disable the `sa` account and use the new sysadmin account instead.
-
-Create a new user with a strong password for the server to connect to the database. This user should only have access to the `stats` database.
-
-### Server
-
-Set the following environment variables appropriately, based on the database.
-
-**Client:** \
-`REACT_APP_FRIENDLY_STATS_CLIENT_HOST` - The base client application url. For example: `localhost:3000`
-`REACT_APP_FRIENDLY_STATS_SERVER_HOST` - The base server application url. For example: `localhost:8080`
-
-**Server:** \
+`COMPOSE_PROFILES` - Which environment this is for. Enumeration: `dev`, `dev-partial`, `prod` \
+`COMPOSE_PROJECT_NAME` - The docker container group name. For example: `friendly_stats` \
 `FRIENDLY_STATS_SIGNATURE` - An HMAC-SHA256 hex hash that is the application's secret signature. \
-`FRIENDLY_STATS_DB_HOST` - The database host. For example: `localhost:1433`\
-`FRIENDLY_STATS_DB_USERNAME` - The database username. For example: `sa`\
-`FRIENDLY_STATS_DB_PASSWORD` - The database host. For example: `DefaultPassword1!`\
-`FRIENDLY_STATS_GOOGLE_CLIENT_ID` - The google oauth client id for the server.\
-`REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID` - The google oauth client id for clients.\
+`FRIENDLY_STATS_DB_USERNAME` - The database username. For example: `sa` \
+`FRIENDLY_STATS_DB_PASSWORD` - The database host. \
+`FRIENDLY_STATS_GOOGLE_API_CLIENT_ID` - The google oauth client id for the server. \
+`FRIENDLY_STATS_GOOGLE_APP_CLIENT_ID` - The google oauth client id for clients. This should be the same as `REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID`. \
 `FRIENDLY_STATS_GOOGLE_CLIENT_SECRET` - The google oauth client secret. \
 `FRIENDLY_STATS_EMAIL_ADDRESS` - The application email address. For example: `friendly-stats-noreply@potrt.com` \
 `FRIENDLY_STATS_EMAIL_HOST` - The application email's host. For example: `smtp.gmail.com` \
@@ -87,8 +50,37 @@ Set the following environment variables appropriately, based on the database.
 `FRIENDLY_STATS_EMAIL_USERNAME` - The application email's username. \
 `FRIENDLY_STATS_EMAIL_PASSWORD` - The application email's password.
 
-## Goals
+If running the api locally and not in a container, all of these variables must be set in the system's environment variables. Additionally, add the following variable:
 
+`FRIENDLY_STATS_DB_HOST` - The database host. For example: `localhost:1433`\
+
+### Run
+Run: `docker-compose up -d` \
+Stop: `docker-compose down`
+
+Stop and remove the image: Run compose down and add a `--rmi local` flag.
+
+> [!WARNING]  
+> The followng deletes data! \
+> Stop and remove volumes: Run compose down and add a `-v` flag.
+
+#### Local Run
+Run: `gradlew bootRun`
+
+## Client
+### Setup
+Set the following environment variables:
+
+`REACT_APP_FRIENDLY_STATS_CLIENT_HOST` - The base client application url. For example: `localhost:3000`
+`REACT_APP_FRIENDLY_STATS_SERVER_HOST` - The base server application url. For example: `localhost:8080`
+`REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID` - The google oauth client id for clients. \
+
+### Run
+
+#### Local Run
+Run: `npm start`
+
+## Goals
 - Users information is tied to an account (oauth2?)
 - Users can create a group that tracks game data
 - This group can track any number of games desired

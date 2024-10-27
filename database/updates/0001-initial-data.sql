@@ -1,3 +1,6 @@
+USE [stats];
+GO
+
 SET IDENTITY_INSERT [Person] ON
 INSERT INTO [Person] ([ID], [Email], [Username], [FirstName], [LastName], [Nickname], [IsPrivate], [IsDisabled], [IsDeleted]) VALUES
 	('1', '', 'System', NULL, NULL, NULL, '1', '0', '0');

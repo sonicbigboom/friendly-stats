@@ -1,0 +1,83 @@
+services:
+  db:
+    &db
+    profiles:
+      - base
+    container_name: friendly_stats_db
+    image: friendly_stats_db_image
+    build:
+      context: ./database/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${FRIENDLY_STATS_DB_PASSWORD}
+      MSSQL_PID: Developer
+      TZ: America/New_York
+      MSSQL_LCID: 1033
+    volumes:
+      - friendly_stats_db_volume:/var/opt/mssql
+    networks:
+      - friendly_stats_network
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${FRIENDLY_STATS_DB_PASSWORD} -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+  db-dev: 
+    profiles:
+      - dev
+      - dev-partial
+    <<: *db
+    ports:
+      - 1433:1433
+  db-prod:
+    profiles:
+      - prod
+    <<: *db
+  api:
+    &api
+    profiles:
+      - base
+    container_name: friendly_stats_api
+    image: friendly_stats_api_image
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    ports:
+      - ${FRIENDLY_STATS_PORT}:8080
+    restart: always
+    environment:
+      FRIENDLY_STATS_SIGNATURE: ${FRIENDLY_STATS_SIGNATURE}
+      FRIENDLY_STATS_DB_HOST: friendly_stats_db:1433
+      FRIENDLY_STATS_DB_USERNAME: ${FRIENDLY_STATS_DB_USERNAME}
+      FRIENDLY_STATS_DB_PASSWORD: ${FRIENDLY_STATS_DB_PASSWORD}
+      FRIENDLY_STATS_API_GOOGLE_CLIENT_ID: ${FRIENDLY_STATS_API_GOOGLE_CLIENT_ID}
+      FRIENDLY_STATS_APP_GOOGLE_CLIENT_ID: ${FRIENDLY_STATS_APP_GOOGLE_CLIENT_ID}
+      FRIENDLY_STATS_GOOGLE_CLIENT_SECRET: ${FRIENDLY_STATS_GOOGLE_CLIENT_SECRET}
+      FRIENDLY_STATS_EMAIL_ADDRESS: ${FRIENDLY_STATS_EMAIL_ADDRESS}
+      FRIENDLY_STATS_EMAIL_HOST: ${FRIENDLY_STATS_EMAIL_HOST}
+      FRIENDLY_STATS_EMAIL_PORT: ${FRIENDLY_STATS_EMAIL_PORT}
+      FRIENDLY_STATS_EMAIL_USERNAME: ${FRIENDLY_STATS_EMAIL_USERNAME}
+      FRIENDLY_STATS_EMAIL_PASSWORD: ${FRIENDLY_STATS_EMAIL_PASSWORD}
+    networks:
+      - friendly_stats_network
+  api-dev: 
+    profiles:
+      - dev
+    <<: *api
+    depends_on:
+      - db-dev
+  api-prod:
+    profiles:
+      - prod
+    <<: *api
+    depends_on:
+      - db-prod
+volumes:
+  friendly_stats_db_volume:
+    driver: local
+networks:
+  friendly_stats_network:
+    driver: bridge

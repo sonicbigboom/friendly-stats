@@ -111,8 +111,8 @@ public class AuthGoogleService implements AuthService {
     }
 
     String aud = jsonObject.get("aud").getAsString();
-    if (!aud.equals(System.getenv("REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID"))
-        && !aud.equals(System.getenv("FRIENDLY_STATS_GOOGLE_CLIENT_ID"))) {
+    if (!aud.equals(System.getenv("FRIENDLY_STATS_APP_GOOGLE_CLIENT_ID"))
+        && !aud.equals(System.getenv("FRIENDLY_STATS_API_GOOGLE_CLIENT_ID"))) {
       throw new BadCredentialsException("Invalid client authenticator.");
     }
 
