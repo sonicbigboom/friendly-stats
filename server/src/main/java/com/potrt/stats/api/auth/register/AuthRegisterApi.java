@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.auth.register;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;

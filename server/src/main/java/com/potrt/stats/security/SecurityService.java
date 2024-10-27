@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

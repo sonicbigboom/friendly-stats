@@ -1,9 +1,9 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.users;
 
-import com.potrt.stats.entities.Person.MaskedPerson;
+import com.potrt.stats.data.person.Person.MaskedPerson;
+import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.exceptions.UnauthenticatedException;
-import com.potrt.stats.services.PersonService;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;

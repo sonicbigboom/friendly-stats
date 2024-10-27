@@ -1,7 +1,6 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.repositories;
+package com.potrt.stats.data.person;
 
-import com.potrt.stats.entities.Person;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

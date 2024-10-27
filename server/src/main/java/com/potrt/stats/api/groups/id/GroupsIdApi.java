@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.groups.id;
 
-import com.potrt.stats.entities.Club.MaskedClub;
-import com.potrt.stats.entities.Person.MaskedPerson;
+import com.potrt.stats.data.club.Club.MaskedClub;
+import com.potrt.stats.data.club.ClubService;
+import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.ClubService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

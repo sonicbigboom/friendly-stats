@@ -1,8 +1,8 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.exceptions;
 
-import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.person.Person;
 
 /**
  * An {@link Exception} when trying to create a {@link Person} for a {@link Club} when that there is

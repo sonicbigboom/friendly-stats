@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security.auth.verification;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
+import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.security.auth.exceptions.TokenDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.TokenExpiredException;
 import com.potrt.stats.services.EmailService;
-import com.potrt.stats.services.PersonService;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import java.io.UnsupportedEncodingException;

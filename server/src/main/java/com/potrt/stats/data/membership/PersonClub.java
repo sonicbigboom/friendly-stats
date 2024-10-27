@@ -1,5 +1,5 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.entities.desc;
+package com.potrt.stats.data.membership;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

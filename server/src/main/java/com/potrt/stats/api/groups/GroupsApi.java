@@ -1,9 +1,9 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.groups;
 
-import com.potrt.stats.entities.Club.MaskedClub;
+import com.potrt.stats.data.club.Club.MaskedClub;
+import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.exceptions.UnauthenticatedException;
-import com.potrt.stats.services.ClubService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.HttpStatus;

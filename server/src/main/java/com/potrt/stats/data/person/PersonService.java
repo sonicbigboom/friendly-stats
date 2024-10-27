@@ -1,11 +1,9 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.services;
+package com.potrt.stats.data.person;
 
-import com.potrt.stats.entities.Person;
-import com.potrt.stats.entities.Person.MaskedPerson;
+import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
-import com.potrt.stats.repositories.PersonRepository;
 import com.potrt.stats.security.SecurityService;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;

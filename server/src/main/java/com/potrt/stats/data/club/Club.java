@@ -1,5 +1,5 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.entities;
+package com.potrt.stats.data.club;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

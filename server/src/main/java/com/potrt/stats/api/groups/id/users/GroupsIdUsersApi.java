@@ -1,13 +1,13 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.groups.id.users;
 
-import com.potrt.stats.entities.Membership.MaskedMembership;
+import com.potrt.stats.data.club.ClubService;
+import com.potrt.stats.data.membership.Membership.MaskedMembership;
+import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.ClubService;
-import com.potrt.stats.services.MembershipService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

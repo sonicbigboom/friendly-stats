@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.games.id.record;
 
-import com.potrt.stats.entities.GameRecord.MaskedGameRecord;
+import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
+import com.potrt.stats.data.gamerecord.GameRecordService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.GameRecordService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security.auth.basic;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.security.PersonPrincipal;
 import java.util.Collection;
 import org.springframework.security.core.CredentialsContainer;

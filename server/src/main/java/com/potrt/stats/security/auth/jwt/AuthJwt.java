@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security.auth.jwt;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
 import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;

@@ -1,9 +1,9 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security.auth.basic;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
+import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
-import com.potrt.stats.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

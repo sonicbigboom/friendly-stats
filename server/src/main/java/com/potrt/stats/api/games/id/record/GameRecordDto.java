@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.games.id.record;
 
-import com.potrt.stats.entities.Game;
+import com.potrt.stats.data.game.Game;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

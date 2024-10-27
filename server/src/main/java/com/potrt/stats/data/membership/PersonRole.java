@@ -1,8 +1,8 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.entities.desc;
+package com.potrt.stats.data.membership;
 
-import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.person.Person;
 import java.util.HashMap;
 import java.util.Map;
 

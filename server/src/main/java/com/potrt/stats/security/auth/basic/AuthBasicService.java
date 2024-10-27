@@ -1,14 +1,14 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.security.auth.basic;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
+import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.security.auth.AuthService;
 import com.potrt.stats.security.auth.AuthType;
 import com.potrt.stats.security.auth.LoginDto;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
-import com.potrt.stats.services.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,17 +1,17 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.services;
+package com.potrt.stats.data.banktransation;
 
 import com.potrt.stats.api.groups.id.bank.BankCashTransactionDto;
-import com.potrt.stats.entities.BankCashTransaction;
-import com.potrt.stats.entities.BankCashTransaction.MaskedBankCashTransaction;
-import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.Person;
-import com.potrt.stats.entities.desc.PersonRole;
+import com.potrt.stats.data.banktransation.BankCashTransaction.MaskedBankCashTransaction;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.club.ClubService;
+import com.potrt.stats.data.membership.MembershipService;
+import com.potrt.stats.data.membership.PersonRole;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.repositories.BankCashTransactionRepository;
 import com.potrt.stats.security.SecurityService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;

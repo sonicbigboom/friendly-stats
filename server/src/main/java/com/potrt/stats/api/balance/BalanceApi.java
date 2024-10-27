@@ -1,9 +1,9 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.balance;
 
+import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.SecurityService;
-import com.potrt.stats.services.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

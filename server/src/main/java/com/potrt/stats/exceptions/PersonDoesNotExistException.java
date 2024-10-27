@@ -1,7 +1,7 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.exceptions;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
 
 /**
  * An {@link Exception} for attempting to get a {@link Person} that does not exist.

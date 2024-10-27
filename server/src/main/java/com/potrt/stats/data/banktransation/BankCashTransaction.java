@@ -1,5 +1,5 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.entities;
+package com.potrt.stats.data.banktransation;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -17,14 +17,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.type.NumericBooleanConverter;
 
-/** A {@link GameRecord} represents a record in a game. */
+/** A {@link BankCashTransaction} represents a deposit or withdrawal from the group's bank. */
 @Table
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class GameRecord {
+public class BankCashTransaction {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,13 +32,13 @@ public class GameRecord {
   private Integer id;
 
   @Column(nullable = false)
-  private Integer gameID;
-
-  @Column(nullable = false)
   private Integer personID;
 
   @Column(nullable = false)
-  private Integer scoreChange;
+  private Integer clubID;
+
+  @Column(nullable = false)
+  private Integer deposit;
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
@@ -58,31 +58,31 @@ public class GameRecord {
   @Column(nullable = false)
   private Integer modifiedByPersonID;
 
-  /** A {@link MaskedGameRecord} with private information hidden. */
+  /** A {@link MaskedBankCashTransaction} with private information hidden. */
   @NoArgsConstructor
   @AllArgsConstructor
   @Getter
   @Setter
-  public static class MaskedGameRecord {
+  public static class MaskedBankCashTransaction {
     private Integer id;
-    private Integer gameID;
     private Integer personID;
-    private Integer scoreChange;
+    private Integer clubID;
+    private Integer deposit;
     private Date createdTime;
     private Integer createdByPersonID;
     private Date modifiedTime;
     private Integer modifiedByPersonID;
 
-    /** A {@link MaskedGameRecord} with public information. */
-    public MaskedGameRecord(GameRecord gameRecord) {
-      this.id = gameRecord.id;
-      this.gameID = gameRecord.gameID;
-      this.personID = gameRecord.personID;
-      this.scoreChange = gameRecord.scoreChange;
-      this.createdTime = gameRecord.createdTime;
-      this.createdByPersonID = gameRecord.createdByPersonID;
-      this.modifiedTime = gameRecord.modifiedTime;
-      this.modifiedByPersonID = gameRecord.modifiedByPersonID;
+    /** A {@link MaskedBankCashTransaction} with public information. */
+    public MaskedBankCashTransaction(BankCashTransaction bankCashTransaction) {
+      this.id = bankCashTransaction.id;
+      this.personID = bankCashTransaction.personID;
+      this.clubID = bankCashTransaction.clubID;
+      this.deposit = bankCashTransaction.deposit;
+      this.createdTime = bankCashTransaction.createdTime;
+      this.createdByPersonID = bankCashTransaction.createdByPersonID;
+      this.modifiedTime = bankCashTransaction.modifiedTime;
+      this.modifiedByPersonID = bankCashTransaction.modifiedByPersonID;
     }
   }
 }

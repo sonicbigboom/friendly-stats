@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.groups.id.bank;
 
-import com.potrt.stats.entities.BankCashTransaction.MaskedBankCashTransaction;
+import com.potrt.stats.data.banktransation.BankCashTransaction.MaskedBankCashTransaction;
+import com.potrt.stats.data.banktransation.BankCashTransactionService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.services.BankCashTransactionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

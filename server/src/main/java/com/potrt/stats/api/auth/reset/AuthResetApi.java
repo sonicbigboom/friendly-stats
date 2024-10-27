@@ -1,7 +1,8 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.auth.reset;
 
-import com.potrt.stats.entities.Person;
+import com.potrt.stats.data.person.Person;
+import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.exceptions.BadExternalCommunicationException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.AuthService;
@@ -10,7 +11,6 @@ import com.potrt.stats.security.auth.exceptions.TokenDoesNotExistException;
 import com.potrt.stats.security.auth.exceptions.TokenExpiredException;
 import com.potrt.stats.security.auth.verification.reset.ResetDto;
 import com.potrt.stats.security.auth.verification.reset.ResetService;
-import com.potrt.stats.services.PersonService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.ValidationException;

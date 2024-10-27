@@ -1,7 +1,8 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.entities;
+package com.potrt.stats.data.membership;
 
-import com.potrt.stats.entities.desc.PersonClub;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.person.Person;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

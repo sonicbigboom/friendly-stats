@@ -1,15 +1,14 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.services;
+package com.potrt.stats.data.club;
 
-import com.potrt.stats.entities.Club;
-import com.potrt.stats.entities.Club.MaskedClub;
-import com.potrt.stats.entities.Membership.MaskedMembership;
-import com.potrt.stats.entities.Person;
-import com.potrt.stats.entities.desc.PersonRole;
+import com.potrt.stats.data.club.Club.MaskedClub;
+import com.potrt.stats.data.membership.Membership.MaskedMembership;
+import com.potrt.stats.data.membership.MembershipService;
+import com.potrt.stats.data.membership.PersonRole;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
-import com.potrt.stats.repositories.ClubRepository;
 import com.potrt.stats.security.SecurityService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;

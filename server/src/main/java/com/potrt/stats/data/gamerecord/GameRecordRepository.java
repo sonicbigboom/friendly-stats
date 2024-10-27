@@ -1,7 +1,6 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.repositories;
+package com.potrt.stats.data.gamerecord;
 
-import com.potrt.stats.entities.GameRecord;
 import org.springframework.data.repository.CrudRepository;
 
 /** A {@link CrudRepository} for a {@link GameRecord}. */

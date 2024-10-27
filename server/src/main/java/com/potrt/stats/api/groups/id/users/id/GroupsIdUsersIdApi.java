@@ -1,8 +1,8 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.api.groups.id.users.id;
 
-import com.potrt.stats.entities.Membership;
-import com.potrt.stats.services.MembershipService;
+import com.potrt.stats.data.membership.Membership;
+import com.potrt.stats.data.membership.MembershipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
