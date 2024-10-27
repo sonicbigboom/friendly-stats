@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.entities;
 
 import com.potrt.stats.entities.desc.PersonClub;

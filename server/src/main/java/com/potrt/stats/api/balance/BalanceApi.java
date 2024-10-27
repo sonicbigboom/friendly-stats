@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.api.balance;
 
 import com.potrt.stats.exceptions.UnauthenticatedException;

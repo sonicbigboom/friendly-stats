@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.api.groups.id.games;
 
 import com.potrt.stats.entities.Game.MaskedGame;

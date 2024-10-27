@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.api.games.id.record;
 
 import com.potrt.stats.entities.GameRecord.MaskedGameRecord;

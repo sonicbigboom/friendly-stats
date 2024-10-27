@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.api.auth.verify;
 
 import com.potrt.stats.security.auth.exceptions.TokenDoesNotExistException;

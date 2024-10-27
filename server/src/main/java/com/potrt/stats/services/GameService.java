@@ -1,4 +1,4 @@
-/* Copywrite (c) 2024 */
+/* Copyright (c) 2024 */
 package com.potrt.stats.services;
 
 import com.potrt.stats.api.groups.id.games.GameDto;
@@ -85,7 +85,17 @@ public class GameService {
 
     Date now = new Date();
     Game game =
-        new Game(null, clubID, gameDto.getGameTypeID(), gameDto.getName(), gameDto.isForCash(), gameDto.getSeasonID(), 0, now, null, false);
+        new Game(
+            null,
+            clubID,
+            gameDto.getGameTypeID(),
+            gameDto.getName(),
+            gameDto.isForCash(),
+            gameDto.getSeasonID(),
+            0,
+            now,
+            null,
+            false);
     gameRepository.save(game);
   }
 
