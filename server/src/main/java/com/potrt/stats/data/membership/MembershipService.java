@@ -1,11 +1,11 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.membership;
 
-import com.potrt.stats.api.groups.id.users.MembershipDto;
 import com.potrt.stats.data.club.Club;
 import com.potrt.stats.data.membership.Membership.MaskedMembership;
 import com.potrt.stats.data.person.Person;
 import com.potrt.stats.data.person.PersonService;
+import com.potrt.stats.endpoints.groups.id.users.MembershipDto;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;

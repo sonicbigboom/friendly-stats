@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.game;
 
-import com.potrt.stats.api.groups.id.games.GameDto;
 import com.potrt.stats.data.club.Club;
 import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.data.game.Game.MaskedGame;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
+import com.potrt.stats.endpoints.groups.id.games.GameDto;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
