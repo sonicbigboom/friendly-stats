@@ -32,7 +32,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
   })
 
   useEffect(() => {
-    fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
@@ -74,7 +74,7 @@ export function GameRecord({ userID, groupID, gameID, isGameAdmin }: GameRecordP
 
   function recordScoreChange() {
     fetch(
-      `http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/records`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/records`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),

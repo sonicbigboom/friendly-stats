@@ -11,7 +11,7 @@ async function registerUser(
   code: string
 ) {
   return fetch(
-    `http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register?verificationUrl=http://${process.env.REACT_APP_FRIENDLY_STATS_CLIENT_HOST}/verify?token=`,
+    `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/register?verificationUrl=http://${process.env.REACT_APP_FRIENDLY_STATS_CLIENT_HOST}/verify?token=`,
     {
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),

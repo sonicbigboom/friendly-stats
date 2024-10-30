@@ -10,7 +10,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User>(new User());
 
   useEffect(() => {
-    fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/me`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/me`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {

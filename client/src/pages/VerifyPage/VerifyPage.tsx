@@ -7,7 +7,7 @@ export default function VerifyPage() {
 
   async function verifyUser(token: string) {
     return fetch(
-      `http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/verify?token=${token}`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/verify?token=${token}`,
       {
         method: "GET",
       }

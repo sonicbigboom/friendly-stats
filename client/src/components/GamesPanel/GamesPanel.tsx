@@ -34,7 +34,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
   })
 
   useEffect(() => {
-    fetch(`http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
@@ -55,7 +55,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
 
   async function addGame() {
     fetch(
-      `http://${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
