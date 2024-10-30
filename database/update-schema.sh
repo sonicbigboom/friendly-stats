@@ -9,6 +9,8 @@ DBSTATUS=1
 ERRCODE=1
 i=0
 
+sleep 5
+
 while [[ ( "$DBSTATUS" != "0" || "$ERRCODE" != "0" ) && $i -lt 60 ]]; do
 	sleep 1
 	i=$(($i+1))
@@ -21,6 +23,8 @@ if [[ "$DBSTATUS" != "0" || "$ERRCODE" != "0" ]]; then
 	echo "SQL Server took more than 60 seconds to start up or one or more databases are not in an ONLINE state"
 	exit 1
 fi
+
+sleep 5
 
 # Run the update schema scripts as necessary.
 current=`cat /var/opt/mssql/schema.version`
