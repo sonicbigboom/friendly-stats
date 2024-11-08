@@ -46,7 +46,7 @@ export default function MembersPanel( { groupID, isCashAdmin }: Props) {
 
       setMembers(json);
     });
-  }, [token, members]);
+  }, [token, members.length]);
 
   async function addMember() {
     fetch(

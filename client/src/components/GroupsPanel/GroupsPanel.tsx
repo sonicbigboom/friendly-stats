@@ -40,7 +40,7 @@ export default function GroupsPanel() {
 
       setGroups(json);
     });
-  }, [token, groups]);
+  }, [token, groups.length]);
 
   async function createGroup() {
     fetch(

@@ -51,7 +51,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
 
       setGames(json);
     });
-  }, [token, games]);
+  }, [token, games.length]);
 
   async function addGame() {
     fetch(

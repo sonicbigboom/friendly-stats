@@ -49,7 +49,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
 
       setMembers(json);
     });
-  }, [token, members]);
+  }, [token, members.length]);
 
   return (
     <div>
