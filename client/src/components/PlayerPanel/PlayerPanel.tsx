@@ -19,7 +19,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
 
       return (   
         <li key={member.personID}>
-          <p>{member.firstName} {member.lastName} ({member.nickname}) cashBalance: {member.cashBalance}</p>
+          <p>{member.firstName} {member.lastName}{(member.nickname) ? <> ({member.nickname})</> : <></>}: {member.cashBalance}</p>
           <GameRecord userID={member.personID} groupID={groupID} gameID={gameID} isGameAdmin={isGameAdmin}/>
           <BankTransaction userID={member.personID} groupID={member.clubID} isCashAdmin={isCashAdmin}/>
         </li>

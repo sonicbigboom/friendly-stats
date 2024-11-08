@@ -17,7 +17,7 @@ export default function MembersPanel( { groupID, isCashAdmin }: Props) {
 
       return (   
         <li key={member.personID}>
-          <p>{member.firstName} {member.lastName} ({member.nickname}) cashBalance: {member.cashBalance}</p>
+          <p>{member.firstName} {member.lastName}{(member.nickname) ? <> ({member.nickname})</> : <></>}: {member.cashBalance}</p>
           <BankTransaction userID={member.personID} groupID={member.clubID} isCashAdmin={isCashAdmin}/>
         </li>
       );
