@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./LoginPage.css";
-import PropTypes from "prop-types";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
+import { TokenContext } from "../../data/Token/TokenContext";
 
 async function loginUser(credentials: {
   loginName: string;
@@ -24,14 +24,11 @@ async function loginUser(credentials: {
   });
 }
 
-interface LoginProps {
-  setToken: (token: null | string) => void;
-}
-
-export default function LoginPage({ setToken }: LoginProps) {
+export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const {token, setToken} = useContext(TokenContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +89,3 @@ export default function LoginPage({ setToken }: LoginProps) {
     </div>
   );
 }
-
-LoginPage.propTypes = {
-  setToken: PropTypes.func.isRequired,
-};

@@ -5,7 +5,7 @@ import GroupsPanel from "../../components/GroupsPanel/GroupsPanel";
 import UserPanel from "../../components/UserPanel/UserPanel";
 
 export default function DashboardPage() {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
 
   return (
     <>

@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function GamesPanel( { groupID, isGameAdmin }: Props) {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [games, setGames] = useState<Game[]>([]);
   const [newGame, setNewGame] = useState<GameDto>(new GameDto());
   

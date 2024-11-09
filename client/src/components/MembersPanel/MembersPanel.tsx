@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function MembersPanel( { groupID, isCashAdmin }: Props) {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [members, setMembers] = useState<Member[]>([]);
   const [newMember, setNewMember] = useState<MemberDto>(new MemberDto("", PersonRole.Player, "", "", ""));
   
@@ -109,7 +109,7 @@ type BankTransactionProps = {
 };
 
 export function BankTransaction({ groupID, userID, isCashAdmin }: BankTransactionProps) {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [deposit, setDeposit] = useState(0);
 
   if (!isCashAdmin) { return <></> }

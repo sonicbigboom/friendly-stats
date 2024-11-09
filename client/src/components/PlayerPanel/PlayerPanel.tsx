@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin }: Props) {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [members, setMembers] = useState<Member[]>([]);
   
   const listPlayers = members.map(member => {
@@ -67,7 +67,7 @@ type GameRecordProps = {
 };
 
 export function GameRecord({ userID, groupID, gameID, isGameAdmin }: GameRecordProps) {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [scoreChange, setScoreChange] = useState(0);
 
   if (!isGameAdmin) { return <></> }

@@ -4,7 +4,7 @@ import { TokenContext } from "../../data/Token/TokenContext";
 import { Link } from "react-router-dom";
 
 export default function GroupsPanel() {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const [groups, setGroups] = useState<Group[]>([]);
   const [newGroupName, setNewGroupName] = useState("");
   

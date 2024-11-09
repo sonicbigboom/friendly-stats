@@ -17,9 +17,9 @@ function App() {
 
   if (!token) {
     return (
-      <Wrapper token={token}>
+      <Wrapper token={token} setToken={setToken}>
         <Routes>
-          <Route path="/login" element={<LoginPage setToken={setToken} />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/reset" element={<ResetPage />} />
           <Route path="/verify" element={<VerifyPage />} />
@@ -30,8 +30,8 @@ function App() {
   }
 
   return (
-    <Wrapper token={token}>
-      <FSNavbar setToken={setToken}/>
+    <Wrapper token={token} setToken={setToken}>
+      <FSNavbar />
       <div className="wrapper">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />

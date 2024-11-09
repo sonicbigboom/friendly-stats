@@ -5,7 +5,7 @@ import "./GamePage.css";
 import PlayerPanel from "../../components/PlayerPanel/PlayerPanel";
 
 export default function GroupPage() {
-  const token = useContext(TokenContext);
+  const { token, setToken } = useContext(TokenContext);
   const { groupID, gameID } = useParams()
 
   return (

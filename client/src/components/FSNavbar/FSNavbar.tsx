@@ -1,13 +1,13 @@
+import { useContext } from 'react';
 import { Button } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { TokenContext } from '../../data/Token/TokenContext';
 
-interface LoginProps {
-  setToken: (token: null | string) => void;
-}
+export default function FSNavbar() {
+  const {token, setToken} = useContext(TokenContext);
 
-export default function FSNavbar({ setToken }: LoginProps) {
   return (
     <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
       <Container>
