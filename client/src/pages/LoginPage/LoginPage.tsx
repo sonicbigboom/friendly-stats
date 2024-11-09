@@ -26,9 +26,9 @@ async function loginUser(credentials: {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [username, setUserName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const {token, setToken} = useContext(TokenContext);
+  const {setToken} = useContext(TokenContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +46,7 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit}>
         <label>
           <p>Username</p>
-          <input type="text" onChange={(e) => setUserName(e.target.value)} />
+          <input type="text" onChange={(e) => setUsername(e.target.value)} />
         </label>
         <label>
           <p>Password</p>

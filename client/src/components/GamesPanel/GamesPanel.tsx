@@ -8,8 +8,8 @@ type Props = {
   isGameAdmin: boolean;
 };
 
-export default function GamesPanel( { groupID, isGameAdmin }: Props) {
-  const { token, setToken } = useContext(TokenContext);
+export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
+  const { token } = useContext(TokenContext);
   const [games, setGames] = useState<Game[]>([]);
   const [newGame, setNewGame] = useState<GameDto>(new GameDto());
   
@@ -28,7 +28,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
       );
     } else {
       return (   
-        <li>Loading user {game.id}...</li>
+        <li key={-1}>Loading user {game.id}...</li>
       );
     }
   })
@@ -86,35 +86,43 @@ export default function GamesPanel( { groupID, isGameAdmin }: Props) {
       {listGames}
       <div>
         <h4>Add Game</h4>
-        <label>Name</label>
-        <input type="text" onChange={(e) => setNewGame(game => {
-          const g = game.clone();
-          g.name = e.target.value;
-          return g;
-        })} />
-        <label>Game Type</label>
-        <select onChange={(e) => setNewGame(game => {
-          const g = game.clone();
-          g.gameTypeID = Number(e.target.value);
-          return g;
-        })}>
-          <option value={1}>Poker</option>
-          <option value={4}>Fantasy Football</option>
-        </select>
-        <label>For Cash?</label>
-        <input type="checkbox" onChange={(e) => setNewGame(game => {
-          const g = game.clone();
-          g.forCash = e.target.checked;
-          return g;
-        })} />
-        <label>Season</label>
-        <select onChange={(e) => setNewGame(game => {
-          const g = game.clone();
-          g.seasonID = Number(e.target.value);
-          return g;
-        })}>
-          <option value={1}>Season 0</option>
-        </select>
+        <label>
+          Name{}
+          <input type="text" onChange={(e) => setNewGame(game => {
+            const g = game.clone();
+            g.name = e.target.value;
+            return g;
+          })} />
+        </label>
+        <label>
+          Game Type{}
+          <select onChange={(e) => setNewGame(game => {
+            const g = game.clone();
+            g.gameTypeID = Number(e.target.value);
+            return g;
+          })}>
+            <option value={1}>Poker</option>
+            <option value={4}>Fantasy Football</option>
+          </select>
+        </label>
+        <label>
+          For Cash?{}
+          <input type="checkbox" onChange={(e) => setNewGame(game => {
+            const g = game.clone();
+            g.forCash = e.target.checked;
+            return g;
+          })} />
+        </label>
+        <label>
+          Season{}
+          <select onChange={(e) => setNewGame(game => {
+            const g = game.clone();
+            g.seasonID = Number(e.target.value);
+            return g;
+          })}>
+            <option value={1}>Season 0</option>
+          </select>
+        </label>
         <button onClick={addGame}>Add</button>
       </div>
     </div>

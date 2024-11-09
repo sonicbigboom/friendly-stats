@@ -8,7 +8,7 @@ type Props = {
 
 export default function UserPanel() {
 
-  const { token, setToken } = useContext(TokenContext);
+  const { token } = useContext(TokenContext);
   const [user, setUser] = useState<User>(new User());
 
   useEffect(() => {

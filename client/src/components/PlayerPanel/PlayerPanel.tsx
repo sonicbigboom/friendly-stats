@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
-import Member, { PersonRole } from "../../classes/Member";
+import Member from "../../classes/Member";
 import { BankTransaction } from "../MembersPanel/MembersPanel";
 
 type Props = {
@@ -10,8 +10,8 @@ type Props = {
   isCashAdmin: boolean;
 };
 
-export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin }: Props) {
-  const { token, setToken } = useContext(TokenContext);
+export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin }: Readonly<Props>) {
+  const { token } = useContext(TokenContext);
   const [members, setMembers] = useState<Member[]>([]);
   
   const listPlayers = members.map(member => {
@@ -26,7 +26,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
       );
     } else {
       return (   
-        <li>Loading user {member.personID}...</li>
+        <li key={-1}>Loading user {member.personID}...</li>
       );
     }
   })
@@ -66,8 +66,8 @@ type GameRecordProps = {
   isGameAdmin: boolean;
 };
 
-export function GameRecord({ userID, groupID, gameID, isGameAdmin }: GameRecordProps) {
-  const { token, setToken } = useContext(TokenContext);
+export function GameRecord({ userID, gameID, isGameAdmin }: Readonly<GameRecordProps>) {
+  const { token } = useContext(TokenContext);
   const [scoreChange, setScoreChange] = useState(0);
 
   if (!isGameAdmin) { return <></> }

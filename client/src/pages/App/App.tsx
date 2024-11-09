@@ -1,5 +1,5 @@
 import useToken from "../../data/Token/useToken";
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import LoginPage from "../LoginPage/LoginPage";
 import DashboardPage from "../DashboardPage/DashboardPage";

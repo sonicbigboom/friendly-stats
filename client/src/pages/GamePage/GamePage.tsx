@@ -1,11 +1,8 @@
-import { useContext, useState } from "react";
-import { TokenContext } from "../../data/Token/TokenContext";
 import { useParams } from "react-router-dom";
 import "./GamePage.css";
 import PlayerPanel from "../../components/PlayerPanel/PlayerPanel";
 
 export default function GroupPage() {
-  const { token, setToken } = useContext(TokenContext);
   const { groupID, gameID } = useParams()
 
   return (
