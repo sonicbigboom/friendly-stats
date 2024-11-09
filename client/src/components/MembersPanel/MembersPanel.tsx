@@ -1,18 +1,19 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
-import Member, { PersonRole } from "../../classes/Member";
+import { PersonRole } from "../../classes/Member";
+import { MembersContext } from "../../data/Members/MembersContext";
 
 type Props = {
   groupID: number;
   isCashAdmin: boolean;
 };
 
-export default function MembersPanel( { groupID, isCashAdmin }: Props) {
-  const { token, setToken } = useContext(TokenContext);
-  const [members, setMembers] = useState<Member[]>([]);
+export default function MembersPanel( { groupID, isCashAdmin }: Readonly<Props>) {
+  const { token } = useContext(TokenContext);
+  const { getMembers, refresh } = useContext(MembersContext)
   const [newMember, setNewMember] = useState<MemberDto>(new MemberDto("", PersonRole.Player, "", "", ""));
   
-  const listMembers = members.map(member => {
+  const listMembers = getMembers(groupID).map(member => {
     if (member.personID >= 0 && member.clubID >= 0) {
 
       return (   
@@ -23,30 +24,10 @@ export default function MembersPanel( { groupID, isCashAdmin }: Props) {
       );
     } else {
       return (   
-        <li>Loading user {member.personID}...</li>
+        <li key={-1}>Loading user {member.personID}...</li>
       );
     }
   })
-
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`, {
-      method: "GET",
-      headers: new Headers({ Authorization: token }),
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw response.status;
-      }
-
-      if (response.status === 204) {
-        setMembers([]);
-        return;
-      }
-
-      const json = await response.json();
-
-      setMembers(json);
-    });
-  }, [token, members.length]);
 
   async function addMember() {
     fetch(
@@ -61,7 +42,7 @@ export default function MembersPanel( { groupID, isCashAdmin }: Props) {
         if (!response.ok) {
           throw response.status;
         }
-        setMembers([...members, new Member(-1, -1, PersonRole.Player, 0, newMember.firstName, newMember.lastName, newMember.nickname)])
+        refresh(groupID)
       }
     );
   }
@@ -72,30 +53,38 @@ export default function MembersPanel( { groupID, isCashAdmin }: Props) {
       {listMembers}
       <div>
         <h4>Add Member</h4>
-        <label>Email</label>
-        <input type="text" onChange={(e) => setNewMember(member => {
-          const m = member.clone();
-          m.identifier = e.target.value;
-          return m;
-        })} />
-        <label>First Name</label>
-        <input type="text" onChange={(e) => setNewMember(member => {
-          const m = member.clone();
-          m.firstName = e.target.value;
-          return m;
-        })} />
-        <label>Last Name</label>
-        <input type="text" onChange={(e) => setNewMember(member => {
-          const m = member.clone();
-          m.lastName = e.target.value;
-          return m;
-        })} />
-        <label>Nickname</label>
-        <input type="text" onChange={(e) => setNewMember(member => {
-          const m = member.clone();
-          m.nickname = e.target.value;
-          return m;
-        })} />
+        <label>
+          Email{}
+          <input type="text" onChange={(e) => setNewMember(member => {
+            const m = member.clone();
+            m.identifier = e.target.value;
+            return m;
+          })} />
+        </label>
+        <label>
+          First Name{}
+          <input type="text" onChange={(e) => setNewMember(member => {
+            const m = member.clone();
+            m.firstName = e.target.value;
+            return m;
+          })} />
+        </label>
+        <label>
+          Last Name{}
+          <input type="text" onChange={(e) => setNewMember(member => {
+            const m = member.clone();
+            m.lastName = e.target.value;
+            return m;
+          })} />
+        </label>
+        <label>
+          Nickname{}
+          <input type="text" onChange={(e) => setNewMember(member => {
+            const m = member.clone();
+            m.nickname = e.target.value;
+            return m;
+          })} />
+        </label>
         <button onClick={addMember}>Add</button>
       </div>
     </div>
@@ -108,8 +97,8 @@ type BankTransactionProps = {
   isCashAdmin: boolean;
 };
 
-export function BankTransaction({ groupID, userID, isCashAdmin }: BankTransactionProps) {
-  const { token, setToken } = useContext(TokenContext);
+export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankTransactionProps>) {
+  const { token } = useContext(TokenContext);
   const [deposit, setDeposit] = useState(0);
 
   if (!isCashAdmin) { return <></> }

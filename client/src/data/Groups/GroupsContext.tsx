@@ -2,7 +2,11 @@ import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 import { TokenContext } from "../Token/TokenContext";
 import Group from "../../classes/Group";
 
-export const GroupsContext = createContext({getGroups: () => { return [] as Group[] }, refresh: () => {}});
+export const GroupsContext = createContext({
+  refresh: () => {},
+  getGroups: () => { return [] as Group[] }, 
+  getGroup: (id: number) => { return new Group(); }
+});
 
 type Props = { children: ReactNode }
 
@@ -22,11 +26,6 @@ export default function GroupsContextWrapper({ children }: Readonly<Props>) {
         throw response.status;
       }
 
-      if (response.status === 204) {
-        setGroups([]);
-        return;
-      }
-
       const json = await response.json();
 
       setGroups(json);
@@ -35,7 +34,6 @@ export default function GroupsContextWrapper({ children }: Readonly<Props>) {
   }
 
   function getGroups() {
-
     if (refreshDate.getTime() + REFRESH_RATE < Date.now()) {
       refresh();
     }
@@ -43,7 +41,20 @@ export default function GroupsContextWrapper({ children }: Readonly<Props>) {
     return groups;
   }
 
-  const provider = useMemo(() => ({getGroups: getGroups, refresh: refresh}), [groups])
+  function getGroup(id: number) {
+    if (refreshDate.getTime() + REFRESH_RATE < Date.now()) {
+      refresh();
+    }
+    
+    const group = groups.find((g:Group) => { return g.id === id; })
+    if (!group) {
+      return new Group()
+    }
+
+    return group;
+  }
+
+  const provider = useMemo(() => ({refresh: refresh, getGroups: getGroups, getGroup}), [groups])
 
   return (
     <GroupsContext.Provider value={provider}>
