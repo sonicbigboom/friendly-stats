@@ -9,13 +9,11 @@ import RegisterPage from "../RegisterPage/RegisterPage";
 import ResetPage from "../ResetPage/ResetPage";
 import GroupPage from "../GroupPage/GroupPage";
 import GamePage from "../GamePage/GamePage";
+import FSNavbar from "../../components/FSNavbar/FSNavbar";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const { token, setToken } = useToken();
-
-  function logout() {
-    setToken(null);
-  }
 
   if (!token) {
     return (
@@ -33,15 +31,14 @@ function App() {
 
   return (
     <Wrapper token={token}>
+      <FSNavbar setToken={setToken}/>
       <div className="wrapper">
-        <Link to="/dashboard"><h1>Friendly Stats</h1></Link>
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/group/:groupID" element={<GroupPage />} />
           <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
-        <button onClick={logout}>Logout</button>
       </div>
     </Wrapper>
   );

@@ -25,7 +25,7 @@ async function loginUser(credentials: {
 }
 
 interface LoginProps {
-  setToken: (token: string) => void;
+  setToken: (token: null | string) => void;
 }
 
 export default function LoginPage({ setToken }: LoginProps) {

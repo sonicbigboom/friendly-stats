@@ -12,7 +12,7 @@ export default function useToken() {
 
   const [token, setToken] = useState(getToken());
 
-  const saveToken = (userToken: any) => {
+  const saveToken = (userToken: null | string) => {
     localStorage.setItem("token", JSON.stringify(userToken));
     setToken(userToken);
   };
