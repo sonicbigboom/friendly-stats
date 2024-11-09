@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import User from "../../classes/User";
-import { TokenContext } from "../../data/Token/TokenContext";
+import { UserContext } from "../../data/User/UserContext";
 
 type Props = {
   user: User;
@@ -8,23 +8,7 @@ type Props = {
 
 export default function UserPanel() {
 
-  const { token } = useContext(TokenContext);
-  const [user, setUser] = useState<User>(new User());
-
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/me`, {
-      method: "GET",
-      headers: new Headers({ Authorization: token }),
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw response.status;
-      }
-
-      const json = await response.json();
-
-      setUser(json);
-    });
-  }, [token]);
+  const { user } = useContext(UserContext)
 
   return (
     <div>

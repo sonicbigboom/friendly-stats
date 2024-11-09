@@ -11,7 +11,7 @@ import GroupPage from "../GroupPage/GroupPage";
 import GamePage from "../GamePage/GamePage";
 import FSNavbar from "../../components/FSNavbar/FSNavbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import UserContextWrapper from "../../data/User/UserContextWrapper";
+import DataWrapper from "../../components/DataWrapper/DataWrapper";
 
 function App() {
   const { token, setToken } = useToken();
@@ -32,17 +32,15 @@ function App() {
 
   return (
     <Wrapper token={token} setToken={setToken}>
-      <UserContextWrapper>
+      <DataWrapper>
         <FSNavbar />
-        <div className="wrapper">
-          <Routes>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/group/:groupID" element={<GroupPage />} />
-            <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </div>
-      </UserContextWrapper>
+        <Routes>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/group/:groupID" element={<GroupPage />} />
+          <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </DataWrapper>
     </Wrapper>
   );
 }

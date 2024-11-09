@@ -2,13 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import Group from "../../classes/Group"
 import { TokenContext } from "../../data/Token/TokenContext";
 import { Link } from "react-router-dom";
+import { GroupsContext } from "../../data/Groups/GroupsContext";
 
 export default function GroupsPanel() {
-  const { token, setToken } = useContext(TokenContext);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const { token } = useContext(TokenContext);
+  const { getGroups, refresh } = useContext(GroupsContext);
   const [newGroupName, setNewGroupName] = useState("");
   
-  const listGroups = groups.map(group => {
+  const listGroups = getGroups().map(group => {
     if (group.id >= 0) {
       return (   
         <li key={group.id}>
@@ -22,26 +23,6 @@ export default function GroupsPanel() {
     }
   })
 
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups`, {
-      method: "GET",
-      headers: new Headers({ Authorization: token }),
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw response.status;
-      }
-
-      if (response.status === 204) {
-        setGroups([]);
-        return;
-      }
-
-      const json = await response.json();
-
-      setGroups(json);
-    });
-  }, [token, groups.length]);
-
   async function createGroup() {
     fetch(
       `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups?name=${newGroupName}`,
@@ -54,7 +35,7 @@ export default function GroupsPanel() {
         if (!response.ok) {
           throw response.status;
         }
-        setGroups([...groups, new Group(-1, `Loading ${newGroupName}...`, -1, 0)])
+        refresh();
       }
     );
   }
