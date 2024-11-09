@@ -4,9 +4,11 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { TokenContext } from '../../data/Token/TokenContext';
+import { UserContext } from '../../data/User/UserContext';
 
 export default function FSNavbar() {
-  const {token, setToken} = useContext(TokenContext);
+  const {setToken} = useContext(TokenContext);
+  const {user} = useContext(UserContext);
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary" data-bs-theme="dark">
@@ -19,7 +21,7 @@ export default function FSNavbar() {
           </Nav>
           <Nav className="ml-auto">
             <Navbar.Text>
-              USERNAME
+              {user.username}
             </Navbar.Text>
           <Button variant="outline-danger" className="mx-2" onClick={() => setToken(null)}>Logout</Button>
           </Nav>
