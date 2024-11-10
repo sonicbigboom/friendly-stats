@@ -18,6 +18,7 @@ import com.potrt.stats.security.SecurityService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -117,5 +118,21 @@ public class GamePlayerService {
             now,
             personID);
     gamePlayerRepository.save(gamePlayer);
+  }
+
+  public boolean isPlayer(Integer personID, Integer gameID)
+      throws NoResourceException, UnauthenticatedException, UnauthorizedException {
+    Game game = gameService.getGameWithoutAuthorization(gameID);
+    Integer clubID = game.getClubID();
+
+    clubService.getClub(clubID);
+
+    Optional<GamePlayer> player = gamePlayerRepository.findById(new GamePerson(gameID, personID));
+
+    if (player.isEmpty()) {
+      return false;
+    }
+
+    return !player.get().isDeleted();
   }
 }

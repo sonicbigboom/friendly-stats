@@ -7,9 +7,10 @@ import com.potrt.stats.data.game.GameService;
 import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
+import com.potrt.stats.data.player.GamePlayerService;
 import com.potrt.stats.endpoints.games.id.records.GameRecordDto;
 import com.potrt.stats.exceptions.NoResourceException;
-import com.potrt.stats.exceptions.PersonIsNotMemberException;
+import com.potrt.stats.exceptions.PersonIsNotPlayerException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import com.potrt.stats.security.SecurityService;
@@ -26,6 +27,7 @@ public class GameRecordService {
   private ClubService clubService;
   private MembershipService membershipService;
   private GameService gameService;
+  private GamePlayerService gamePlayerService;
   private GameRecordRepository gameRecordRepository;
 
   /** Autowires a {@link GameRecordService}. */
@@ -35,11 +37,13 @@ public class GameRecordService {
       ClubService clubService,
       MembershipService membershipService,
       GameService gameService,
+      GamePlayerService gamePlayerService,
       GameRecordRepository gameRecordRepository) {
     this.securityService = securityService;
     this.clubService = clubService;
     this.membershipService = membershipService;
     this.gameService = gameService;
+    this.gamePlayerService = gamePlayerService;
     this.gameRecordRepository = gameRecordRepository;
   }
 
@@ -77,7 +81,7 @@ public class GameRecordService {
       throws NoResourceException,
           UnauthenticatedException,
           UnauthorizedException,
-          PersonIsNotMemberException {
+          PersonIsNotPlayerException {
     Game game = gameService.getGameWithoutAuthorization(gameID);
     Integer clubID = game.getClubID();
 
@@ -87,8 +91,8 @@ public class GameRecordService {
     }
     clubService.getClub(clubID);
 
-    if (!membershipService.isMember(gameRecordDto.getUserID(), clubID)) {
-      throw new PersonIsNotMemberException();
+    if (!gamePlayerService.isPlayer(gameRecordDto.getUserID(), gameID)) {
+      throw new PersonIsNotPlayerException();
     }
 
     Date now = new Date();

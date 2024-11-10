@@ -4,7 +4,7 @@ package com.potrt.stats.endpoints.games.id.records;
 import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
 import com.potrt.stats.data.gamerecord.GameRecordService;
 import com.potrt.stats.exceptions.NoResourceException;
-import com.potrt.stats.exceptions.PersonIsNotMemberException;
+import com.potrt.stats.exceptions.PersonIsNotPlayerException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
 import java.util.List;
@@ -76,7 +76,7 @@ public class GamesIdRecordsEndpoint {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     } catch (NoResourceException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } catch (PersonIsNotMemberException e) {
+    } catch (PersonIsNotPlayerException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
   }
