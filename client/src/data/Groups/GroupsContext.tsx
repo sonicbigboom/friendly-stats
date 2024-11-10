@@ -26,8 +26,13 @@ export default function GroupsContextWrapper({ children }: Readonly<Props>) {
         throw response.status;
       }
 
-      const json = await response.json();
-
+      let json: Group[];
+      if (response.status == 204) {
+        json = []
+      } else {
+        json = await response.json();
+      }
+      
       setGroups(json);
       setRefreshDate(new Date())
     });

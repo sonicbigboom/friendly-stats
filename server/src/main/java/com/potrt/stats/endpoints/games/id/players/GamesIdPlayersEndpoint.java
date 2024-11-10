@@ -1,8 +1,8 @@
 /* Copyright (c) 2024 */
-package com.potrt.stats.endpoints.games.id.record;
+package com.potrt.stats.endpoints.games.id.players;
 
-import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
-import com.potrt.stats.data.gamerecord.GameRecordService;
+import com.potrt.stats.data.player.GamePlayer.MaskedGamePlayer;
+import com.potrt.stats.data.player.GamePlayerService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
@@ -17,36 +17,36 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Creates an endpoint for viewing and adding games. */
+/** Creates an endpoint for viewing and adding players to games. */
 @RestController
-public class GamesIdRecordEndpoint {
+public class GamesIdPlayersEndpoint {
 
-  private GameRecordService gameRecordService;
+  private GamePlayerService gamePlayerService;
 
-  /** Autowires a {@link GamesIdRecordEndpoint}. */
+  /** Autowires a {@link GamesIdPlayersEndpoint}. */
   @Autowired
-  public GamesIdRecordEndpoint(GameRecordService gameRecordService) {
-    this.gameRecordService = gameRecordService;
+  public GamesIdPlayersEndpoint(GamePlayerService gamePlayerService) {
+    this.gamePlayerService = gamePlayerService;
   }
 
   /**
-   * The <code>/games/{gameID}/records</code> {@code GET} endpoint returns the records for the
+   * The <code>/games/{gameID}/players</code> {@code GET} endpoint returns the players for the
    * target games.
    *
    * <p>TODO: Add query parameter for user id.
    */
-  @GetMapping("/games/{gameID}/records")
-  public ResponseEntity<List<MaskedGameRecord>> getGameRecord(
+  @GetMapping("/games/{gameID}/players")
+  public ResponseEntity<List<MaskedGamePlayer>> getGamePlayers(
       @PathVariable(value = "gameID") String gameID) {
     try {
-      List<MaskedGameRecord> gameRecords =
-          gameRecordService.getGameRecords(Integer.valueOf(gameID));
+      List<MaskedGamePlayer> gamePlayers =
+          gamePlayerService.getGamePlayers(Integer.valueOf(gameID));
 
-      if (gameRecords.isEmpty()) {
+      if (gamePlayers.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(gameRecords, HttpStatus.OK);
+      return new ResponseEntity<>(gamePlayers, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -59,16 +59,16 @@ public class GamesIdRecordEndpoint {
   }
 
   /**
-   * The <code>/games/{gameID}/records</code> {@code POST} endpoint creates a new record for the
-   * target game.
+   * The <code>/games/{gameID}/players</code> {@code POST} endpoint adds a player for the target
+   * game.
    */
-  @PostMapping("/games/{gameID}/records")
-  public ResponseEntity<Void> addGameRecord(
-      @PathVariable(value = "gameID") String gameID, @RequestBody GameRecordDto gameRecordDto) {
+  @PostMapping("/games/{gameID}/players")
+  public ResponseEntity<Void> addGamePlayer(
+      @PathVariable(value = "gameID") String gameID, @RequestBody GamePlayerDto gamePlayerDto) {
     try {
-      gameRecordService.addGameRecord(Integer.valueOf(gameID), gameRecordDto);
+      gamePlayerService.addGamePlayer(Integer.valueOf(gameID), gamePlayerDto);
       return new ResponseEntity<>(HttpStatus.CREATED);
-    } catch (NumberFormatException | PersonIsNotMemberException e) {
+    } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -76,6 +76,8 @@ public class GamesIdRecordEndpoint {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     } catch (NoResourceException e) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } catch (PersonIsNotMemberException e) {
+      return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
   }
 }

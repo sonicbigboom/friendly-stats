@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
-import Game from "../../classes/Game";
 import { Link } from "react-router-dom";
+import { GamesContext } from "../../data/Games/GamesContext";
 
 type Props = {
   groupID: number;
@@ -10,10 +10,10 @@ type Props = {
 
 export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
-  const [games, setGames] = useState<Game[]>([]);
+  const { getGames, refresh } = useContext(GamesContext)
   const [newGame, setNewGame] = useState<GameDto>(new GameDto());
   
-  const listGames = games.map(game => {
+  const listGames = getGames(groupID).map(game => {
     if (game.id >= 0) {
 
       let end = "On Going";
@@ -33,26 +33,6 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
     }
   })
 
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`, {
-      method: "GET",
-      headers: new Headers({ Authorization: token }),
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw response.status;
-      }
-
-      if (response.status === 204) {
-        setGames([]);
-        return;
-      }
-
-      const json = await response.json();
-
-      setGames(json);
-    });
-  }, [token, games.length]);
-
   async function addGame() {
     fetch(
       `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`,
@@ -66,7 +46,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
         if (!response.ok) {
           throw response.status;
         }
-        setGames([...games, new Game()])
+        refresh(groupID);
       }
     );
   }

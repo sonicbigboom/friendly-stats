@@ -5,7 +5,7 @@ import Member from "../../classes/Member";
 export const MembersContext = createContext({
   refresh: (groupID: number) => {},
   getMembers: (groupID: number) => { return [] as Member[] },
-  getMember: (groupID: number, userId: number) => { return new Member }
+  getMember: (groupID: number, userId: number) => { return new Member() }
 });
 
 type Props = { children: ReactNode }
@@ -26,17 +26,22 @@ export default function MembersContextWrapper({ children }: Readonly<Props>) {
         throw response.status;
       }
 
-      const json = await response.json();
+      let json: Member[];
+      if (response.status == 204) {
+        json = []
+      } else {
+        json = await response.json();
+      }
 
-      setMembers({
-        ...members,
+      setMembers(d => {return {
+        ...d,
         [groupID]: json
-      });
+      }});
 
-      setRefreshDates({
-        ...refreshDates,
+      setRefreshDates(d => {return {
+        ...d,
         [groupID]: new Date()
-      })
+      }})
     });
   }
 

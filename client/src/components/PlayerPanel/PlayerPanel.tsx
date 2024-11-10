@@ -1,7 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
-import Member from "../../classes/Member";
 import { BankTransaction } from "../MembersPanel/MembersPanel";
+import { MembersContext } from "../../data/Members/MembersContext";
+import { PlayersContext } from "../../data/Players/PlayersContext";
+import { GamesContext } from "../../data/Games/GamesContext";
 
 type Props = {
   groupID: number;
@@ -12,9 +14,13 @@ type Props = {
 
 export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
-  const [members, setMembers] = useState<Member[]>([]);
+  const { getPlayerMembers, getNonPlayerMembers, refresh } = useContext(PlayersContext);
+  const [ newPlayerID, setNewPlayerID ] = useState((getNonPlayerMembers(groupID, gameID).length > 0) ? getNonPlayerMembers(groupID, gameID)[0].personID : -1);
   
-  const listPlayers = members.map(member => {
+  const players = getPlayerMembers(groupID, gameID);
+  const nonPlayers = getNonPlayerMembers(groupID, gameID);
+
+  const listPlayers = players.map(member => {
     if (member.personID >= 0 && member.clubID >= 0) {
 
       return (   
@@ -31,30 +37,51 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
     }
   })
 
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`, {
-      method: "GET",
-      headers: new Headers({ Authorization: token }),
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw response.status;
+  const listNewPlayerOptions = nonPlayers.map(member => {
+    return  (
+      <option key={member.personID} value={member.personID}>{member.firstName} {member.lastName}{(member.nickname) ? (" " + member.nickname) : ""}</option>
+    )
+  })
+
+  function addNewPlayer() {
+    let id = newPlayerID;
+    if (id === -1) {
+      id = nonPlayers[0].personID
+    }
+    fetch(
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/players`,
+      {
+        method: "POST",
+        headers: new Headers({ Authorization: token, "content-type": "application/json" }),
+        body: JSON.stringify({userID: id, metadata: ""}),
       }
-
-      if (response.status === 204) {
-        setMembers([]);
-        return;
+    ).then(
+      async (response) => {
+        if (!response.ok) {
+          throw response.status;
+        }
+        refresh(gameID)
       }
+    );
+  }
 
-      const json = await response.json();
-
-      setMembers(json);
-    });
-  }, [token, members.length]);
+  const addNewPlayerSelector = (
+    <div>
+      <label>
+        Add Player{}
+        <select onChange={(e) => setNewPlayerID(Number(e.target.value))}>
+          {listNewPlayerOptions}
+        </select>
+      </label>
+      <button onClick={addNewPlayer}>Add</button>
+    </div>
+  )
 
   return (
     <div>
-      <h3>Player:</h3>
+      <h3>Players:</h3>
       {listPlayers}
+      {(nonPlayers.length > 0) ? addNewPlayerSelector : <></>}
     </div>
   )
 }

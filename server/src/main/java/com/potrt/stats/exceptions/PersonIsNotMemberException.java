@@ -8,7 +8,7 @@ import com.potrt.stats.data.person.Person;
  * An {@link Exception} when trying to perform an action on a {@link Person} for a {@link Club} that
  * the {@link Person} is not a member of.
  *
- * @fs.httpStatus 409 Conflict
+ * @fs.httpStatus 400 Bad Request
  */
 public class PersonIsNotMemberException extends Exception {
   public PersonIsNotMemberException() {
