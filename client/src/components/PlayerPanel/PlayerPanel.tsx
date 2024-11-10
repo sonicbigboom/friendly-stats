@@ -46,6 +46,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
     if (id === -1) {
       id = nonPlayers[0].personID
     }
+    setNewPlayerID(-1)
     fetch(
       `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/players`,
       {
