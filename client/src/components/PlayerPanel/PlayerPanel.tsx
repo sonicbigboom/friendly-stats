@@ -1,9 +1,7 @@
 import { useContext, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
 import { BankTransaction } from "../MembersPanel/MembersPanel";
-import { MembersContext } from "../../data/Members/MembersContext";
 import { PlayersContext } from "../../data/Players/PlayersContext";
-import { GamesContext } from "../../data/Games/GamesContext";
 
 type Props = {
   groupID: number;
@@ -60,7 +58,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
         if (!response.ok) {
           throw response.status;
         }
-        refresh(gameID)
+        refresh(groupID, gameID)
       }
     );
   }
@@ -93,8 +91,9 @@ type GameRecordProps = {
   isGameAdmin: boolean;
 };
 
-export function GameRecord({ userID, gameID, isGameAdmin }: Readonly<GameRecordProps>) {
+export function GameRecord({ userID, groupID, gameID, isGameAdmin }: Readonly<GameRecordProps>) {
   const { token } = useContext(TokenContext);
+  const { refresh: refreshPlayers } = useContext(PlayersContext);
   const [scoreChange, setScoreChange] = useState(0);
 
   if (!isGameAdmin) { return <></> }
@@ -112,6 +111,7 @@ export function GameRecord({ userID, gameID, isGameAdmin }: Readonly<GameRecordP
         if (!response.ok) {
           throw response.status;
         }
+        refreshPlayers(groupID, gameID);
       }
     );
   }

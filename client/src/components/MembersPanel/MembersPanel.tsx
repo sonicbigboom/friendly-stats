@@ -100,6 +100,7 @@ type BankTransactionProps = {
 export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankTransactionProps>) {
   const { token } = useContext(TokenContext);
   const [deposit, setDeposit] = useState(0);
+  const { refresh: refreshMembers } = useContext(MembersContext);
 
   if (!isCashAdmin) { return <></> }
 
@@ -116,6 +117,7 @@ export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankT
         if (!response.ok) {
           throw response.status;
         }
+        refreshMembers(groupID);
       }
     );
   }

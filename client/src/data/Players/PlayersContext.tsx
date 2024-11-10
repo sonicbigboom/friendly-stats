@@ -5,8 +5,8 @@ import Member from "../../classes/Member";
 import { MembersContext } from "../Members/MembersContext";
 
 export const PlayersContext = createContext({
-  refresh: (gameID: number) => {},
-  getPlayers: (gameID: number) => { return [] as Player[] },
+  refresh: (groupID: number, gameID: number) => {},
+  getPlayers: (groupID: number, gameID: number) => { return [] as Player[] },
   getPlayerMembers: (groupID: number, gameID: number) => { return [] as Member[] },
   getNonPlayerMembers: (groupID: number, gameID: number) => { return [] as Member[] }
 });
@@ -19,9 +19,9 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
   const [players, setPlayers] = useState<{[gameID: number] : Player[]}>({});
   const [refreshDates, setRefreshDates] = useState<{[gameID: number] : Date}>({})
-  const { getMembers } = useContext(MembersContext);
+  const { getMembers, refresh: refreshMember } = useContext(MembersContext);
 
-  function refresh(gameID: number) {
+  function refresh(groupID: number, gameID: number) {
     fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/players`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
@@ -47,11 +47,13 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
         [gameID]: new Date()
       }})
     });
+
+    refreshMember(groupID);
   }
 
-  function getPlayers(gameID: number) {
+  function getPlayers(groupID: number, gameID: number) {
     if (!refreshDates[gameID] || refreshDates[gameID].getTime() + REFRESH_RATE < Date.now()) {
-      refresh(gameID);
+      refresh(groupID, gameID);
     }
 
     const ps = players[gameID];
@@ -64,7 +66,7 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
 
   function getPlayerMembers(groupID: number, gameID: number) {
     const members = getMembers(groupID);
-    const players = getPlayers(gameID);
+    const players = getPlayers(groupID, gameID);
     const playerMembers = members.filter((m) => {
       for (const player of players) {
         if (m.personID === player.personID) {
@@ -79,7 +81,7 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
 
   function getNonPlayerMembers(groupID: number, gameID: number) {
     const members = getMembers(groupID);
-    const players = getPlayers(gameID);
+    const players = getPlayers(groupID, gameID);
     const playerMembers = members.filter((m) => {
       for (const player of players) {
         if (m.personID === player.personID) {
@@ -92,7 +94,7 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
     return playerMembers;
   }
 
-  const provider = useMemo(() => ({refresh: refresh, getPlayers: getPlayers, getPlayerMembers: getPlayerMembers, getNonPlayerMembers: getNonPlayerMembers}), [players])
+  const provider = useMemo(() => ({refresh: refresh, getPlayers: getPlayers, getPlayerMembers: getPlayerMembers, getNonPlayerMembers: getNonPlayerMembers}), [players, getMembers])
 
   return (
     <PlayersContext.Provider value={provider}>
