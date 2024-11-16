@@ -5,7 +5,7 @@ import Member from "../../classes/Member";
 export const MembersContext = createContext({
   refresh: (groupID: number) => {},
   getMembers: (groupID: number) => { return [] as Member[] },
-  getMember: (groupID: number, userId: number) => { return new Member() }
+  getMember: (groupID: number, userID: number) => { return new Member() }
 });
 
 type Props = { children: ReactNode }
@@ -58,10 +58,10 @@ export default function MembersContextWrapper({ children }: Readonly<Props>) {
     return ms;
   }
 
-  function getMember(groupID: number, userId: number) {
+  function getMember(groupID: number, userID: number) {
     const ms = getMembers(groupID);
 
-    const member = ms.find((m:Member) => { return m.personID === userId; })
+    const member = ms.find((m:Member) => { return m.personID === userID; })
     if (!member) {
       return new Member()
     }

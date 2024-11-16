@@ -37,11 +37,12 @@ public class GroupsIdRecordsEndpoint {
       @PathVariable(value = "groupID") String groupID,
       @RequestParam(value = "gameTypeID") Optional<String> gameTypeID,
       @RequestParam(value = "forCash") Optional<String> forCash,
-      @RequestParam(value = "seasonID") Optional<String> seasonID) {
+      @RequestParam(value = "seasonID") Optional<String> seasonID,
+      @RequestParam(value = "userID") Optional<String> userID) {
     try {
       List<GameRecordExpanded> gameRecordExpandeds =
           gameRecordExpandedService.getGameRecordExpandeds(
-              Integer.valueOf(groupID), gameTypeID, forCash, seasonID);
+              Integer.valueOf(groupID), gameTypeID, forCash, seasonID, userID);
 
       if (gameRecordExpandeds.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);

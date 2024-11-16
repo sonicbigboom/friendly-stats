@@ -47,8 +47,12 @@ public class GameRecordExpandedService {
       Integer clubID,
       Optional<String> gameTypeID,
       Optional<String> forCash,
-      Optional<String> seasonID)
-      throws NoResourceException, UnauthenticatedException, UnauthorizedException, NumberFormatException {
+      Optional<String> seasonID,
+      Optional<String> personID)
+      throws NoResourceException,
+          UnauthenticatedException,
+          UnauthorizedException,
+          NumberFormatException {
 
     clubService.getClub(clubID);
 
@@ -65,6 +69,10 @@ public class GameRecordExpandedService {
 
     if (seasonID.isPresent()) {
       example.setSeasonID(Integer.valueOf(seasonID.get()));
+    }
+
+    if (personID.isPresent()) {
+      example.setPersonID(Integer.valueOf(personID.get()));
     }
 
     Iterable<GameRecordExpanded> gameRecordExpandeds =

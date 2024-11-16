@@ -12,6 +12,7 @@ import GamePage from "../GamePage/GamePage";
 import FSNavbar from "../../components/FSNavbar/FSNavbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DataWrapper from "../../components/DataWrapper/DataWrapper";
+import ScoreboardPage from "../ScoreboardPage/ScoreboardPage";
 
 function App() {
   const { token, setToken } = useToken();
@@ -37,6 +38,7 @@ function App() {
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/group/:groupID" element={<GroupPage />} />
+          <Route path="/group/:groupID/scoreboard" element={<ScoreboardPage />} />
           <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
