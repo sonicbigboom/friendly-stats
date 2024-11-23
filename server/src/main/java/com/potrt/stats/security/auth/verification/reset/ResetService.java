@@ -77,7 +77,7 @@ public class ResetService {
   public Person checkToken(String email, String token)
       throws PersonDoesNotExistException, TokenDoesNotExistException, TokenExpiredException {
 
-    Person person = personService.getPersonWithoutAuthorization(email);
+    Person person = personService.getPersonWithoutAuthCheck(email);
 
     Optional<Reset> optionalReset = resetRepository.findById(token);
     if (optionalReset.isEmpty()) {

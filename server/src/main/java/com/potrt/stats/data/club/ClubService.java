@@ -2,7 +2,6 @@
 package com.potrt.stats.data.club;
 
 import com.potrt.stats.data.club.Club.MaskedClub;
-import com.potrt.stats.data.membership.Membership.MaskedMembership;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.data.person.Person;
@@ -13,7 +12,6 @@ import com.potrt.stats.security.SecurityService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 /** The {@link ClubService} is a service that allows for {@link Club} management. */
@@ -41,23 +39,17 @@ public class ClubService {
    * @param clubID The {@link Club} id.
    * @return A {@link MaskedClub}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
-   * @throws UnauthorizedException Thrown if the caller is not authorized to view this club.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public MaskedClub getClub(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    Integer personID = securityService.getPersonID();
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
-    if (!membershipService.hasRole(personID, clubID, PersonRole.PERSON)) {
-      throw new UnauthorizedException();
-    }
-
-    Optional<Club> club = clubRepository.findById(clubID);
-    if (club.isEmpty() || club.get().isDeleted()) {
-      throw new NoResourceException();
-    }
+    Club club = clubRepository.findById(clubID).get();
     return new MaskedClub(
-        club.get(), membershipService.hasRole(personID, clubID, PersonRole.CASH_ADMIN));
+        club,
+        membershipService.hasRole(securityService.getPersonID(), clubID, PersonRole.CASH_ADMIN));
   }
 
   /**
@@ -73,25 +65,6 @@ public class ClubService {
     club = clubRepository.save(club);
     membershipService.updatePermissions(personID, club.getId(), PersonRole.OWNER);
     return new MaskedClub(club, true);
-  }
-
-  /**
-   * Gets all of the members of a {@link Club}.
-   *
-   * @param clubID The {@link Club}'s id.
-   * @return The {@link List} of {@link MaskedMembership}s within the club.
-   * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
-   * @throws UnauthorizedException Thrown if the caller is not authorized to view this club.
-   * @throws NoResourceException Thrown if the club does not exist.
-   */
-  public List<MaskedMembership> getMemberships(Integer clubID)
-      throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    Optional<Club> club = clubRepository.findById(clubID);
-    if (club.isEmpty() || club.get().isDeleted()) {
-      throw new NoResourceException();
-    }
-
-    return membershipService.getMemberships(clubID);
   }
 
   /**

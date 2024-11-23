@@ -2,9 +2,7 @@
 package com.potrt.stats.data.game;
 
 import com.potrt.stats.data.club.Club;
-import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.data.game.Game.MaskedGame;
-import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.endpoints.groups.id.games.GameDto;
 import com.potrt.stats.exceptions.NoResourceException;
@@ -22,20 +20,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameService {
   private SecurityService securityService;
-  private ClubService clubService;
-  private MembershipService membershipService;
   private GameRepository gameRepository;
 
   /** Autowires a {@link GameService}. */
   @Autowired
-  public GameService(
-      SecurityService securityService,
-      ClubService clubService,
-      MembershipService membershipService,
-      GameRepository gameRepository) {
+  public GameService(SecurityService securityService, GameRepository gameRepository) {
     this.securityService = securityService;
-    this.clubService = clubService;
-    this.membershipService = membershipService;
     this.gameRepository = gameRepository;
   }
 
@@ -44,13 +34,13 @@ public class GameService {
    *
    * @param clubID The {@link Club} id.
    * @return The {@link List} of {@link Game}s.
-   * @throws UnauthenticatedException Thrown if the user is not authenticated.
-   * @throws UnauthorizedException Thrown if the user is not a member of the club.
-   * @throws NoResourceException Thrown if the club doesn't exist.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public List<MaskedGame> getGames(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    clubService.getClub(clubID);
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
     Iterable<Game> games = gameRepository.findByClubID(clubID);
 
@@ -70,18 +60,14 @@ public class GameService {
    *
    * @param clubID The {@link Club} id.
    * @param gameDto The {@link GameDto}.
-   * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
    *     Club}.
-   * @throws NoResourceException Thrown if the {@link Club} does not exist.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public void addGame(Integer clubID, GameDto gameDto)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    Integer personID = securityService.getPersonID();
-    if (!membershipService.hasRole(personID, clubID, PersonRole.CASH_ADMIN)) {
-      throw new UnauthorizedException();
-    }
-    clubService.getClub(clubID);
+    securityService.assertHasPermission(clubID, PersonRole.GAME_ADMIN);
 
     Date now = new Date();
     Game game =
@@ -105,12 +91,13 @@ public class GameService {
    * @param gameID The {@link Game} id.
    * @return The {@link Game}.
    * @throws NoResourceException Thrown if no game with this id exists.
+   * @apiNote This service method does not check authorization.
    */
-  public Game getGameWithoutAuthorization(Integer gameID) throws NoResourceException {
+  public Game getGameWithoutAuthCheck(Integer gameID) throws NoResourceException {
     Optional<Game> game = gameRepository.findById(gameID);
 
     if (game.isEmpty()) {
-      throw new NoResourceException();
+      throw new NoResourceException("No game with id \"" + gameID + "\" exists.");
     }
 
     return game.get();

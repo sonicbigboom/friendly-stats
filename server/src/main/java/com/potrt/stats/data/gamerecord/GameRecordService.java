@@ -1,12 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.gamerecord;
 
-import com.potrt.stats.data.club.ClubService;
+import com.potrt.stats.data.club.Club;
 import com.potrt.stats.data.game.Game;
 import com.potrt.stats.data.game.GameService;
 import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
-import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
+import com.potrt.stats.data.person.Person;
 import com.potrt.stats.data.player.GamePlayerService;
 import com.potrt.stats.endpoints.games.id.records.GameRecordDto;
 import com.potrt.stats.exceptions.NoResourceException;
@@ -24,8 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class GameRecordService {
   private SecurityService securityService;
-  private ClubService clubService;
-  private MembershipService membershipService;
   private GameService gameService;
   private GamePlayerService gamePlayerService;
   private GameRecordRepository gameRecordRepository;
@@ -34,14 +32,10 @@ public class GameRecordService {
   @Autowired
   public GameRecordService(
       SecurityService securityService,
-      ClubService clubService,
-      MembershipService membershipService,
       GameService gameService,
       GamePlayerService gamePlayerService,
       GameRecordRepository gameRecordRepository) {
     this.securityService = securityService;
-    this.clubService = clubService;
-    this.membershipService = membershipService;
     this.gameService = gameService;
     this.gamePlayerService = gamePlayerService;
     this.gameRecordRepository = gameRecordRepository;
@@ -52,50 +46,53 @@ public class GameRecordService {
    *
    * @param gameID The {@link Game} id.
    * @return The {@link List} of {@link GameRecord}s.
-   * @throws NoResourceException Thrown if the {@link Game} does not exist.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
-   * @throws UnauthorizedException Thrown if the caller is not a member of the {@link Club} that the
-   *     game is a part of.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Game} with this id.
    */
   public List<MaskedGameRecord> getGameRecords(Integer gameID)
       throws NoResourceException, UnauthenticatedException, UnauthorizedException {
-    Game game = gameService.getGameWithoutAuthorization(gameID);
+    Game game = gameService.getGameWithoutAuthCheck(gameID);
     Integer clubID = game.getClubID();
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
-    clubService.getClub(clubID);
-
-    Iterable<GameRecord> gameRecords = gameRecordRepository.findByGameID(gameID);
-
-    List<MaskedGameRecord> outGameRecords = new ArrayList<>();
-    for (GameRecord gameRecord : gameRecords) {
+    List<MaskedGameRecord> gameRecords = new ArrayList<>();
+    for (GameRecord gameRecord : gameRecordRepository.findByGameID(gameID)) {
       if (gameRecord.isDeleted()) {
         continue;
       }
-      outGameRecords.add(new MaskedGameRecord(gameRecord));
+      gameRecords.add(new MaskedGameRecord(gameRecord));
     }
 
-    return outGameRecords;
+    return gameRecords;
   }
 
+  /**
+   * Adds a game record to a game.
+   *
+   * @param gameID The {@link Game} id.
+   * @param gameRecordDto
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Game} with this id.
+   * @throws PersonIsNotPlayerException Thrown if the target {@link Person} is not a player of this
+   *     game.
+   */
   public void addGameRecord(Integer gameID, GameRecordDto gameRecordDto)
       throws NoResourceException,
           UnauthenticatedException,
           UnauthorizedException,
           PersonIsNotPlayerException {
-    Game game = gameService.getGameWithoutAuthorization(gameID);
+    Game game = gameService.getGameWithoutAuthCheck(gameID);
     Integer clubID = game.getClubID();
-
-    Integer personID = securityService.getPersonID();
-    if (!membershipService.hasRole(personID, clubID, PersonRole.GAME_ADMIN)) {
-      throw new UnauthorizedException();
-    }
-    clubService.getClub(clubID);
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
     if (!gamePlayerService.isPlayer(gameRecordDto.getUserID(), gameID)) {
       throw new PersonIsNotPlayerException();
     }
 
     Date now = new Date();
+    Integer personID = securityService.getPersonID();
     GameRecord gameRecord =
         new GameRecord(
             null,

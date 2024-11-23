@@ -3,7 +3,6 @@ package com.potrt.stats.endpoints.users;
 
 import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.data.person.PersonService;
-import com.potrt.stats.exceptions.UnauthenticatedException;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -27,16 +26,12 @@ public class UsersEndpoint {
   @GetMapping("/users")
   public ResponseEntity<List<MaskedPerson>> getUsers(
       @RequestParam(value = "filter") Optional<String> filter) {
-    try {
-      List<MaskedPerson> persons = personService.getPersons(filter.orElseGet(() -> null));
+    List<MaskedPerson> persons = personService.getPersons(filter.orElseGet(() -> null));
 
-      if (persons.isEmpty()) {
-        return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
-      }
-
-      return new ResponseEntity<>(persons, HttpStatus.OK);
-    } catch (UnauthenticatedException e) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    if (persons.isEmpty()) {
+      return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
     }
+
+    return new ResponseEntity<>(persons, HttpStatus.OK);
   }
 }

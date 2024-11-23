@@ -3,12 +3,9 @@ package com.potrt.stats.data.person;
 
 import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
-import com.potrt.stats.exceptions.UnauthenticatedException;
-import com.potrt.stats.security.SecurityService;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
 import com.potrt.stats.security.auth.exceptions.UsernameAlreadyExistsException;
-import com.potrt.stats.security.auth.verification.VerificationService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,24 +21,22 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class PersonService {
 
-  private SecurityService securityService;
   private PersonRepository personRepository;
 
   /** Autowires a {@link PersonService}. */
-  public PersonService(SecurityService securityService, PersonRepository personRepository) {
-    this.securityService = securityService;
+  public PersonService(PersonRepository personRepository) {
     this.personRepository = personRepository;
   }
 
   /**
-   * Gets a {@link Person} by id and skips authentication/authorization checks.
+   * Gets a {@link Person} by id.
    *
    * @param id The {@link Person} id.
    * @return The associated {@link Person}.
    * @throws PersonDoesNotExistException Thrown if the {@link Person} does not exist or is deleted.
-   * @apiNote This method's output should never be sent to the caller.
+   * @apiNote This method does not check for authorization.
    */
-  public Person getPersonWithoutAuthorization(Integer id) throws PersonDoesNotExistException {
+  public Person getPersonWithoutAuthCheck(Integer id) throws PersonDoesNotExistException {
     Optional<Person> person = personRepository.findById(id);
 
     if (person.isEmpty() || person.get().isDeleted()) {
@@ -52,14 +47,14 @@ public class PersonService {
   }
 
   /**
-   * Gets a {@link Person} by email and skips authentication/authorization checks.
+   * Gets a {@link Person} by email.
    *
    * @param email The {@link Person}'s email.
    * @return The associated {@link Person}.
    * @throws PersonDoesNotExistException Thrown if the {@link Person} does not exist or is deleted.
-   * @apiNote This method's output should never be sent to the caller.
+   * @apiNote This method does not check for authorization.
    */
-  public Person getPersonWithoutAuthorization(String email) throws PersonDoesNotExistException {
+  public Person getPersonWithoutAuthCheck(String email) throws PersonDoesNotExistException {
     Optional<Person> person = personRepository.findByEmail(email);
 
     if (person.isEmpty() || person.get().isDeleted()) {
@@ -101,12 +96,12 @@ public class PersonService {
   }
 
   /**
-   * Enables a {@link Person} skips authentication/authorization checks.
+   * Enables a {@link Person} account.
    *
-   * @param personID The {@link Person}'s id.
-   * @apiNote This method should only be called by the {@link VerificationService}.
+   * @param personID The {@link Person} to enable's id.
+   * @apiNote This method does not check authorization.
    */
-  public void enableWithoutAuthorization(Integer personID) {
+  public void enableWithoutAuthCheck(Integer personID) {
     personRepository.enable(personID);
   }
 
@@ -116,11 +111,8 @@ public class PersonService {
    *
    * @param filter A string that is compared to all of a {@link Person}'s fields.
    * @return A {@link List} of {@link MaskedPerson}s who contain the field.
-   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    */
-  public List<MaskedPerson> getPersons(String filter) throws UnauthenticatedException {
-    securityService.getPerson();
-
+  public List<MaskedPerson> getPersons(String filter) {
     Iterable<Person> persons;
     if (filter == null) {
       persons = personRepository.findAll();
@@ -149,8 +141,13 @@ public class PersonService {
     return personRepository.isEmailTaken(email);
   }
 
-  /** TODO: CHECK AUTHORIZATION */
-  public Person createPerson(String email) {
+  /**
+   * Creates a person from the given email.
+   *
+   * @param email The email of the new person.
+   * @return The created {@link Person}.
+   */
+  public Person createPersonWithoutAuthCheck(String email) {
     return personRepository.save(
         new Person(null, email, UUID.randomUUID().toString(), null, null, null, true, true, false));
   }

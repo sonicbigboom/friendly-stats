@@ -2,13 +2,14 @@
 package com.potrt.stats.data.gamerecord.expanded;
 
 import com.potrt.stats.data.club.Club;
-import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.data.game.Game;
 import com.potrt.stats.data.gamerecord.GameRecord;
 import com.potrt.stats.data.gamerecord.GameRecordService;
+import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import com.potrt.stats.security.SecurityService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,14 +23,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GameRecordExpandedService {
-  private ClubService clubService;
+
+  private SecurityService securityService;
   private GameRecordExpandedRepository gameRecordExpandedRepository;
 
   /** Autowires a {@link GameRecordService}. */
   @Autowired
   public GameRecordExpandedService(
-      ClubService clubService, GameRecordExpandedRepository gameRecordExpandedRepository) {
-    this.clubService = clubService;
+      SecurityService securityService, GameRecordExpandedRepository gameRecordExpandedRepository) {
+    this.securityService = securityService;
     this.gameRecordExpandedRepository = gameRecordExpandedRepository;
   }
 
@@ -54,7 +56,7 @@ public class GameRecordExpandedService {
           UnauthorizedException,
           NumberFormatException {
 
-    clubService.getClub(clubID);
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
     GameRecordExpanded example = new GameRecordExpanded();
     example.setClubID(clubID);

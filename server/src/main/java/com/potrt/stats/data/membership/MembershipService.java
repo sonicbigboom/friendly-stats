@@ -6,6 +6,7 @@ import com.potrt.stats.data.membership.Membership.MaskedMembership;
 import com.potrt.stats.data.person.Person;
 import com.potrt.stats.data.person.PersonService;
 import com.potrt.stats.endpoints.groups.id.users.MembershipDto;
+import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
@@ -26,18 +27,18 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class MembershipService {
 
-  private MembershipRepository membershipRepository;
   private SecurityService securityService;
+  private MembershipRepository membershipRepository;
   private PersonService personService;
 
   /** Autowires a {@link MembershipService}. */
   @Autowired
   public MembershipService(
-      MembershipRepository membershipRepository,
       SecurityService securityService,
+      MembershipRepository membershipRepository,
       PersonService personService) {
-    this.membershipRepository = membershipRepository;
     this.securityService = securityService;
+    this.membershipRepository = membershipRepository;
     this.personService = personService;
   }
 
@@ -48,13 +49,13 @@ public class MembershipService {
    * @param clubID The {@link Club} id.
    * @param personRole The {@link PersonRole} permission level requested.
    * @return Whether the {@link Person} has at least that {@link PersonRole} for the club.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public boolean hasRole(Integer personID, Integer clubID, PersonRole personRole)
-      throws UnauthenticatedException, UnauthorizedException {
-    if (!personID.equals(securityService.getPersonID())
-        && !membershipRepository.isMember(securityService.getPersonID(), clubID)) {
-      throw new UnauthorizedException();
-    }
+      throws UnauthenticatedException, UnauthorizedException, NoResourceException {
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
     String role = membershipRepository.getRole(personID, clubID);
     return personRole.permits(role);
@@ -119,21 +120,19 @@ public class MembershipService {
    *
    * @param clubID The {@link Club} id.
    * @return The list of {@link MaskedMembership}.
-   * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
-   * @throws UnauthorizedException Thrown if the caller is not a member of the {@link Club}.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public List<MaskedMembership> getMemberships(Integer clubID)
-      throws UnauthenticatedException, UnauthorizedException {
+      throws UnauthenticatedException, UnauthorizedException, NoResourceException {
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+
     String role = membershipRepository.getRole(securityService.getPersonID(), clubID);
-    if (!PersonRole.PERSON.permits(role)) {
-      throw new UnauthorizedException();
-    }
     boolean isCashAdmin = PersonRole.CASH_ADMIN.permits(role);
 
-    Iterable<Membership> memberships = membershipRepository.getByClubID(clubID);
-
     List<MaskedMembership> maskedMemberships = new ArrayList<>();
-    for (Membership membership : memberships) {
+    for (Membership membership : membershipRepository.getByClubID(clubID)) {
       if (membership.getPersonRole() == null) {
         continue;
       }
@@ -150,15 +149,13 @@ public class MembershipService {
    * @param personID The {@link Person} id.
    * @param clubID The {@link Club} id.
    * @return Whether the {@link Person} is a member of the {@link Club}.
-   * @throws UnauthorizedException Thrown if the user is unauthenticated.
-   * @throws UnauthenticatedException Thrown is the user is not a member of the {@link Club}.
+   * @throws UnauthenticatedException Thrown if the caller is not authenticated.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
   public boolean isMember(Integer personID, Integer clubID)
-      throws UnauthenticatedException, UnauthorizedException {
-    if (!personID.equals(securityService.getPersonID())
-        && !membershipRepository.isMember(securityService.getPersonID(), clubID)) {
-      throw new UnauthorizedException();
-    }
+      throws UnauthenticatedException, UnauthorizedException, NoResourceException {
+    securityService.assertHasPermission(clubID, PersonRole.PERSON);
 
     return membershipRepository.isMember(personID, clubID);
   }
@@ -169,16 +166,19 @@ public class MembershipService {
    * @param clubID The {@link Club} id.
    * @param membershipDto The {@link MembershipDto}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
-   * @throws UnauthorizedException Thrown if the caller does not have permission to add a member.
+   * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
+   *     Club}.
+   * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    * @throws PersonDoesNotExistException Thrown if the {@link Person} does not exist.
    * @throws PersonAlreadyExistsException Thrown if the {@link Person} is already a member of the
    *     {@link Club}.
    */
   public void addMember(Integer clubID, MembershipDto membershipDto)
-      throws UnauthenticatedException, UnauthorizedException, PersonAlreadyExistsException {
-    if (!hasRole(securityService.getPersonID(), clubID, PersonRole.GAME_ADMIN)) {
-      throw new UnauthorizedException();
-    }
+      throws UnauthenticatedException,
+          UnauthorizedException,
+          NoResourceException,
+          PersonAlreadyExistsException {
+    securityService.assertHasPermission(clubID, PersonRole.GAME_ADMIN);
 
     Integer personID;
     if (StringUtils.isNumeric(membershipDto.getIdentifier())) {
@@ -186,9 +186,9 @@ public class MembershipService {
     } else {
       String email = membershipDto.getIdentifier();
       try {
-        personID = personService.getPersonWithoutAuthorization(email).getId();
+        personID = personService.getPersonWithoutAuthCheck(email).getId();
       } catch (PersonDoesNotExistException e) {
-        personID = personService.createPerson(email).getId();
+        personID = personService.createPersonWithoutAuthCheck(email).getId();
       }
     }
 

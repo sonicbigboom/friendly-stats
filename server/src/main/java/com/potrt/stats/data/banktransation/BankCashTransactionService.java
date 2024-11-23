@@ -3,7 +3,6 @@ package com.potrt.stats.data.banktransation;
 
 import com.potrt.stats.data.banktransation.BankCashTransaction.MaskedBankCashTransaction;
 import com.potrt.stats.data.club.Club;
-import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.data.person.Person;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Service;
 public class BankCashTransactionService {
 
   private SecurityService securityService;
-  private ClubService clubService;
   private MembershipService membershipService;
   private BankCashTransactionRepository bankCashTransactionRepository;
 
@@ -37,11 +35,9 @@ public class BankCashTransactionService {
   @Autowired
   public BankCashTransactionService(
       SecurityService securityService,
-      ClubService clubService,
       MembershipService membershipService,
       BankCashTransactionRepository bankCashTransactionRepository) {
     this.securityService = securityService;
-    this.clubService = clubService;
     this.membershipService = membershipService;
     this.bankCashTransactionRepository = bankCashTransactionRepository;
   }
@@ -58,13 +54,9 @@ public class BankCashTransactionService {
    */
   public List<MaskedBankCashTransaction> getBankCashTransactions(Integer clubID)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
+    securityService.assertHasPermission(clubID, PersonRole.CASH_ADMIN);
+
     Integer personID = securityService.getPersonID();
-    if (!membershipService.hasRole(personID, clubID, PersonRole.CASH_ADMIN)) {
-      throw new UnauthorizedException();
-    }
-
-    clubService.getClub(clubID);
-
     Iterable<BankCashTransaction> bankCashTransactions =
         bankCashTransactionRepository.findByPersonIDAndClubID(personID, clubID);
 
@@ -93,17 +85,14 @@ public class BankCashTransactionService {
           UnauthorizedException,
           NoResourceException,
           PersonIsNotMemberException {
-    Integer personID = securityService.getPersonID();
-    if (!membershipService.hasRole(personID, clubID, PersonRole.CASH_ADMIN)) {
-      throw new UnauthorizedException();
-    }
-    clubService.getClub(clubID);
+    securityService.assertHasPermission(clubID, PersonRole.CASH_ADMIN);
 
     if (!membershipService.isMember(bankCashTransactionDto.getUserID(), clubID)) {
       throw new PersonIsNotMemberException();
     }
 
     Date now = new Date();
+    Integer personID = securityService.getPersonID();
     BankCashTransaction bankCashTransaction =
         new BankCashTransaction(
             null,

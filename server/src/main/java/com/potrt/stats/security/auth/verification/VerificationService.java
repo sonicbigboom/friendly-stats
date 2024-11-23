@@ -110,7 +110,7 @@ public class VerificationService {
     if (verification.getExpirationDate().getTime() < (new Date()).getTime()) {
       throw new TokenExpiredException();
     }
-    personService.enableWithoutAuthorization(verification.getPersonID());
+    personService.enableWithoutAuthCheck(verification.getPersonID());
   }
 
   /**

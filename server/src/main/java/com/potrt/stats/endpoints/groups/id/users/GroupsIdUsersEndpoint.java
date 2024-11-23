@@ -1,7 +1,6 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups.id.users;
 
-import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.data.membership.Membership.MaskedMembership;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.exceptions.NoResourceException;
@@ -22,13 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GroupsIdUsersEndpoint {
 
-  private ClubService clubService;
   private MembershipService membershipService;
 
   /** Autowires a {@link GroupsIdUsersEndpoint}. */
   @Autowired
-  public GroupsIdUsersEndpoint(ClubService clubService, MembershipService membershipService) {
-    this.clubService = clubService;
+  public GroupsIdUsersEndpoint(MembershipService membershipService) {
     this.membershipService = membershipService;
   }
 
@@ -41,7 +38,7 @@ public class GroupsIdUsersEndpoint {
       @PathVariable(value = "groupID") String groupID) {
     try {
       List<MaskedMembership> maskedMemberships =
-          clubService.getMemberships(Integer.valueOf(groupID));
+          membershipService.getMemberships(Integer.valueOf(groupID));
 
       if (maskedMemberships.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
@@ -71,6 +68,8 @@ public class GroupsIdUsersEndpoint {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     } catch (UnauthorizedException e) {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    } catch (NoResourceException e) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } catch (PersonAlreadyExistsException e) {
       return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
