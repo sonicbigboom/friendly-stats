@@ -28,11 +28,11 @@ public class GamePlayer {
 
   @Id
   @Column(nullable = false)
-  private Integer gameID;
+  private Integer gameId;
 
   @Id
   @Column(nullable = false)
-  private Integer personID;
+  private Integer personId;
 
   @Column(nullable = false)
   private String metadata;
@@ -46,38 +46,21 @@ public class GamePlayer {
   private Date createdTime;
 
   @Column(nullable = false)
-  private Integer createdByPersonID;
+  private Integer createdByPersonId;
 
   @Column(nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedTime;
 
   @Column(nullable = false)
-  private Integer modifiedByPersonID;
+  private Integer modifiedByPersonId;
 
-  /** A {@link MaskedGamePlayer} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedGamePlayer {
-    private Integer gameID;
-    private Integer personID;
-    private String metadata;
-    private Date createdTime;
-    private Integer createdByPersonID;
-    private Date modifiedTime;
-    private Integer modifiedByPersonID;
-
-    /** A {@link MaskedGamePlayer} with public information. */
-    public MaskedGamePlayer(GamePlayer gamePlayer) {
-      this.gameID = gamePlayer.gameID;
-      this.personID = gamePlayer.personID;
-      this.metadata = gamePlayer.metadata;
-      this.createdTime = gamePlayer.createdTime;
-      this.createdByPersonID = gamePlayer.createdByPersonID;
-      this.modifiedTime = gamePlayer.modifiedTime;
-      this.modifiedByPersonID = gamePlayer.modifiedByPersonID;
-    }
+  /**
+   * Returns a duplicate without data that a basic member cannot see.
+   *
+   * @return The masked duplicate.
+   */
+  public GamePlayer mask() {
+    return new GamePlayer(gameId, personId, metadata, isDeleted, null, null, null, null);
   }
 }

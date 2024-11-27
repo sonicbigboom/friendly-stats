@@ -5,15 +5,15 @@ import { useContext } from "react";
 import { GamesContext } from "../../data/Games/GamesContext";
 
 export default function GroupPage() {
-  const { groupID, gameID } = useParams()
+  const { groupId, gameId } = useParams()
   const { getGame } = useContext(GamesContext)
 
   return (
     <>
-      <h2>{ getGame(Number(groupID), Number(gameID)).name }</h2>
+      <h2>{ getGame(Number(groupId), Number(gameId)).name }</h2>
       <div className="row">
         <div className="column">
-          <PlayerPanel groupID={Number(groupID)} gameID={Number(gameID)} isGameAdmin={true} isCashAdmin={true} />
+          <PlayerPanel groupId={Number(groupId)} gameId={Number(gameId)} isGameAdmin={true} isCashAdmin={true} />
         </div>
         <div className="column">
         </div>

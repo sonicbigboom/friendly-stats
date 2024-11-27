@@ -57,7 +57,7 @@ public class SecurityService {
    * @return The authenticated {@link Person}'s id.
    * @throws UnauthenticatedException Thrown when no {@link Person} is authenticated.
    */
-  public Integer getPersonID() throws UnauthenticatedException {
+  public Integer getPersonId() throws UnauthenticatedException {
     return getPerson().getId();
   }
 
@@ -65,16 +65,16 @@ public class SecurityService {
    * Throws an exception if the authenticated {@link Person} does not have the required role for the
    * given club, or the club does not exists.
    *
-   * @param clubID The club id.
+   * @param clubId The club id.
    * @param role The {@link PersonRole role} that the {@link Person} must have.
    * @throws UnauthenticatedException Thrown when no {@link Person} is authenticated.
    * @throws UnauthorizedException Thrown when the no {@link Person} is authenticated.
    * @throws NoResourceException Thrown if the clube does not exist.
    */
-  public void assertHasPermission(Integer clubID, PersonRole role)
+  public void assertHasPermission(Integer clubId, PersonRole role)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    Integer personID = getPerson().getId();
-    String r = membershipRepository.getRole(personID, clubID);
+    Integer personId = getPerson().getId();
+    String r = membershipRepository.getRole(personId, clubId);
     if (!role.permits(r)) {
       throw new UnauthorizedException(
           "The caller does not have the \""
@@ -82,7 +82,7 @@ public class SecurityService {
               + "\" role required for the service.");
     }
 
-    Optional<Club> club = clubRepository.findById(clubID);
+    Optional<Club> club = clubRepository.findById(clubId);
     if (club.isEmpty() || club.get().isDeleted()) {
       throw new NoResourceException("This club does not exist.");
     }

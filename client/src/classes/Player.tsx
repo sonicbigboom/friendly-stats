@@ -1,28 +1,28 @@
 export default class Player {
-  gameID: number;
-  personID: number;
+  gameId: number;
+  userId: number;
   metadata: string;
   createdTime: Date;
-  createdByPersonID: number;
+  createdByUserId: number;
   modifiedTime: Date;
-  modifiedByPersonID: number;
+  modifiedByUserId: number;
 
   constructor();
   constructor(
-    gameID?: number,
-    personID?: number,
+    gameId?: number,
+    userId?: number,
     metadata?: string,
     createdTime?: Date,
-    createdByPersonID?: number,
+    createdByUserId?: number,
     modifiedTime?: Date,
-    modifiedByPersonID?: number
+    modifiedByUserId?: number
   ) {
-    this.gameID = gameID ?? -1;
-    this.personID = personID ?? -1;
+    this.gameId = gameId ?? -1;
+    this.userId = userId ?? -1;
     this.metadata = metadata ?? "Loading...";
     this.createdTime = createdTime ?? new Date(0);
-    this.createdByPersonID = createdByPersonID ?? -1;
+    this.createdByUserId = createdByUserId ?? -1;
     this.modifiedTime = modifiedTime ?? new Date(0);
-    this.modifiedByPersonID = modifiedByPersonID ?? -1;
+    this.modifiedByUserId = modifiedByUserId ?? -1;
   }
 }

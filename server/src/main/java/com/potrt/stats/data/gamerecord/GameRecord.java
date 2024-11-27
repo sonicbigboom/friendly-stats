@@ -32,10 +32,10 @@ public class GameRecord {
   private Integer id;
 
   @Column(nullable = false)
-  private Integer gameID;
+  private Integer gameId;
 
   @Column(nullable = false)
-  private Integer personID;
+  private Integer personId;
 
   @Column(nullable = false)
   private Integer scoreChange;
@@ -49,40 +49,21 @@ public class GameRecord {
   private Date createdTime;
 
   @Column(nullable = false)
-  private Integer createdByPersonID;
+  private Integer createdByPersonId;
 
   @Column(nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedTime;
 
   @Column(nullable = false)
-  private Integer modifiedByPersonID;
+  private Integer modifiedByPersonId;
 
-  /** A {@link MaskedGameRecord} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedGameRecord {
-    private Integer id;
-    private Integer gameID;
-    private Integer personID;
-    private Integer scoreChange;
-    private Date createdTime;
-    private Integer createdByPersonID;
-    private Date modifiedTime;
-    private Integer modifiedByPersonID;
-
-    /** A {@link MaskedGameRecord} with public information. */
-    public MaskedGameRecord(GameRecord gameRecord) {
-      this.id = gameRecord.id;
-      this.gameID = gameRecord.gameID;
-      this.personID = gameRecord.personID;
-      this.scoreChange = gameRecord.scoreChange;
-      this.createdTime = gameRecord.createdTime;
-      this.createdByPersonID = gameRecord.createdByPersonID;
-      this.modifiedTime = gameRecord.modifiedTime;
-      this.modifiedByPersonID = gameRecord.modifiedByPersonID;
-    }
+  /**
+   * Returns a duplicate without data that a basic member cannot see.
+   *
+   * @return The masked duplicate.
+   */
+  public GameRecord mask() {
+    return new GameRecord(id, gameId, personId, scoreChange, isDeleted, null, null, null, null);
   }
 }

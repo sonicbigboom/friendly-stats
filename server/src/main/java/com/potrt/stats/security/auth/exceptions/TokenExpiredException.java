@@ -2,14 +2,8 @@
 package com.potrt.stats.security.auth.exceptions;
 
 import javax.naming.AuthenticationException;
+import lombok.experimental.StandardException;
 
 /** An {@link AuthenticationException} for trying to use an expired token. */
-public class TokenExpiredException extends AuthenticationException {
-  public TokenExpiredException() {
-    super();
-  }
-
-  public TokenExpiredException(String msg) {
-    super(msg);
-  }
-}
+@StandardException
+public class TokenExpiredException extends AuthenticationException {}

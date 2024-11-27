@@ -2,12 +2,14 @@
 package com.potrt.stats.exceptions;
 
 import com.potrt.stats.data.person.Person;
+import lombok.experimental.StandardException;
 
 /**
  * An {@link Exception} for attempting to get a {@link Person} that does not exist.
  *
  * @fs.httpStatus 404 Not Found
  */
+@StandardException
 public class PersonDoesNotExistException extends Exception {
 
   private static final String PERSON_ID_NOT_FOUND = "Could not find a person with id %d.";
@@ -29,21 +31,5 @@ public class PersonDoesNotExistException extends Exception {
    */
   public PersonDoesNotExistException(Integer id, Throwable cause) {
     super(String.format(PERSON_ID_NOT_FOUND, id), cause);
-  }
-
-  public PersonDoesNotExistException() {
-    super();
-  }
-
-  public PersonDoesNotExistException(Throwable cause) {
-    super(cause);
-  }
-
-  public PersonDoesNotExistException(String msg) {
-    super(msg);
-  }
-
-  public PersonDoesNotExistException(String msg, Throwable cause) {
-    super(msg, cause);
   }
 }

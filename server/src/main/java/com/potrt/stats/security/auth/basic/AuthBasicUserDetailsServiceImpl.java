@@ -42,7 +42,7 @@ public class AuthBasicUserDetailsServiceImpl implements UserDetailsService {
     }
 
     try {
-      authBasic.setPerson(personService.getPersonWithoutAuthCheck(authBasic.getPersonID()));
+      authBasic.setPerson(personService.getPersonWithoutAuthCheck(authBasic.getPersonId()));
       return new AuthBasicPrincipal(authBasic);
     } catch (PersonDoesNotExistException e) {
       throw new UsernameNotFoundException("Username or password not found.", e);

@@ -50,11 +50,11 @@ public class AuthGoogleService implements AuthService {
           EmailAlreadyExistsException,
           UsernameAlreadyExistsException {
     String idToken = registerDto.getCode();
-    String googleID = getGoogleID(idToken);
+    String googleId = getGoogleId(idToken);
 
     Person person = personService.register(registerDto);
 
-    AuthGoogle authGoogle = new AuthGoogle(googleID, person.getId());
+    AuthGoogle authGoogle = new AuthGoogle(googleId, person.getId());
     authGoogleRepository.save(authGoogle);
     return person;
   }
@@ -63,8 +63,8 @@ public class AuthGoogleService implements AuthService {
   public Authentication login(@Valid LoginDto loginDto) throws BadCredentialsException {
     try {
       String idToken = loginDto.getCode();
-      String googleID = getGoogleID(idToken);
-      Person person = getPerson(googleID);
+      String googleId = getGoogleId(idToken);
+      Person person = getPerson(googleId);
 
       AuthService.checkAccountStatus(person);
 
@@ -82,7 +82,7 @@ public class AuthGoogleService implements AuthService {
    * @throws BadExternalCommunicationException Thrown if communication with google failed.
    * @throws BadCredentialsException Thrown if google id token is invalid.
    */
-  private String getGoogleID(String idToken)
+  private String getGoogleId(String idToken)
       throws BadExternalCommunicationException, BadCredentialsException {
     String url = "https://oauth2.googleapis.com/tokeninfo";
     String urlTemplate =
@@ -133,17 +133,17 @@ public class AuthGoogleService implements AuthService {
   /**
    * Gets a {@link Person} from a google id.
    *
-   * @param googleID The google id.
+   * @param googleId The google id.
    * @return The {@link Person} linked to the google id.
    * @throws BadCredentialsException Thrown if there is no {@link Person} linked to this google id.
    */
-  private Person getPerson(String googleID) throws BadCredentialsException {
-    Optional<AuthGoogle> optionalID = authGoogleRepository.findById(googleID);
-    if (optionalID.isEmpty()) {
+  private Person getPerson(String googleId) throws BadCredentialsException {
+    Optional<AuthGoogle> optionalId = authGoogleRepository.findById(googleId);
+    if (optionalId.isEmpty()) {
       throw new BadCredentialsException("Google token did not have an id.");
     }
 
-    Integer id = optionalID.get().getPersonID();
+    Integer id = optionalId.get().getPersonId();
     if (id == null) {
       throw new BadCredentialsException("No user with this google account.");
     }
@@ -156,11 +156,11 @@ public class AuthGoogleService implements AuthService {
   }
 
   @Override
-  public void updateCredentials(Integer personID, String code)
+  public void updateCredentials(Integer personId, String code)
       throws BadCredentialsException, BadExternalCommunicationException {
     String idToken = code;
-    String googleID = getGoogleID(idToken);
-    AuthGoogle authGoogle = new AuthGoogle(googleID, personID);
+    String googleId = getGoogleId(idToken);
+    AuthGoogle authGoogle = new AuthGoogle(googleId, personId);
     authGoogleRepository.save(authGoogle);
   }
 }

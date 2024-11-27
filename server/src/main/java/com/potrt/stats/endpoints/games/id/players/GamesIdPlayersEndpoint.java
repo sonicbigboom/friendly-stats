@@ -1,12 +1,14 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.games.id.players;
 
-import com.potrt.stats.data.player.GamePlayer.MaskedGamePlayer;
+import com.potrt.stats.data.player.GamePlayer;
+import com.potrt.stats.data.player.GamePlayerResponse;
 import com.potrt.stats.data.player.GamePlayerService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,23 +32,25 @@ public class GamesIdPlayersEndpoint {
   }
 
   /**
-   * The <code>/games/{gameID}/players</code> {@code GET} endpoint returns the players for the
+   * The <code>/games/{gameId}/players</code> {@code GET} endpoint returns the players for the
    * target games.
-   *
-   * <p>TODO: Add query parameter for user id.
    */
-  @GetMapping("/games/{gameID}/players")
-  public ResponseEntity<List<MaskedGamePlayer>> getGamePlayers(
-      @PathVariable(value = "gameID") String gameID) {
+  @GetMapping("/games/{gameId}/players")
+  public ResponseEntity<List<GamePlayerResponse>> getGamePlayers(
+      @PathVariable(value = "gameId") String gameId) {
     try {
-      List<MaskedGamePlayer> gamePlayers =
-          gamePlayerService.getGamePlayers(Integer.valueOf(gameID));
+      List<GamePlayer> gamePlayers = gamePlayerService.getGamePlayers(Integer.valueOf(gameId));
 
       if (gamePlayers.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(gamePlayers, HttpStatus.OK);
+      List<GamePlayerResponse> gamePlayerDto = new ArrayList<>();
+      for (GamePlayer gamePlayer : gamePlayers) {
+        gamePlayerDto.add(new GamePlayerResponse(gamePlayer));
+      }
+
+      return new ResponseEntity<>(gamePlayerDto, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -59,14 +63,15 @@ public class GamesIdPlayersEndpoint {
   }
 
   /**
-   * The <code>/games/{gameID}/players</code> {@code POST} endpoint adds a player for the target
+   * The <code>/games/{gameId}/players</code> {@code POST} endpoint adds a player for the target
    * game.
    */
-  @PostMapping("/games/{gameID}/players")
+  @PostMapping("/games/{gameId}/players")
   public ResponseEntity<Void> addGamePlayer(
-      @PathVariable(value = "gameID") String gameID, @RequestBody GamePlayerDto gamePlayerDto) {
+      @PathVariable(value = "gameId") String gameId, @RequestBody GamePlayerNewDto gamePlayerDto) {
     try {
-      gamePlayerService.addGamePlayer(Integer.valueOf(gameID), gamePlayerDto);
+      gamePlayerService.addGamePlayer(
+          Integer.valueOf(gameId), gamePlayerDto.getUserId(), gamePlayerDto.getMetadata());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

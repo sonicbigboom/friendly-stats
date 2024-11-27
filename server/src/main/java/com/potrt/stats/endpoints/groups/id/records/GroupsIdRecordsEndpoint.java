@@ -2,10 +2,12 @@
 package com.potrt.stats.endpoints.groups.id.records;
 
 import com.potrt.stats.data.gamerecord.expanded.GameRecordExpanded;
+import com.potrt.stats.data.gamerecord.expanded.GameRecordExpandedResponse;
 import com.potrt.stats.data.gamerecord.expanded.GameRecordExpandedService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +31,31 @@ public class GroupsIdRecordsEndpoint {
   }
 
   /**
-   * The <code>/groups/{groupID}/records</code> {@code GET} endpoint returns the records for the
+   * The <code>/groups/{groupId}/records</code> {@code GET} endpoint returns the records for the
    * target games.
    */
-  @GetMapping("/groups/{groupID}/records")
-  public ResponseEntity<List<GameRecordExpanded>> getGameRecords(
-      @PathVariable(value = "groupID") String groupID,
-      @RequestParam(value = "gameTypeID") Optional<String> gameTypeID,
+  @GetMapping("/groups/{groupId}/records")
+  public ResponseEntity<List<GameRecordExpandedResponse>> getGameRecords(
+      @PathVariable(value = "groupId") String groupId,
+      @RequestParam(value = "gameTypeId") Optional<String> gameTypeId,
       @RequestParam(value = "forCash") Optional<String> forCash,
-      @RequestParam(value = "seasonID") Optional<String> seasonID,
-      @RequestParam(value = "userID") Optional<String> userID) {
+      @RequestParam(value = "seasonId") Optional<String> seasonId,
+      @RequestParam(value = "userId") Optional<String> userId) {
     try {
       List<GameRecordExpanded> gameRecordExpandeds =
           gameRecordExpandedService.getGameRecordExpandeds(
-              Integer.valueOf(groupID), gameTypeID, forCash, seasonID, userID);
+              Integer.valueOf(groupId), gameTypeId, forCash, seasonId, userId);
 
       if (gameRecordExpandeds.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(gameRecordExpandeds, HttpStatus.OK);
+      List<GameRecordExpandedResponse> responses = new ArrayList<>();
+      for (GameRecordExpanded gameRecordExpanded : gameRecordExpandeds) {
+        responses.add(new GameRecordExpandedResponse(gameRecordExpanded));
+      }
+
+      return new ResponseEntity<>(responses, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {

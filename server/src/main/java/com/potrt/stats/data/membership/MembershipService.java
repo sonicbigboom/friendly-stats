@@ -2,10 +2,8 @@
 package com.potrt.stats.data.membership;
 
 import com.potrt.stats.data.club.Club;
-import com.potrt.stats.data.membership.Membership.MaskedMembership;
 import com.potrt.stats.data.person.Person;
 import com.potrt.stats.data.person.PersonService;
-import com.potrt.stats.endpoints.groups.id.users.MembershipDto;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
@@ -45,19 +43,19 @@ public class MembershipService {
   /**
    * Determines if a {@link Person} has the given {@link PersonRole} permissions for a club.
    *
-   * @param personID The {@link Person} id.
-   * @param clubID The {@link Club} id.
+   * @param personId The {@link Person} id.
+   * @param clubId The {@link Club} id.
    * @param personRole The {@link PersonRole} permission level requested.
    * @return Whether the {@link Person} has at least that {@link PersonRole} for the club.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public boolean hasRole(Integer personID, Integer clubID, PersonRole personRole)
+  public boolean hasPermission(Integer personId, Integer clubId, PersonRole personRole)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    String role = membershipRepository.getRole(personID, clubID);
+    String role = membershipRepository.getRole(personId, clubId);
     return personRole.permits(role);
   }
 
@@ -68,7 +66,7 @@ public class MembershipService {
    * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
    */
   public Integer getCashBalance() throws UnauthenticatedException {
-    return membershipRepository.getCashBalance(securityService.getPersonID());
+    return membershipRepository.getCashBalance(securityService.getPersonId());
   }
 
   /**
@@ -79,7 +77,7 @@ public class MembershipService {
    * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
    */
   public Integer getMemberedCashBalance() throws UnauthenticatedException {
-    return membershipRepository.getMemberedCashBalance(securityService.getPersonID());
+    return membershipRepository.getMemberedCashBalance(securityService.getPersonId());
   }
 
   /**
@@ -88,29 +86,29 @@ public class MembershipService {
    * @return The collection of {@link Club} ids that the caller is a member of.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    */
-  public Iterable<Integer> getClubIDs() throws UnauthenticatedException {
-    Integer personID = securityService.getPersonID();
-    return membershipRepository.getClubIDs(personID);
+  public Iterable<Integer> getClubIds() throws UnauthenticatedException {
+    Integer personId = securityService.getPersonId();
+    return membershipRepository.getClubIds(personId);
   }
 
   /**
    * Updates the permissions of a {@link Person} in a {@link Club}.
    *
-   * @param personID The {@link Person}'s id.
-   * @param clubID The {@link Club}'s id.
+   * @param personId The {@link Person}'s id.
+   * @param clubId The {@link Club}'s id.
    * @param personRole The {@link PersonRole} new role.
    * @apiNote This can be used to add or remove a person from a {@link Club}.
    */
-  public void updatePermissions(Integer personID, Integer clubID, PersonRole personRole) {
+  public void updatePermissions(Integer personId, Integer clubId, PersonRole personRole) {
     Optional<Membership> oldMembership =
-        membershipRepository.findById(new PersonClub(personID, clubID));
+        membershipRepository.findById(new PersonClub(personId, clubId));
     Membership membership;
     if (oldMembership.isPresent()) {
       membership = oldMembership.get();
       membership.setPersonRole(personRole.getIdentifier());
     } else {
       membership =
-          new Membership(personID, clubID, personRole.getIdentifier(), 0, null, null, null);
+          new Membership(personId, clubId, personRole.getIdentifier(), 0, null, null, null);
     }
     membershipRepository.save(membership);
   }
@@ -118,53 +116,61 @@ public class MembershipService {
   /**
    * Gets all of the {@link MaskedMembership}s for a {@link Club}.
    *
-   * @param clubID The {@link Club} id.
+   * @param clubId The {@link Club} id.
    * @return The list of {@link MaskedMembership}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public List<MaskedMembership> getMemberships(Integer clubID)
+  public List<Membership> getMemberships(Integer clubId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    String role = membershipRepository.getRole(securityService.getPersonID(), clubID);
+    String role = membershipRepository.getRole(securityService.getPersonId(), clubId);
     boolean isCashAdmin = PersonRole.CASH_ADMIN.permits(role);
 
-    List<MaskedMembership> maskedMemberships = new ArrayList<>();
-    for (Membership membership : membershipRepository.getByClubID(clubID)) {
+    List<Membership> out = new ArrayList<>();
+    for (Membership membership : membershipRepository.getByClubId(clubId)) {
       if (membership.getPersonRole() == null) {
         continue;
       }
 
-      maskedMemberships.add(new MaskedMembership(membership, isCashAdmin));
+      if (!isCashAdmin) {
+        membership = membership.mask();
+      }
+
+      out.add(membership);
     }
 
-    return maskedMemberships;
+    return out;
   }
 
   /**
    * Determines if a {@link Person} is a member of a {@link Club}.
    *
-   * @param personID The {@link Person} id.
-   * @param clubID The {@link Club} id.
+   * @param personId The {@link Person} id.
+   * @param clubId The {@link Club} id.
    * @return Whether the {@link Person} is a member of the {@link Club}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public boolean isMember(Integer personID, Integer clubID)
+  public boolean isMember(Integer personId, Integer clubId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    return membershipRepository.isMember(personID, clubID);
+    return membershipRepository.isMember(personId, clubId);
   }
 
   /**
    * Creates a {@link Membership} for a {@link Person} and a {@link Club}.
    *
-   * @param clubID The {@link Club} id.
-   * @param membershipDto The {@link MembershipDto}.
+   * @param clubId The {@link Club} id.
+   * @param identifier A {@link identifier} can be either a {@link Person} id or email.
+   * @param personRole The {@link PersonRole} for the person.
+   * @param firstName The person's first name.
+   * @param lastName The person's last name.
+   * @param nickname The person's nickname.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
    *     Club}.
@@ -173,48 +179,46 @@ public class MembershipService {
    * @throws PersonAlreadyExistsException Thrown if the {@link Person} is already a member of the
    *     {@link Club}.
    */
-  public void addMember(Integer clubID, MembershipDto membershipDto)
+  public void addMember(
+      Integer clubId,
+      String identifier,
+      String personRole,
+      String firstName,
+      String lastName,
+      String nickname)
       throws UnauthenticatedException,
           UnauthorizedException,
           NoResourceException,
           PersonAlreadyExistsException {
-    securityService.assertHasPermission(clubID, PersonRole.GAME_ADMIN);
+    securityService.assertHasPermission(clubId, PersonRole.GAME_ADMIN);
 
-    Integer personID;
-    if (StringUtils.isNumeric(membershipDto.getIdentifier())) {
-      personID = Integer.parseInt(membershipDto.getIdentifier());
+    Integer personId;
+    if (StringUtils.isNumeric(identifier)) {
+      personId = Integer.parseInt(identifier);
     } else {
-      String email = membershipDto.getIdentifier();
+      String email = identifier;
       try {
-        personID = personService.getPersonWithoutAuthCheck(email).getId();
+        personId = personService.getPersonWithoutAuthCheck(email).getId();
       } catch (PersonDoesNotExistException e) {
-        personID = personService.createPersonWithoutAuthCheck(email).getId();
+        personId = personService.createPersonWithoutAuthCheck(email).getId();
       }
     }
 
-    if (isMember(personID, clubID)) {
+    if (isMember(personId, clubId)) {
       throw new PersonAlreadyExistsException();
     }
 
     Optional<Membership> oldMembership =
-        membershipRepository.findById(new PersonClub(personID, clubID));
+        membershipRepository.findById(new PersonClub(personId, clubId));
     Membership membership;
     if (oldMembership.isPresent()) {
       membership = oldMembership.get();
-      membership.setPersonRole(membershipDto.getPersonRole());
-      membership.setFirstName(membershipDto.getFirstName());
-      membership.setLastName(membershipDto.getLastName());
-      membership.setNickname(membershipDto.getNickname());
+      membership.setPersonRole(personRole);
+      membership.setFirstName(firstName);
+      membership.setLastName(lastName);
+      membership.setNickname(nickname);
     } else {
-      membership =
-          new Membership(
-              personID,
-              clubID,
-              membershipDto.getPersonRole(),
-              0,
-              membershipDto.getFirstName(),
-              membershipDto.getLastName(),
-              membershipDto.getNickname());
+      membership = new Membership(personId, clubId, personRole, 0, firstName, lastName, nickname);
     }
 
     membershipRepository.save(membership);

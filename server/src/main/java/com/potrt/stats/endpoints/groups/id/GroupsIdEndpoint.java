@@ -1,9 +1,9 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups.id;
 
-import com.potrt.stats.data.club.Club.MaskedClub;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.club.ClubResponse;
 import com.potrt.stats.data.club.ClubService;
-import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -29,12 +29,13 @@ public class GroupsIdEndpoint {
     this.clubService = clubService;
   }
 
-  /** The {@code /groups/{groupID}} {@code GET} endpoint returns details of the target group. */
-  @GetMapping("/groups/{groupID}")
-  public ResponseEntity<MaskedClub> getGroup(@PathVariable(value = "groupID") String groupID) {
+  /** The {@code /groups/{groupId}} {@code GET} endpoint returns details of the target group. */
+  @GetMapping("/groups/{groupId}")
+  public ResponseEntity<ClubResponse> getGroup(@PathVariable(value = "groupId") String groupId) {
     try {
-      MaskedClub club = clubService.getClub(Integer.valueOf(groupID));
-      return new ResponseEntity<>(club, HttpStatus.OK);
+      Club club = clubService.getClub(Integer.valueOf(groupId));
+
+      return new ResponseEntity<>(new ClubResponse(club), HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -47,18 +48,18 @@ public class GroupsIdEndpoint {
   }
 
   /**
-   * TODO: The {@code /groups/{groupID}} {@code PATCH} endpoint updates the calling details and
+   * TODO: The {@code /groups/{groupId}} {@code PATCH} endpoint updates the calling details and
    * returns the updated caller's details.
    */
-  @PatchMapping("/groups/{groupID}")
-  public ResponseEntity<MaskedPerson> patchGroup(
-      @PathVariable(value = "groupID") String groupID, @RequestBody MaskedClub club) {
+  @PatchMapping("/groups/{groupId}")
+  public ResponseEntity<Void> patchGroup(
+      @PathVariable(value = "groupId") String groupId, @RequestBody ClubResponse club) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
-  /** TODO: The {@code /groups/{groupID}} {@code DELETE} endpoint deletes the caller's account. */
-  @DeleteMapping("/groups/{groupID}")
-  public ResponseEntity<MaskedPerson> deleteGroup(@PathVariable(value = "groupID") String groupID) {
+  /** TODO: The {@code /groups/{groupId}} {@code DELETE} endpoint deletes the caller's account. */
+  @DeleteMapping("/groups/{groupId}")
+  public ResponseEntity<Void> deleteGroup(@PathVariable(value = "groupId") String groupId) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 }

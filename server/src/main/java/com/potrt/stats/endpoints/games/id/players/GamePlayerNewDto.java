@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@link GamePlayerDto} represents a new {@link GamePlayer}. */
+/** A {@link GamePlayerNewDto} represents a new {@link GamePlayer}. */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GamePlayerDto {
-  private Integer userID;
+public class GamePlayerNewDto {
+  private Integer userId;
   private String metadata;
 }

@@ -1,12 +1,10 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.banktransation;
 
-import com.potrt.stats.data.banktransation.BankCashTransaction.MaskedBankCashTransaction;
 import com.potrt.stats.data.club.Club;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.data.person.Person;
-import com.potrt.stats.endpoints.groups.id.bank.BankCashTransactionDto;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
@@ -45,34 +43,36 @@ public class BankCashTransactionService {
   /**
    * Gets all of the {@link BankCashTransaction}s for a {@link Club}.
    *
-   * @param clubID The club id.
+   * @param clubId The club id.
    * @return The {@link List} of {@link BankCashTransaction}s.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Cash Admin} of the {@link
    *     Club}.
    * @throws NoResourceException Thrown if the {@link Club} does not exist.
    */
-  public List<MaskedBankCashTransaction> getBankCashTransactions(Integer clubID)
+  public List<BankCashTransaction> getBankCashTransactions(Integer clubId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.CASH_ADMIN);
+    securityService.assertHasPermission(clubId, PersonRole.CASH_ADMIN);
 
-    Integer personID = securityService.getPersonID();
+    Integer personId = securityService.getPersonId();
     Iterable<BankCashTransaction> bankCashTransactions =
-        bankCashTransactionRepository.findByPersonIDAndClubID(personID, clubID);
+        bankCashTransactionRepository.findByPersonIdAndClubId(personId, clubId);
 
-    List<MaskedBankCashTransaction> outBankCashTransaction = new ArrayList<>();
+    List<BankCashTransaction> out = new ArrayList<>();
     for (BankCashTransaction bankCashTransaction : bankCashTransactions) {
-      outBankCashTransaction.add(new MaskedBankCashTransaction(bankCashTransaction));
+      // Note: No need for masking, as Cash Admin is already required to call this method at all.
+      out.add(bankCashTransaction);
     }
 
-    return outBankCashTransaction;
+    return out;
   }
 
   /**
    * Creates a new {@link BankCashTransaction}.
    *
-   * @param clubID The {@link Club} id.
-   * @param bankCashTransactionDto The {@link BankCashTransactionDto}.
+   * @param clubId The {@link Club} id.
+   * @param personId The {@link Person}'s id.
+   * @param deposit The amount to deposit.
    * @throws UnauthenticatedException Thrown if the caller is unauthenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Cash Admin} of the {@link
    *     Club}.
@@ -80,30 +80,22 @@ public class BankCashTransactionService {
    * @throws PersonIsNotMemberException Thrown if the {@link BankCashTransaction} is performed on a
    *     {@link Person} who is not a member of the {@link Club}.
    */
-  public void addBankCashTransaction(Integer clubID, BankCashTransactionDto bankCashTransactionDto)
+  public void addBankCashTransaction(Integer clubId, Integer personId, Integer deposit)
       throws UnauthenticatedException,
           UnauthorizedException,
           NoResourceException,
           PersonIsNotMemberException {
-    securityService.assertHasPermission(clubID, PersonRole.CASH_ADMIN);
+    securityService.assertHasPermission(clubId, PersonRole.CASH_ADMIN);
 
-    if (!membershipService.isMember(bankCashTransactionDto.getUserID(), clubID)) {
+    if (!membershipService.isMember(personId, clubId)) {
       throw new PersonIsNotMemberException();
     }
 
     Date now = new Date();
-    Integer personID = securityService.getPersonID();
+    Integer callerId = securityService.getPersonId();
     BankCashTransaction bankCashTransaction =
         new BankCashTransaction(
-            null,
-            bankCashTransactionDto.getUserID(),
-            clubID,
-            bankCashTransactionDto.getDeposit(),
-            false,
-            now,
-            personID,
-            now,
-            personID);
+            null, personId, clubId, deposit, false, now, callerId, now, callerId);
     bankCashTransactionRepository.save(bankCashTransaction);
   }
 }

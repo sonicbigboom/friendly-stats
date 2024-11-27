@@ -3,9 +3,9 @@ import { TokenContext } from "../Token/TokenContext";
 import Game from "../../classes/Game";
 
 export const GamesContext = createContext({
-  refresh: (groupID: number) => {},
-  getGames: (groupID: number) => { return [] as Game[] },
-  getGame: (groupID: number, gameID: number) => { return new Game() },
+  refresh: (groupId: number) => {},
+  getGames: (groupId: number) => { return [] as Game[] },
+  getGame: (groupId: number, gameId: number) => { return new Game() },
 });
 
 type Props = { children: ReactNode }
@@ -14,11 +14,11 @@ const REFRESH_RATE = 1 * 60 * 1000;
 
 export default function GamesContextWrapper({ children }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
-  const [games, setGames] = useState<{[groupID: number] : Game[]}>({});
-  const [refreshDates, setRefreshDates] = useState<{[groupID: number] : Date}>({})
+  const [games, setGames] = useState<{[groupId: number] : Game[]}>({});
+  const [refreshDates, setRefreshDates] = useState<{[groupId: number] : Date}>({})
 
-  function refresh(groupID: number) {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`, {
+  function refresh(groupId: number) {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/games`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
@@ -35,22 +35,22 @@ export default function GamesContextWrapper({ children }: Readonly<Props>) {
 
       setGames(d => { return {
         ...d,
-        [groupID]: json
+        [groupId]: json
       }});
 
       setRefreshDates(d => { return {
         ...d,
-        [groupID]: new Date()
+        [groupId]: new Date()
       }})
     });
   }
 
-  function getGames(groupID: number) {
-    if (!refreshDates[groupID] || refreshDates[groupID].getTime() + REFRESH_RATE < Date.now()) {
-      refresh(groupID);
+  function getGames(groupId: number) {
+    if (!refreshDates[groupId] || refreshDates[groupId].getTime() + REFRESH_RATE < Date.now()) {
+      refresh(groupId);
     }
 
-    const gs = games[groupID];
+    const gs = games[groupId];
     if (!gs) {
       return [] as Game[];
     }
@@ -58,10 +58,10 @@ export default function GamesContextWrapper({ children }: Readonly<Props>) {
     return gs;
   }
 
-  function getGame(groupID: number, gameID: number) {
-    const gs = getGames(groupID);
+  function getGame(groupId: number, gameId: number) {
+    const gs = getGames(groupId);
 
-    const game = gs.find((g:Game) => { return g.id === gameID; })
+    const game = gs.find((g:Game) => { return g.id === gameId; })
     if (!game) {
       return new Game()
     }

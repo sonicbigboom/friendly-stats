@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonClub {
-  private Integer personID;
-  private Integer clubID;
+  private Integer personId;
+  private Integer clubId;
 }

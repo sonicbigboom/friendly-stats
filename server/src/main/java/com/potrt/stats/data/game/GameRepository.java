@@ -6,5 +6,5 @@ import org.springframework.data.repository.CrudRepository;
 /** A {@link CrudRepository} for a {@link Game}. */
 public interface GameRepository extends CrudRepository<Game, Integer> {
 
-  Iterable<Game> findByClubID(Integer clubID);
+  Iterable<Game> findByClubId(Integer clubId);
 }

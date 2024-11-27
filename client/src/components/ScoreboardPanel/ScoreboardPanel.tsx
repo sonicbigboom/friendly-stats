@@ -5,29 +5,29 @@ import GameRecordExpanded from '../../classes/GameRecordExpanded';
 import { MembersContext } from '../../data/Members/MembersContext';
 
 type Props = {
-  groupID: number;
-  gameTypeID: number;
+  groupId: number;
+  gameTypeId: number;
   forCash: boolean;
-  seasonID: number;
-  userID: number;
+  seasonId: number;
+  userId: number;
 };
 
-export default function ScoreboardPanel( { groupID, gameTypeID, forCash, seasonID, userID }: Readonly<Props>) {
+export default function ScoreboardPanel( { groupId, gameTypeId, forCash, seasonId, userId }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
   const [ records, setRecords ] = useState<GameRecordExpanded[]>([]);
   const { getMember } = useContext(MembersContext);
 
 
   const forCashParameter = `?forCash=${forCash}`;
-  const gameTypeIDParameter = (gameTypeID == -1) ? "" : `&gameTypeID=${gameTypeID}`
-  const seasonIDParameter = (seasonID == -1) ? "" : `&seasonID=${seasonID}`
-  const userIDParameter = (userID == -1) ? "" : `&userID=${userID}`
+  const gameTypeIdParameter = (gameTypeId == -1) ? "" : `&gameTypeId=${gameTypeId}`
+  const seasonIdParameter = (seasonId == -1) ? "" : `&seasonId=${seasonId}`
+  const userIdParameter = (userId == -1) ? "" : `&userId=${userId}`
 
-  const parameters = `${forCashParameter}${gameTypeIDParameter}${seasonIDParameter}${userIDParameter}`
+  const parameters = `${forCashParameter}${gameTypeIdParameter}${seasonIdParameter}${userIdParameter}`
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/records${parameters}`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/records${parameters}`,
       {
         method: "GET",
         headers: new Headers({ Authorization: token, "content-type": "application/json" })
@@ -43,14 +43,14 @@ export default function ScoreboardPanel( { groupID, gameTypeID, forCash, seasonI
         setRecords(json)
       }
     );
-  }, [groupID, gameTypeID, forCash, seasonID, userID])
+  }, [groupId, gameTypeId, forCash, seasonId, userId])
 
   let people = new Set<number>()
   let totals: {[id: number] : number} = {}
   let time: {[time: number] : any} = {}
   
   for (const record of records) {
-    people.add(record.personID)
+    people.add(record.userId)
 
     let date = new Date(record.date)
     let t = Math.floor(date.getTime() / (60 * 1000))
@@ -59,12 +59,12 @@ export default function ScoreboardPanel( { groupID, gameTypeID, forCash, seasonI
       time[t] = { x: t }
     }
 
-    if (!(record.personID in totals)) {
-      totals[record.personID] = 0
+    if (!(record.userId in totals)) {
+      totals[record.userId] = 0
     }
-    totals[record.personID] += record.scoreChange;
+    totals[record.userId] += record.scoreChange;
 
-    time[t][`person-${record.personID}`] = totals[record.personID]
+    time[t][`person-${record.userId}`] = totals[record.userId]
   }
 
   let minT = Number.MAX_VALUE
@@ -92,7 +92,7 @@ export default function ScoreboardPanel( { groupID, gameTypeID, forCash, seasonI
 
   const lines: ReactElement[] = []
   for (const id of Array.from(people)) {
-    const member = getMember(groupID, id);
+    const member = getMember(groupId, id);
     lines.push(
       <Line 
         key={id}

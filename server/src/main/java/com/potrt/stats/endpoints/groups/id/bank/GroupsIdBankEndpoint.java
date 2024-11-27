@@ -1,12 +1,14 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups.id.bank;
 
-import com.potrt.stats.data.banktransation.BankCashTransaction.MaskedBankCashTransaction;
+import com.potrt.stats.data.banktransation.BankCashTransaction;
+import com.potrt.stats.data.banktransation.BankCashTransactionResponse;
 import com.potrt.stats.data.banktransation.BankCashTransactionService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,21 +32,26 @@ public class GroupsIdBankEndpoint {
   }
 
   /**
-   * The {@code /groups/{groupID}/bank} {@code GET} endpoint returns the bank transactions the
+   * The {@code /groups/{groupId}/bank} {@code GET} endpoint returns the bank transactions the
    * target group.
    */
-  @GetMapping("/groups/{groupID}/bank")
-  public ResponseEntity<List<MaskedBankCashTransaction>> getBankTransactions(
-      @PathVariable(value = "groupID") String groupID) {
+  @GetMapping("/groups/{groupId}/bank")
+  public ResponseEntity<List<BankCashTransactionResponse>> getBankTransactions(
+      @PathVariable(value = "groupId") String groupId) {
     try {
-      List<MaskedBankCashTransaction> bankCashTransactions =
-          bankCashTransactionService.getBankCashTransactions(Integer.valueOf(groupID));
+      List<BankCashTransaction> bankCashTransactions =
+          bankCashTransactionService.getBankCashTransactions(Integer.valueOf(groupId));
 
       if (bankCashTransactions.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(bankCashTransactions, HttpStatus.OK);
+      List<BankCashTransactionResponse> out = new ArrayList<>();
+      for (BankCashTransaction bankCashTransaction : bankCashTransactions) {
+        out.add(new BankCashTransactionResponse(bankCashTransaction));
+      }
+
+      return new ResponseEntity<>(out, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -57,16 +64,18 @@ public class GroupsIdBankEndpoint {
   }
 
   /**
-   * The {@code /groups/{groupID}/bank} {@code POST} endpoint creates a new bank transaction for the
+   * The {@code /groups/{groupId}/bank} {@code POST} endpoint creates a new bank transaction for the
    * target group.
    */
-  @PostMapping("/groups/{groupID}/bank")
+  @PostMapping("/groups/{groupId}/bank")
   public ResponseEntity<Void> addBankTransaction(
-      @PathVariable(value = "groupID") String groupID,
-      @RequestBody BankCashTransactionDto bankCashTransactionDto) {
+      @PathVariable(value = "groupId") String groupId,
+      @RequestBody BankCashTransactionNewDto bankCashTransactionDto) {
     try {
       bankCashTransactionService.addBankCashTransaction(
-          Integer.valueOf(groupID), bankCashTransactionDto);
+          Integer.valueOf(groupId),
+          bankCashTransactionDto.getUserId(),
+          bankCashTransactionDto.getDeposit());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException | PersonIsNotMemberException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

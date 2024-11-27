@@ -7,8 +7,7 @@ import com.potrt.stats.data.game.GameService;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.data.person.Person;
-import com.potrt.stats.data.player.GamePlayer.MaskedGamePlayer;
-import com.potrt.stats.endpoints.games.id.players.GamePlayerDto;
+import com.potrt.stats.endpoints.games.id.players.GamePlayerNewDto;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotMemberException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
@@ -45,25 +44,35 @@ public class GamePlayerService {
   /**
    * Gets all of the game players for a game.
    *
-   * @param gameID The {@link Game} id.
+   * @param gameId The {@link Game} id.
    * @return The {@link List} of {@link MaskedGamePlayer}s.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
    *     Club}.
    * @throws NoResourceException Thrown if there is no {@link Game} with this id.
+   * @apiNote The {@code Cash Admin} role is required to receive unmasked data.
    */
-  public List<MaskedGamePlayer> getGamePlayers(Integer gameID)
+  public List<GamePlayer> getGamePlayers(Integer gameId)
       throws NoResourceException, UnauthenticatedException, UnauthorizedException {
-    Game game = gameService.getGameWithoutAuthCheck(gameID);
-    Integer clubID = game.getClubID();
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    Game game = gameService.getGameWithoutAuthCheck(gameId);
+    Integer clubId = game.getClubId();
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    List<MaskedGamePlayer> gamePlayers = new ArrayList<>();
-    for (GamePlayer gamePlayer : gamePlayerRepository.findByGameID(gameID)) {
+    boolean isGameAdmin =
+        membershipService.hasPermission(
+            securityService.getPersonId(), clubId, PersonRole.GAME_ADMIN);
+
+    List<GamePlayer> gamePlayers = new ArrayList<>();
+    for (GamePlayer gamePlayer : gamePlayerRepository.findByGameId(gameId)) {
       if (gamePlayer.isDeleted()) {
         continue;
       }
-      gamePlayers.add(new MaskedGamePlayer(gamePlayer));
+
+      if (!isGameAdmin) {
+        gamePlayer = gamePlayer.mask();
+      }
+
+      gamePlayers.add(gamePlayer);
     }
 
     return gamePlayers;
@@ -72,8 +81,10 @@ public class GamePlayerService {
   /**
    * Adds a {@link GamePlayer} to a {@link Game}.
    *
-   * @param gameID The {@link Game} id.
-   * @param gamePlayerDto A {@link GamePlayerDto} for the {@link GamePlayer}.
+   * @param gameId The {@link Game} id.
+   * @param personId The {@link Person} id.
+   * @param metadata The metadata for the player.
+   * @param gamePlayerDto A {@link GamePlayerNewDto} for the {@link GamePlayer}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
    *     Club}.
@@ -81,51 +92,43 @@ public class GamePlayerService {
    * @throws PersonIsNotMemberException Thrown if the target {@link Person} is not a member of the
    *     {@link Club}.
    */
-  public void addGamePlayer(Integer gameID, GamePlayerDto gamePlayerDto)
+  public void addGamePlayer(Integer gameId, Integer personId, String metadata)
       throws NoResourceException,
           UnauthenticatedException,
           UnauthorizedException,
           PersonIsNotMemberException {
-    Game game = gameService.getGameWithoutAuthCheck(gameID);
-    Integer clubID = game.getClubID();
-    securityService.assertHasPermission(clubID, PersonRole.GAME_ADMIN);
+    Game game = gameService.getGameWithoutAuthCheck(gameId);
+    Integer clubId = game.getClubId();
+    securityService.assertHasPermission(clubId, PersonRole.GAME_ADMIN);
 
-    if (!membershipService.isMember(gamePlayerDto.getUserID(), clubID)) {
+    if (!membershipService.isMember(personId, clubId)) {
       throw new PersonIsNotMemberException();
     }
 
     Date now = new Date();
-    Integer personID = securityService.getPersonID();
+    Integer callerId = securityService.getPersonId();
     GamePlayer gamePlayer =
-        new GamePlayer(
-            gameID,
-            gamePlayerDto.getUserID(),
-            gamePlayerDto.getMetadata(),
-            false,
-            now,
-            personID,
-            now,
-            personID);
+        new GamePlayer(gameId, personId, metadata, false, now, callerId, now, callerId);
     gamePlayerRepository.save(gamePlayer);
   }
 
   /**
    * Checks if a {@link Person} is a player of a game.
    *
-   * @param personID The target {@link Person}'s id.
-   * @param gameID The target {@link Game} id.
+   * @param personId The target {@link Person}'s id.
+   * @param gameId The target {@link Game} id.
    * @return Whether the {@link Person} is a player in the game.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Game} with this id.
    */
-  public boolean isPlayer(Integer personID, Integer gameID)
+  public boolean isPlayer(Integer personId, Integer gameId)
       throws NoResourceException, UnauthenticatedException, UnauthorizedException {
-    Game game = gameService.getGameWithoutAuthCheck(gameID);
-    Integer clubID = game.getClubID();
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    Game game = gameService.getGameWithoutAuthCheck(gameId);
+    Integer clubId = game.getClubId();
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    Optional<GamePlayer> player = gamePlayerRepository.findById(new GamePerson(gameID, personID));
+    Optional<GamePlayer> player = gamePlayerRepository.findById(new GamePerson(gameId, personId));
     if (player.isEmpty()) {
       return false;
     }

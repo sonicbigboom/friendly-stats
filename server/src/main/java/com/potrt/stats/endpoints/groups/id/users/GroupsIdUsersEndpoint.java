@@ -1,12 +1,14 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups.id.users;
 
-import com.potrt.stats.data.membership.Membership.MaskedMembership;
+import com.potrt.stats.data.membership.Membership;
+import com.potrt.stats.data.membership.MembershipResponse;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonAlreadyExistsException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,21 +32,25 @@ public class GroupsIdUsersEndpoint {
   }
 
   /**
-   * The {@code /groups/{groupID}/users} {@code GET} endpoint returns all of the users that are a
+   * The {@code /groups/{groupId}/users} {@code GET} endpoint returns all of the users that are a
    * member of this group.
    */
-  @GetMapping("/groups/{groupID}/users")
-  public ResponseEntity<List<MaskedMembership>> getGroupUsers(
-      @PathVariable(value = "groupID") String groupID) {
+  @GetMapping("/groups/{groupId}/users")
+  public ResponseEntity<List<MembershipResponse>> getGroupUsers(
+      @PathVariable(value = "groupId") String groupId) {
     try {
-      List<MaskedMembership> maskedMemberships =
-          membershipService.getMemberships(Integer.valueOf(groupID));
+      List<Membership> memberships = membershipService.getMemberships(Integer.valueOf(groupId));
 
-      if (maskedMemberships.isEmpty()) {
+      if (memberships.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(maskedMemberships, HttpStatus.OK);
+      List<MembershipResponse> responses = new ArrayList<>();
+      for (Membership membership : memberships) {
+        responses.add(new MembershipResponse(membership));
+      }
+
+      return new ResponseEntity<>(responses, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -56,11 +62,17 @@ public class GroupsIdUsersEndpoint {
     }
   }
 
-  @PostMapping("/groups/{groupID}/users")
+  @PostMapping("/groups/{groupId}/users")
   public ResponseEntity<Void> addGroupUser(
-      @PathVariable(value = "groupID") String groupID, @RequestBody MembershipDto membership) {
+      @PathVariable(value = "groupId") String groupId, @RequestBody MembershipNewDto membership) {
     try {
-      membershipService.addMember(Integer.valueOf(groupID), membership);
+      membershipService.addMember(
+          Integer.valueOf(groupId),
+          membership.getIdentifier(),
+          membership.getPersonRole(),
+          membership.getFirstName(),
+          membership.getLastName(),
+          membership.getNickname());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

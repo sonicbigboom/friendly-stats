@@ -17,15 +17,15 @@ public class AuthBasic implements CredentialsContainer {
   private String email;
   private String username;
   private String password;
-  @Id private Integer personID;
+  @Id private Integer personId;
 
   @Transient private Person person;
 
-  public AuthBasic(String email, String username, String password, Integer personID) {
+  public AuthBasic(String email, String username, String password, Integer personId) {
     this.email = email;
     this.username = username;
     this.password = password;
-    this.personID = personID;
+    this.personId = personId;
   }
 
   @Override

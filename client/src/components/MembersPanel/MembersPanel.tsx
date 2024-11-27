@@ -1,37 +1,37 @@
 import { useContext, useState } from "react";
 import { TokenContext } from "../../data/Token/TokenContext";
-import { PersonRole } from "../../classes/Member";
+import { UserRole } from "../../classes/Member";
 import { MembersContext } from "../../data/Members/MembersContext";
 
 type Props = {
-  groupID: number;
+  groupId: number;
   isCashAdmin: boolean;
 };
 
-export default function MembersPanel( { groupID, isCashAdmin }: Readonly<Props>) {
+export default function MembersPanel( { groupId, isCashAdmin }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
   const { getMembers, refresh } = useContext(MembersContext)
-  const [newMember, setNewMember] = useState<MemberDto>(new MemberDto("", PersonRole.Player, "", "", ""));
+  const [newMember, setNewMember] = useState<MemberDto>(new MemberDto("", UserRole.Player, "", "", ""));
   
-  const listMembers = getMembers(groupID).map(member => {
-    if (member.personID >= 0 && member.clubID >= 0) {
+  const listMembers = getMembers(groupId).map(member => {
+    if (member.userId >= 0 && member.groupId >= 0) {
 
       return (   
-        <li key={member.personID}>
+        <li key={member.userId}>
           <p>{member.firstName} {member.lastName}{(member.nickname) ? <> ({member.nickname})</> : <></>}: {member.cashBalance}</p>
-          <BankTransaction userID={member.personID} groupID={member.clubID} isCashAdmin={isCashAdmin}/>
+          <BankTransaction userId={member.userId} groupId={member.groupId} isCashAdmin={isCashAdmin}/>
         </li>
       );
     } else {
       return (   
-        <li key={-1}>Loading user {member.personID}...</li>
+        <li key={-1}>Loading user {member.userId}...</li>
       );
     }
   })
 
   async function addMember() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/users`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
@@ -42,7 +42,7 @@ export default function MembersPanel( { groupID, isCashAdmin }: Readonly<Props>)
         if (!response.ok) {
           throw response.status;
         }
-        refresh(groupID)
+        refresh(groupId)
       }
     );
   }
@@ -92,12 +92,12 @@ export default function MembersPanel( { groupID, isCashAdmin }: Readonly<Props>)
 }
 
 type BankTransactionProps = {
-  groupID: number;
-  userID: number;
+  groupId: number;
+  userId: number;
   isCashAdmin: boolean;
 };
 
-export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankTransactionProps>) {
+export function BankTransaction({ groupId, userId, isCashAdmin }: Readonly<BankTransactionProps>) {
   const { token } = useContext(TokenContext);
   const [deposit, setDeposit] = useState(0);
   const { refresh: refreshMembers } = useContext(MembersContext);
@@ -106,25 +106,25 @@ export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankT
 
   function depositTransaction() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/bank`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/bank`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
-        body: JSON.stringify({userID: userID, deposit: deposit}),
+        body: JSON.stringify({userId: userId, deposit: deposit}),
       }
     ).then(
       async (response) => {
         if (!response.ok) {
           throw response.status;
         }
-        refreshMembers(groupID);
+        refreshMembers(groupId);
       }
     );
   }
 
   return (
     <div>
-      <input type="number" id={`deposit-${userID}`} onChange={(e) => setDeposit(Number(e.target.value))}/>
+      <input type="number" id={`deposit-${userId}`} onChange={(e) => setDeposit(Number(e.target.value))}/>
       <button type="button" onClick={depositTransaction}>Deposit</button>
     </div>
   );
@@ -132,14 +132,14 @@ export function BankTransaction({ groupID, userID, isCashAdmin }: Readonly<BankT
 
 class MemberDto {
   identifier: string;
-  personRole: PersonRole | null;
+  personRole: UserRole | null;
   firstName: string | null;
   lastName: string | null;
   nickname: string | null;
 
   public constructor(
     identifier: string,
-    personRole: PersonRole | null,
+    personRole: UserRole | null,
     firstName: string | null,
     lastName: string | null,
     nickname: string | null,

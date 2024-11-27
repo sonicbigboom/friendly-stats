@@ -2,7 +2,7 @@
 package com.potrt.stats.endpoints.me;
 
 import com.potrt.stats.data.person.Person;
-import com.potrt.stats.data.person.Person.MaskedPerson;
+import com.potrt.stats.data.person.PersonResponse;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.security.SecurityService;
 import org.springframework.http.HttpStatus;
@@ -26,10 +26,10 @@ public class MeEndpoint {
 
   /** The {@code /auth/me} {@code GET} endpoint returns the caller's details. */
   @GetMapping("/me")
-  public ResponseEntity<MaskedPerson> getMe() {
+  public ResponseEntity<PersonResponse> getMe() {
     try {
       Person person = securityService.getPerson();
-      return new ResponseEntity<>(new MaskedPerson(person, true), HttpStatus.OK);
+      return new ResponseEntity<>(new PersonResponse(person), HttpStatus.OK);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -40,13 +40,13 @@ public class MeEndpoint {
    * updated caller's details.
    */
   @PatchMapping("/me")
-  public ResponseEntity<MaskedPerson> patchMe(@RequestBody MaskedPerson person) {
+  public ResponseEntity<PersonResponse> patchMe(@RequestBody Person person) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
   /** TODO: The {@code /me} {@code DELETE} endpoint deletes the caller's account. */
   @DeleteMapping("/me")
-  public ResponseEntity<MaskedPerson> deleteMe() {
+  public ResponseEntity<Void> deleteMe() {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 }

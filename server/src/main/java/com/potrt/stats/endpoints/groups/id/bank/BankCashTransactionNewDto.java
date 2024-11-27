@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@link BankCashTransactionDto} represents a new {@link BankCashTransaction}. */
+/** A {@link BankCashTransactionNewDto} represents a new {@link BankCashTransaction}. */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BankCashTransactionDto {
-  private Integer userID;
+public class BankCashTransactionNewDto {
+  private Integer userId;
   private Integer deposit;
 }

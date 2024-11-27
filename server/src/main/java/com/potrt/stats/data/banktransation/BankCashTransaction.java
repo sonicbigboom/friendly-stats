@@ -32,10 +32,10 @@ public class BankCashTransaction {
   private Integer id;
 
   @Column(nullable = false)
-  private Integer personID;
+  private Integer personId;
 
   @Column(nullable = false)
-  private Integer clubID;
+  private Integer clubId;
 
   @Column(nullable = false)
   private Integer deposit;
@@ -49,40 +49,12 @@ public class BankCashTransaction {
   private Date createdTime;
 
   @Column(nullable = false)
-  private Integer createdByPersonID;
+  private Integer createdByPersonId;
 
   @Column(nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedTime;
 
   @Column(nullable = false)
-  private Integer modifiedByPersonID;
-
-  /** A {@link MaskedBankCashTransaction} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedBankCashTransaction {
-    private Integer id;
-    private Integer personID;
-    private Integer clubID;
-    private Integer deposit;
-    private Date createdTime;
-    private Integer createdByPersonID;
-    private Date modifiedTime;
-    private Integer modifiedByPersonID;
-
-    /** A {@link MaskedBankCashTransaction} with public information. */
-    public MaskedBankCashTransaction(BankCashTransaction bankCashTransaction) {
-      this.id = bankCashTransaction.id;
-      this.personID = bankCashTransaction.personID;
-      this.clubID = bankCashTransaction.clubID;
-      this.deposit = bankCashTransaction.deposit;
-      this.createdTime = bankCashTransaction.createdTime;
-      this.createdByPersonID = bankCashTransaction.createdByPersonID;
-      this.modifiedTime = bankCashTransaction.modifiedTime;
-      this.modifiedByPersonID = bankCashTransaction.modifiedByPersonID;
-    }
-  }
+  private Integer modifiedByPersonId;
 }

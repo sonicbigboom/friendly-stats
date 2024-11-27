@@ -1,11 +1,13 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups.id.games;
 
-import com.potrt.stats.data.game.Game.MaskedGame;
+import com.potrt.stats.data.game.Game;
+import com.potrt.stats.data.game.GameResponse;
 import com.potrt.stats.data.game.GameService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,21 +31,27 @@ public class GroupsIdGamesEndpoint {
   }
 
   /**
-   * The {@code /groups/{groupID}/games} {@code GET} endpoint returns the games for the target
+   * The {@code /groups/{groupId}/games} {@code GET} endpoint returns the games for the target
    * group.
    *
    * <p>TODO: Add query params for types of games, and closed games.
    */
-  @GetMapping("/groups/{groupID}/games")
-  public ResponseEntity<List<MaskedGame>> getGame(@PathVariable(value = "groupID") String groupID) {
+  @GetMapping("/groups/{groupId}/games")
+  public ResponseEntity<List<GameResponse>> getGame(
+      @PathVariable(value = "groupId") String groupId) {
     try {
-      List<MaskedGame> games = gameService.getGames(Integer.valueOf(groupID));
+      List<Game> games = gameService.getGames(Integer.valueOf(groupId));
 
       if (games.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(games, HttpStatus.OK);
+      List<GameResponse> responses = new ArrayList<>();
+      for (Game game : games) {
+        responses.add(new GameResponse(game));
+      }
+
+      return new ResponseEntity<>(responses, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -56,14 +64,19 @@ public class GroupsIdGamesEndpoint {
   }
 
   /**
-   * The {@code /groups/{groupID}/games} {@code POST} endpoint creates a new game for the target
+   * The {@code /groups/{groupId}/games} {@code POST} endpoint creates a new game for the target
    * group.
    */
-  @PostMapping("/groups/{groupID}/games")
+  @PostMapping("/groups/{groupId}/games")
   public ResponseEntity<Void> addGame(
-      @PathVariable(value = "groupID") String groupID, @RequestBody GameDto gameDto) {
+      @PathVariable(value = "groupId") String groupId, @RequestBody GameNewDto gameDto) {
     try {
-      gameService.addGame(Integer.valueOf(groupID), gameDto);
+      gameService.addGame(
+          Integer.valueOf(groupId),
+          gameDto.getGameTypeId(),
+          gameDto.getName(),
+          gameDto.isForCash(),
+          gameDto.getSeasonId());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

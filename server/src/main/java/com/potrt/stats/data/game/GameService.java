@@ -2,9 +2,7 @@
 package com.potrt.stats.data.game;
 
 import com.potrt.stats.data.club.Club;
-import com.potrt.stats.data.game.Game.MaskedGame;
 import com.potrt.stats.data.membership.PersonRole;
-import com.potrt.stats.endpoints.groups.id.games.GameDto;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
@@ -32,72 +30,66 @@ public class GameService {
   /**
    * Gets the games for a {@link Club}.
    *
-   * @param clubID The {@link Club} id.
+   * @param clubId The {@link Club} id.
    * @return The {@link List} of {@link Game}s.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public List<MaskedGame> getGames(Integer clubID)
+  public List<Game> getGames(Integer clubId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    Iterable<Game> games = gameRepository.findByClubID(clubID);
+    Iterable<Game> games = gameRepository.findByClubId(clubId);
 
-    List<MaskedGame> outGames = new ArrayList<>();
+    List<Game> out = new ArrayList<>();
     for (Game game : games) {
       if (game.isDeleted()) {
         continue;
       }
-      outGames.add(new MaskedGame(game));
+
+      out.add(game);
     }
 
-    return outGames;
+    return out;
   }
 
   /**
    * Creates a new {@link Game}.
    *
-   * @param clubID The {@link Club} id.
-   * @param gameDto The {@link GameDto}.
+   * @param clubId The {@link Club} id.
+   * @param gameTypeId The {@link GameType} id of the game.
+   * @param name The name of the game.
+   * @param isForCash Whether the game is for real money.
+   * @parma seasonId The season id.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Game Admin} of the {@link
    *     Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public void addGame(Integer clubID, GameDto gameDto)
+  public void addGame(
+      Integer clubId, Integer gameTypeId, String name, boolean isForCash, Integer seasonId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.GAME_ADMIN);
+    securityService.assertHasPermission(clubId, PersonRole.GAME_ADMIN);
 
     Date now = new Date();
-    Game game =
-        new Game(
-            null,
-            clubID,
-            gameDto.getGameTypeID(),
-            gameDto.getName(),
-            gameDto.isForCash(),
-            gameDto.getSeasonID(),
-            0,
-            now,
-            null,
-            false);
+    Game game = new Game(null, clubId, gameTypeId, name, isForCash, seasonId, 0, now, null, false);
     gameRepository.save(game);
   }
 
   /**
    * Gets a {@link Game} with a id.
    *
-   * @param gameID The {@link Game} id.
+   * @param gameId The {@link Game} id.
    * @return The {@link Game}.
    * @throws NoResourceException Thrown if no game with this id exists.
    * @apiNote This service method does not check authorization.
    */
-  public Game getGameWithoutAuthCheck(Integer gameID) throws NoResourceException {
-    Optional<Game> game = gameRepository.findById(gameID);
+  public Game getGameWithoutAuthCheck(Integer gameId) throws NoResourceException {
+    Optional<Game> game = gameRepository.findById(gameId);
 
     if (game.isEmpty()) {
-      throw new NoResourceException("No game with id \"" + gameID + "\" exists.");
+      throw new NoResourceException("No game with id \"" + gameId + "\" exists.");
     }
 
     return game.get();

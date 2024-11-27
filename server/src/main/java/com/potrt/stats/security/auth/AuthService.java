@@ -60,10 +60,10 @@ public interface AuthService {
   /**
    * Updates the credential for the {@link Person} using the {@link AuthService}'s {@link AuthType}.
    *
-   * @param personID The {@link Person}'s id.
+   * @param personId The {@link Person}'s id.
    * @param code The code representing the credentials for the {@link AuthService}'s {@link
    *     AuthType}.
    */
-  public void updateCredentials(Integer personID, String code)
+  public void updateCredentials(Integer personId, String code)
       throws BadExternalCommunicationException;
 }

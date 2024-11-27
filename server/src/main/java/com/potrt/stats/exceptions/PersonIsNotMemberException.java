@@ -3,6 +3,7 @@ package com.potrt.stats.exceptions;
 
 import com.potrt.stats.data.club.Club;
 import com.potrt.stats.data.person.Person;
+import lombok.experimental.StandardException;
 
 /**
  * An {@link Exception} when trying to perform an action on a {@link Person} for a {@link Club} that
@@ -10,20 +11,5 @@ import com.potrt.stats.data.person.Person;
  *
  * @fs.httpStatus 400 Bad Request
  */
-public class PersonIsNotMemberException extends Exception {
-  public PersonIsNotMemberException() {
-    super();
-  }
-
-  public PersonIsNotMemberException(Throwable cause) {
-    super(cause);
-  }
-
-  public PersonIsNotMemberException(String msg) {
-    super(msg);
-  }
-
-  public PersonIsNotMemberException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
-}
+@StandardException
+public class PersonIsNotMemberException extends Exception {}

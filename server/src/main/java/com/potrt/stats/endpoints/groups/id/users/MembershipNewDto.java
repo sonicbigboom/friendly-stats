@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * A {@link MembershipDto} represents a new {@link Membership}. A {@link identifier} can be either a
- * {@link Person} id or email.
+ * A {@link MembershipNewDto} represents a new {@link Membership}. A {@link identifier} can be
+ * either a {@link Person} id or email.
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MembershipDto {
+public class MembershipNewDto {
   private String identifier;
   private String personRole;
   private String firstName;

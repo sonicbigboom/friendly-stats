@@ -32,23 +32,23 @@ public class GameRecordExpanded {
   private Integer id;
 
   @Column(nullable = false)
-  private Integer clubID;
+  private Integer clubId;
 
   @Column(nullable = false)
-  private Integer gameID;
+  private Integer gameId;
 
   @Column(nullable = false)
-  private Integer gameTypeID;
+  private Integer gameTypeId;
 
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
-  private Boolean forCash;
+  private boolean forCash;
 
   @Column(nullable = false)
-  private Integer seasonID;
+  private Integer seasonId;
 
   @Column(nullable = false)
-  private Integer personID;
+  private Integer personId;
 
   @Column(nullable = false)
   private Integer scoreChange;

@@ -32,10 +32,10 @@ public class Game {
   private Integer id;
 
   @Column(nullable = false)
-  private Integer clubID;
+  private Integer clubId;
 
   @Column(nullable = false)
-  private Integer gameTypeID;
+  private Integer gameTypeId;
 
   @Column(nullable = false)
   private String name;
@@ -45,7 +45,7 @@ public class Game {
   private boolean forCash;
 
   @Column(nullable = false)
-  private Integer seasonID;
+  private Integer seasonId;
 
   @Column(nullable = false)
   private Integer netScoreChange;
@@ -61,34 +61,4 @@ public class Game {
   @Column(nullable = false)
   @Convert(converter = NumericBooleanConverter.class)
   private boolean isDeleted;
-
-  /** A {@link MaskedGame} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedGame {
-    private Integer id;
-    private Integer clubID;
-    private Integer gameTypeID;
-    private String name;
-    private boolean forCash;
-    private Integer seasonID;
-    private Integer netScoreChange;
-    private Date startDate;
-    private Date endDate;
-
-    /** A {@link MaskedGame} with public information. */
-    public MaskedGame(Game game) {
-      this.id = game.id;
-      this.clubID = game.clubID;
-      this.gameTypeID = game.gameTypeID;
-      this.name = game.name;
-      this.forCash = game.forCash;
-      this.seasonID = game.seasonID;
-      this.netScoreChange = game.netScoreChange;
-      this.startDate = game.startDate;
-      this.endDate = game.endDate;
-    }
-  }
 }

@@ -37,9 +37,9 @@ function App() {
         <FSNavbar />
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/group/:groupID" element={<GroupPage />} />
-          <Route path="/group/:groupID/scoreboard" element={<ScoreboardPage />} />
-          <Route path="/group/:groupID/game/:gameID" element={<GamePage />} />
+          <Route path="/group/:groupId" element={<GroupPage />} />
+          <Route path="/group/:groupId/scoreboard" element={<ScoreboardPage />} />
+          <Route path="/group/:groupId/game/:gameId" element={<GamePage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </DataWrapper>

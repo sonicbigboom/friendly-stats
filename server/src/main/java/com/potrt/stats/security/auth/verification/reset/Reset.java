@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Reset {
   @Id private String token;
-  private Integer personID;
+  private Integer personId;
   private Timestamp expirationDate;
 }

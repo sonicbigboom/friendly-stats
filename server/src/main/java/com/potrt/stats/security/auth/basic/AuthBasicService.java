@@ -63,9 +63,9 @@ public class AuthBasicService implements AuthService {
   }
 
   @Override
-  public void updateCredentials(Integer personID, String code) {
+  public void updateCredentials(Integer personId, String code) {
     String encodedPassword = "{bcrypt}" + new BCryptPasswordEncoder(14).encode(code);
-    AuthBasicPassword authBasicPassword = new AuthBasicPassword(personID, encodedPassword);
+    AuthBasicPassword authBasicPassword = new AuthBasicPassword(personId, encodedPassword);
     authBasicPasswordRepository.save(authBasicPassword);
   }
 }

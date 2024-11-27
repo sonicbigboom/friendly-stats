@@ -18,6 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AuthGoogle {
-  @Id private String authID;
-  private Integer personID;
+  @Id private String authId;
+  private Integer personId;
 }

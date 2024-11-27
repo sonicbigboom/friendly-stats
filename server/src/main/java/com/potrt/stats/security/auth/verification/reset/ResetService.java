@@ -88,7 +88,7 @@ public class ResetService {
       throw new TokenExpiredException();
     }
 
-    if (!person.getId().equals(reset.getPersonID())) {
+    if (!person.getId().equals(reset.getPersonId())) {
       throw new TokenDoesNotExistException();
     }
 

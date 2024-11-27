@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthBasicPassword {
-  @Id private Integer personID;
+  @Id private Integer personId;
   private String password;
 }

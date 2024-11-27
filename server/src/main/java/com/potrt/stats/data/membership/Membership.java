@@ -24,11 +24,11 @@ import lombok.Setter;
 public class Membership {
   @Id
   @Column(nullable = false)
-  private Integer personID;
+  private Integer personId;
 
   @Id
   @Column(nullable = false)
-  private Integer clubID;
+  private Integer clubId;
 
   @Column(nullable = true)
   private String personRole;
@@ -45,46 +45,12 @@ public class Membership {
   @Column(nullable = true)
   private String nickname;
 
-  /** A {@link Person} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedMembership {
-    private Integer personID;
-    private Integer clubID;
-    private String personRole;
-    private Integer cashBalance;
-    private String firstName;
-    private String lastName;
-    private String nickname;
-
-    /**
-     * A {@link MaskedMembership} with only public information.
-     *
-     * @param membership The {@link Membership} to mask.
-     */
-    public MaskedMembership(Membership membership) {
-      this(membership, false);
-    }
-
-    /**
-     * A {@link MaskedMembership} with public information and potentially sensitive info.
-     *
-     * @param membership The {@link Membership} to mask.
-     * @param includeSensitive Whether the {@code storedCash} is included.
-     */
-    public MaskedMembership(Membership membership, boolean includeSensitive) {
-      this.personID = membership.personID;
-      this.clubID = membership.clubID;
-      this.personRole = membership.personRole;
-      this.firstName = membership.firstName;
-      this.lastName = membership.lastName;
-      this.nickname = membership.nickname;
-
-      if (includeSensitive) {
-        this.cashBalance = membership.cashBalance;
-      }
-    }
+  /**
+   * Returns a duplicate without data that a basic member cannot see.
+   *
+   * @return The masked duplicate.
+   */
+  public Membership mask() {
+    return new Membership(personId, clubId, personRole, null, firstName, lastName, nickname);
   }
 }

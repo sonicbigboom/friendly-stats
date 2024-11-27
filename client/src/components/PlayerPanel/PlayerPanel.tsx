@@ -4,62 +4,62 @@ import { BankTransaction } from "../MembersPanel/MembersPanel";
 import { PlayersContext } from "../../data/Players/PlayersContext";
 
 type Props = {
-  groupID: number;
-  gameID: number;
+  groupId: number;
+  gameId: number;
   isGameAdmin: boolean;
   isCashAdmin: boolean;
 };
 
-export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin }: Readonly<Props>) {
+export default function PlayerPanel( { groupId, gameId, isGameAdmin, isCashAdmin }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
   const { getPlayerMembers, getNonPlayerMembers, refresh } = useContext(PlayersContext);
-  const [ newPlayerID, setNewPlayerID ] = useState((getNonPlayerMembers(groupID, gameID).length > 0) ? getNonPlayerMembers(groupID, gameID)[0].personID : -1);
+  const [ newPlayerId, setNewPlayerId ] = useState((getNonPlayerMembers(groupId, gameId).length > 0) ? getNonPlayerMembers(groupId, gameId)[0].userId : -1);
   
-  const players = getPlayerMembers(groupID, gameID);
-  const nonPlayers = getNonPlayerMembers(groupID, gameID);
+  const players = getPlayerMembers(groupId, gameId);
+  const nonPlayers = getNonPlayerMembers(groupId, gameId);
 
   const listPlayers = players.map(member => {
-    if (member.personID >= 0 && member.clubID >= 0) {
+    if (member.userId >= 0 && member.groupId >= 0) {
 
       return (   
-        <li key={member.personID}>
+        <li key={member.userId}>
           <p>{member.firstName} {member.lastName}{(member.nickname) ? <> ({member.nickname})</> : <></>}: {member.cashBalance}</p>
-          <GameRecord userID={member.personID} groupID={groupID} gameID={gameID} isGameAdmin={isGameAdmin}/>
-          <BankTransaction userID={member.personID} groupID={member.clubID} isCashAdmin={isCashAdmin}/>
+          <GameRecord userId={member.userId} groupId={groupId} gameId={gameId} isGameAdmin={isGameAdmin}/>
+          <BankTransaction userId={member.userId} groupId={member.groupId} isCashAdmin={isCashAdmin}/>
         </li>
       );
     } else {
       return (   
-        <li key={-1}>Loading user {member.personID}...</li>
+        <li key={-1}>Loading user {member.userId}...</li>
       );
     }
   })
 
   const listNewPlayerOptions = nonPlayers.map(member => {
     return  (
-      <option key={member.personID} value={member.personID}>{member.firstName} {member.lastName}{(member.nickname) ? (" " + member.nickname) : ""}</option>
+      <option key={member.userId} value={member.userId}>{member.firstName} {member.lastName}{(member.nickname) ? (" " + member.nickname) : ""}</option>
     )
   })
 
   function addNewPlayer() {
-    let id = newPlayerID;
+    let id = newPlayerId;
     if (id === -1) {
-      id = nonPlayers[0].personID
+      id = nonPlayers[0].userId
     }
-    setNewPlayerID(-1)
+    setNewPlayerId(-1)
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/players`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/players`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
-        body: JSON.stringify({userID: id, metadata: ""}),
+        body: JSON.stringify({userId: id, metadata: ""}),
       }
     ).then(
       async (response) => {
         if (!response.ok) {
           throw response.status;
         }
-        refresh(groupID, gameID)
+        refresh(groupId, gameId)
       }
     );
   }
@@ -68,7 +68,7 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
     <div>
       <label>
         Add Player{}
-        <select onChange={(e) => setNewPlayerID(Number(e.target.value))}>
+        <select onChange={(e) => setNewPlayerId(Number(e.target.value))}>
           {listNewPlayerOptions}
         </select>
       </label>
@@ -86,13 +86,13 @@ export default function PlayerPanel( { groupID, gameID, isGameAdmin, isCashAdmin
 }
 
 type GameRecordProps = {
-  userID: number;
-  groupID: number;
-  gameID: number;
+  userId: number;
+  groupId: number;
+  gameId: number;
   isGameAdmin: boolean;
 };
 
-export function GameRecord({ userID, groupID, gameID, isGameAdmin }: Readonly<GameRecordProps>) {
+export function GameRecord({ userId, groupId, gameId, isGameAdmin }: Readonly<GameRecordProps>) {
   const { token } = useContext(TokenContext);
   const { refresh: refreshPlayers } = useContext(PlayersContext);
   const [scoreChange, setScoreChange] = useState(0);
@@ -101,25 +101,25 @@ export function GameRecord({ userID, groupID, gameID, isGameAdmin }: Readonly<Ga
 
   function recordScoreChange() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/records`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/records`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
-        body: JSON.stringify({userID: userID, scoreChange: scoreChange}),
+        body: JSON.stringify({userId: userId, scoreChange: scoreChange}),
       }
     ).then(
       async (response) => {
         if (!response.ok) {
           throw response.status;
         }
-        refreshPlayers(groupID, gameID);
+        refreshPlayers(groupId, gameId);
       }
     );
   }
 
   return (
     <div>
-      <input type="number" id={`deposit-${userID}`} onChange={(e) => setScoreChange(Number(e.target.value))}/>
+      <input type="number" id={`deposit-${userId}`} onChange={(e) => setScoreChange(Number(e.target.value))}/>
       <button type="button" onClick={recordScoreChange}>Record Score Change</button>
     </div>
   );

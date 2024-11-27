@@ -38,7 +38,11 @@ public class GameRecordExpandedService {
   /**
    * Gets all of the expanded game records for a club.
    *
-   * @param gameID The {@link Game} id.
+   * @param clubId The club's id.
+   * @param gameTypeId Which {@link GameType} id to track for.
+   * @param forCash Whether to track for cash.
+   * @param seasonId Which season to track for.
+   * @param personId Which {@link Person} to track for.
    * @return The {@link List} of {@link GameRecord}s.
    * @throws NoResourceException Thrown if the {@link Game} does not exist.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
@@ -46,35 +50,35 @@ public class GameRecordExpandedService {
    *     game is a part of.
    */
   public List<GameRecordExpanded> getGameRecordExpandeds(
-      Integer clubID,
-      Optional<String> gameTypeID,
+      Integer clubId,
+      Optional<String> gameTypeId,
       Optional<String> forCash,
-      Optional<String> seasonID,
-      Optional<String> personID)
+      Optional<String> seasonId,
+      Optional<String> personId)
       throws NoResourceException,
           UnauthenticatedException,
           UnauthorizedException,
           NumberFormatException {
 
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
     GameRecordExpanded example = new GameRecordExpanded();
-    example.setClubID(clubID);
+    example.setClubId(clubId);
 
-    if (gameTypeID.isPresent()) {
-      example.setGameTypeID(Integer.valueOf(gameTypeID.get()));
+    if (gameTypeId.isPresent()) {
+      example.setGameTypeId(Integer.valueOf(gameTypeId.get()));
     }
 
     if (forCash.isPresent()) {
       example.setForCash(Boolean.parseBoolean(forCash.get()));
     }
 
-    if (seasonID.isPresent()) {
-      example.setSeasonID(Integer.valueOf(seasonID.get()));
+    if (seasonId.isPresent()) {
+      example.setSeasonId(Integer.valueOf(seasonId.get()));
     }
 
-    if (personID.isPresent()) {
-      example.setPersonID(Integer.valueOf(personID.get()));
+    if (personId.isPresent()) {
+      example.setPersonId(Integer.valueOf(personId.get()));
     }
 
     Iterable<GameRecordExpanded> gameRecordExpandeds =

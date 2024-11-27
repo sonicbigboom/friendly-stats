@@ -1,7 +1,7 @@
 export default class Member {
-  personID: number;
-  clubID: number;
-  personRole: PersonRole | null;
+  userId: number;
+  groupId: number;
+  userRole: UserRole | null;
   cashBalance: number | null;
   firstName: string | null;
   lastName: string | null;
@@ -9,26 +9,26 @@ export default class Member {
 
   public constructor();
   public constructor(
-    personID: number,
-    clubID: number,
-    personRole: PersonRole | null,
+    userId: number,
+    groupId: number,
+    userRole: UserRole | null,
     cashBalance: number | null,
     firstName: string | null,
     lastName: string | null,
     nickname: string | null
   )
   public constructor(
-    personID?: number,
-    clubID?: number,
-    personRole?: PersonRole | null,
+    userId?: number,
+    groupId?: number,
+    userRole?: UserRole | null,
     cashBalance?: number | null,
     firstName?: string | null,
     lastName?: string | null,
     nickname?: string | null
   ) {
-    this.personID = personID ?? -1;
-    this.clubID = clubID ?? -1;
-    this.personRole = personRole ?? null
+    this.userId = userId ?? -1;
+    this.groupId = groupId ?? -1;
+    this.userRole = userRole ?? null
     this.cashBalance = cashBalance ?? null;
     this.firstName = firstName ?? "Loading...";
     this.lastName = lastName ?? "Loading...";
@@ -36,11 +36,11 @@ export default class Member {
   }
 
   clone() {
-    return new Member(this.personID, this.clubID, this.personRole, this.cashBalance, this.firstName, this.lastName, this.nickname);
+    return new Member(this.userId, this.groupId, this.userRole, this.cashBalance, this.firstName, this.lastName, this.nickname);
   }
 }
 
-export enum PersonRole {
+export enum UserRole {
   Player = "Player",
   GroupAdmin = "Group Admin",
   CashAdmin = "Cash Admin",

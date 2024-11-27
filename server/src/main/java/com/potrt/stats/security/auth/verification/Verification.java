@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Verification {
   @Id private String token;
-  private Integer personID;
+  private Integer personId;
   private Timestamp expirationDate;
 }

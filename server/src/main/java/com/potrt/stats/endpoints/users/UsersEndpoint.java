@@ -1,8 +1,10 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.users;
 
-import com.potrt.stats.data.person.Person.MaskedPerson;
+import com.potrt.stats.data.person.Person;
+import com.potrt.stats.data.person.PersonResponse;
 import com.potrt.stats.data.person.PersonService;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
@@ -24,14 +26,19 @@ public class UsersEndpoint {
 
   /** The {@code /users} {@code GET} endpoint returns all of the users matching the filter. */
   @GetMapping("/users")
-  public ResponseEntity<List<MaskedPerson>> getUsers(
+  public ResponseEntity<List<PersonResponse>> getUsers(
       @RequestParam(value = "filter") Optional<String> filter) {
-    List<MaskedPerson> persons = personService.getPersons(filter.orElseGet(() -> null));
+    List<Person> persons = personService.getPersons(filter.orElseGet(() -> null));
 
     if (persons.isEmpty()) {
       return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
     }
 
-    return new ResponseEntity<>(persons, HttpStatus.OK);
+    List<PersonResponse> responses = new ArrayList<>();
+    for (Person person : persons) {
+      responses.add(new PersonResponse(person));
+    }
+
+    return new ResponseEntity<>(responses, HttpStatus.OK);
   }
 }

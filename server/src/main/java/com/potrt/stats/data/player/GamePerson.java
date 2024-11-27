@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GamePerson {
-  private Integer gameID;
-  private Integer personID;
+  private Integer gameId;
+  private Integer personId;
 }

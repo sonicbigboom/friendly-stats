@@ -1,10 +1,12 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.groups;
 
-import com.potrt.stats.data.club.Club.MaskedClub;
+import com.potrt.stats.data.club.Club;
+import com.potrt.stats.data.club.ClubResponse;
 import com.potrt.stats.data.club.ClubService;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +31,20 @@ public class GroupsEndpoint {
    * of.
    */
   @GetMapping("/groups")
-  public ResponseEntity<List<MaskedClub>> getGroups() {
+  public ResponseEntity<List<ClubResponse>> getGroups() {
     try {
-      List<MaskedClub> clubs = clubService.getClubs();
+      List<Club> clubs = clubService.getClubs();
 
       if (clubs.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(clubs, HttpStatus.OK);
+      List<ClubResponse> responses = new ArrayList<>();
+      for (Club club : clubs) {
+        responses.add(new ClubResponse(club));
+      }
+
+      return new ResponseEntity<>(responses, HttpStatus.OK);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
@@ -45,10 +52,11 @@ public class GroupsEndpoint {
 
   /** The {@code /groups} {@code POST} endpoint creates a new group. */
   @PostMapping("/groups")
-  public ResponseEntity<MaskedClub> createGroup(
+  public ResponseEntity<ClubResponse> createGroup(
       @RequestParam(value = "name") String name, HttpServletRequest request) {
     try {
-      return new ResponseEntity<>(clubService.createClub(name), HttpStatus.CREATED);
+      return new ResponseEntity<>(
+          new ClubResponse(clubService.createClub(name)), HttpStatus.CREATED);
     } catch (UnauthenticatedException e) {
       return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }

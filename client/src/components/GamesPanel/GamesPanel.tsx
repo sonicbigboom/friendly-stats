@@ -4,16 +4,16 @@ import { Link } from "react-router-dom";
 import { GamesContext } from "../../data/Games/GamesContext";
 
 type Props = {
-  groupID: number;
+  groupId: number;
   isGameAdmin: boolean;
 };
 
-export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
+export default function GamesPanel( { groupId, isGameAdmin }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
   const { getGames, refresh } = useContext(GamesContext)
   const [newGame, setNewGame] = useState<GameDto>(new GameDto());
   
-  const listGames = getGames(groupID).map(game => {
+  const listGames = getGames(groupId).map(game => {
     if (game.id >= 0) {
 
       let end = "On Going";
@@ -23,7 +23,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
 
       return (   
         <li key={game.id}>
-          <Link to={`/group/${groupID}/game/${game.id}`}>{String(game.name)} ({new Date(game.startDate).toDateString()} - {end})</Link>
+          <Link to={`/group/${groupId}/game/${game.id}`}>{String(game.name)} ({new Date(game.startDate).toDateString()} - {end})</Link>
         </li>
       );
     } else {
@@ -35,7 +35,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
 
   async function addGame() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/games`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/games`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
@@ -46,7 +46,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
         if (!response.ok) {
           throw response.status;
         }
-        refresh(groupID);
+        refresh(groupId);
       }
     );
   }
@@ -78,7 +78,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
           Game Type{}
           <select onChange={(e) => setNewGame(game => {
             const g = game.clone();
-            g.gameTypeID = Number(e.target.value);
+            g.gameTypeId = Number(e.target.value);
             return g;
           })}>
             <option value={1}>Poker</option>
@@ -97,7 +97,7 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
           Season{}
           <select onChange={(e) => setNewGame(game => {
             const g = game.clone();
-            g.seasonID = Number(e.target.value);
+            g.seasonId = Number(e.target.value);
             return g;
           })}>
             <option value={1}>Season 0</option>
@@ -111,30 +111,30 @@ export default function GamesPanel( { groupID, isGameAdmin }: Readonly<Props>) {
 
 class GameDto {
   name: string;
-  gameTypeID: number;
+  gameTypeId: number;
   forCash: boolean;
-  seasonID: number;
+  seasonId: number;
 
   public constructor();
   public constructor(
     name: string,
-    gameTypeID: number,
+    gameTypeId: number,
     forCash: boolean,
-    seasonID: number
+    seasonId: number
   );
   public constructor(
     name?: string,
-    gameTypeID?: number,
+    gameTypeId?: number,
     forCash?: boolean,
-    seasonID?: number
+    seasonId?: number
   ) {
     this.name = name ?? "";
-    this.gameTypeID = gameTypeID ?? 1;
+    this.gameTypeId = gameTypeId ?? 1;
     this.forCash = forCash ?? true;
-    this.seasonID = seasonID ?? 1;
+    this.seasonId = seasonId ?? 1;
   }
 
   clone() {
-    return new GameDto(this.name, this.gameTypeID, this.forCash, this.seasonID);
+    return new GameDto(this.name, this.gameTypeId, this.forCash, this.seasonId);
   }
 }

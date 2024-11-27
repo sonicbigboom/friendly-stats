@@ -7,12 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@link GameRecordDto} represents a new {@link GameRecord}. */
+/** A {@link GameRecordNewDto} represents a new {@link GameRecord}. */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameRecordDto {
-  private Integer userID;
+public class GameRecordNewDto {
+  private Integer userId;
   private Integer scoreChange;
 }

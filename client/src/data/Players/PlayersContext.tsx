@@ -5,10 +5,10 @@ import Member from "../../classes/Member";
 import { MembersContext } from "../Members/MembersContext";
 
 export const PlayersContext = createContext({
-  refresh: (groupID: number, gameID: number) => {},
-  getPlayers: (groupID: number, gameID: number) => { return [] as Player[] },
-  getPlayerMembers: (groupID: number, gameID: number) => { return [] as Member[] },
-  getNonPlayerMembers: (groupID: number, gameID: number) => { return [] as Member[] }
+  refresh: (groupId: number, gameId: number) => {},
+  getPlayers: (groupId: number, gameId: number) => { return [] as Player[] },
+  getPlayerMembers: (groupId: number, gameId: number) => { return [] as Member[] },
+  getNonPlayerMembers: (groupId: number, gameId: number) => { return [] as Member[] }
 });
 
 type Props = { children: ReactNode }
@@ -17,12 +17,12 @@ const REFRESH_RATE = 1 * 60 * 1000;
 
 export default function PlayersContextWrapper({ children }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
-  const [players, setPlayers] = useState<{[gameID: number] : Player[]}>({});
-  const [refreshDates, setRefreshDates] = useState<{[gameID: number] : Date}>({})
+  const [players, setPlayers] = useState<{[gameId: number] : Player[]}>({});
+  const [refreshDates, setRefreshDates] = useState<{[gameId: number] : Date}>({})
   const { getMembers, refresh: refreshMember } = useContext(MembersContext);
 
-  function refresh(groupID: number, gameID: number) {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameID}/players`, {
+  function refresh(groupId: number, gameId: number) {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/players`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
@@ -39,24 +39,24 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
 
       setPlayers(d => { return {
         ...d,
-        [gameID]: json
+        [gameId]: json
       }});
 
       setRefreshDates(d => { return {
         ...d,
-        [gameID]: new Date()
+        [gameId]: new Date()
       }})
     });
 
-    refreshMember(groupID);
+    refreshMember(groupId);
   }
 
-  function getPlayers(groupID: number, gameID: number) {
-    if (!refreshDates[gameID] || refreshDates[gameID].getTime() + REFRESH_RATE < Date.now()) {
-      refresh(groupID, gameID);
+  function getPlayers(groupId: number, gameId: number) {
+    if (!refreshDates[gameId] || refreshDates[gameId].getTime() + REFRESH_RATE < Date.now()) {
+      refresh(groupId, gameId);
     }
 
-    const ps = players[gameID];
+    const ps = players[gameId];
     if (!ps) {
       return [] as Player[];
     }
@@ -64,12 +64,12 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
     return ps;
   }
 
-  function getPlayerMembers(groupID: number, gameID: number) {
-    const members = getMembers(groupID);
-    const players = getPlayers(groupID, gameID);
+  function getPlayerMembers(groupId: number, gameId: number) {
+    const members = getMembers(groupId);
+    const players = getPlayers(groupId, gameId);
     const playerMembers = members.filter((m) => {
       for (const player of players) {
-        if (m.personID === player.personID) {
+        if (m.userId === player.userId) {
           return true;
         }
       }
@@ -79,12 +79,12 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
     return playerMembers;
   }
 
-  function getNonPlayerMembers(groupID: number, gameID: number) {
-    const members = getMembers(groupID);
-    const players = getPlayers(groupID, gameID);
+  function getNonPlayerMembers(groupId: number, gameId: number) {
+    const members = getMembers(groupId);
+    const players = getPlayers(groupId, gameId);
     const playerMembers = members.filter((m) => {
       for (const player of players) {
-        if (m.personID === player.personID) {
+        if (m.userId === player.userId) {
           return false;
         }
       }

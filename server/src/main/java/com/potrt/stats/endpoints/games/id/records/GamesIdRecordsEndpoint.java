@@ -1,12 +1,14 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.endpoints.games.id.records;
 
-import com.potrt.stats.data.gamerecord.GameRecord.MaskedGameRecord;
+import com.potrt.stats.data.gamerecord.GameRecord;
+import com.potrt.stats.data.gamerecord.GameRecordResponse;
 import com.potrt.stats.data.gamerecord.GameRecordService;
 import com.potrt.stats.exceptions.NoResourceException;
 import com.potrt.stats.exceptions.PersonIsNotPlayerException;
 import com.potrt.stats.exceptions.UnauthenticatedException;
 import com.potrt.stats.exceptions.UnauthorizedException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,23 +32,27 @@ public class GamesIdRecordsEndpoint {
   }
 
   /**
-   * The <code>/games/{gameID}/records</code> {@code GET} endpoint returns the records for the
+   * The <code>/games/{gameId}/records</code> {@code GET} endpoint returns the records for the
    * target games.
    *
    * <p>TODO: Add query parameter for user id.
    */
-  @GetMapping("/games/{gameID}/records")
-  public ResponseEntity<List<MaskedGameRecord>> getGameRecords(
-      @PathVariable(value = "gameID") String gameID) {
+  @GetMapping("/games/{gameId}/records")
+  public ResponseEntity<List<GameRecordResponse>> getGameRecords(
+      @PathVariable(value = "gameId") String gameId) {
     try {
-      List<MaskedGameRecord> gameRecords =
-          gameRecordService.getGameRecords(Integer.valueOf(gameID));
+      List<GameRecord> gameRecords = gameRecordService.getGameRecords(Integer.valueOf(gameId));
 
       if (gameRecords.isEmpty()) {
         return new ResponseEntity<>(List.of(), HttpStatus.NO_CONTENT);
       }
 
-      return new ResponseEntity<>(gameRecords, HttpStatus.OK);
+      List<GameRecordResponse> out = new ArrayList<>();
+      for (GameRecord gameRecord : gameRecords) {
+        out.add(new GameRecordResponse(gameRecord));
+      }
+
+      return new ResponseEntity<>(out, HttpStatus.OK);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } catch (UnauthenticatedException e) {
@@ -59,14 +65,15 @@ public class GamesIdRecordsEndpoint {
   }
 
   /**
-   * The <code>/games/{gameID}/records</code> {@code POST} endpoint creates a new record for the
+   * The <code>/games/{gameId}/records</code> {@code POST} endpoint creates a new record for the
    * target game.
    */
-  @PostMapping("/games/{gameID}/records")
+  @PostMapping("/games/{gameId}/records")
   public ResponseEntity<Void> addGameRecord(
-      @PathVariable(value = "gameID") String gameID, @RequestBody GameRecordDto gameRecordDto) {
+      @PathVariable(value = "gameId") String gameId, @RequestBody GameRecordNewDto gameRecordDto) {
     try {
-      gameRecordService.addGameRecord(Integer.valueOf(gameID), gameRecordDto);
+      gameRecordService.addGameRecord(
+          Integer.valueOf(gameId), gameRecordDto.getUserId(), gameRecordDto.getScoreChange());
       return new ResponseEntity<>(HttpStatus.CREATED);
     } catch (NumberFormatException e) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -31,7 +31,7 @@ public class Club {
   private String name;
 
   @Column(nullable = false)
-  private Integer ownerPersonID;
+  private Integer ownerPersonId;
 
   @Column(nullable = false)
   private Integer storedCash;
@@ -40,39 +40,12 @@ public class Club {
   @Convert(converter = NumericBooleanConverter.class)
   private boolean isDeleted;
 
-  /** A {@link Club} with private information hidden. */
-  @NoArgsConstructor
-  @AllArgsConstructor
-  @Getter
-  @Setter
-  public static class MaskedClub {
-    private Integer id;
-    private String name;
-    private Integer ownerPersonID;
-    private Integer storedCash;
-
-    /**
-     * A {@link MaskedClub} with only public information.
-     *
-     * @param club The {@link Club} to mask.
-     */
-    public MaskedClub(Club club) {
-      this(club, false);
-    }
-
-    /**
-     * A {@link MaskedClub} with public information and and potentially sensitive info.
-     *
-     * @param club The {@link Club} to mask.
-     * @param includeSensitive Whether the {@code storedCash} is included.
-     */
-    public MaskedClub(Club club, boolean includeSensitive) {
-      this.id = club.getId();
-      this.name = club.getName();
-      this.ownerPersonID = club.getOwnerPersonID();
-      if (includeSensitive) {
-        this.storedCash = club.storedCash;
-      }
-    }
+  /**
+   * Returns a duplicate without data that a basic member cannot see.
+   *
+   * @return The masked duplicate.
+   */
+  public Club mask() {
+    return new Club(id, name, ownerPersonId, null, isDeleted);
   }
 }

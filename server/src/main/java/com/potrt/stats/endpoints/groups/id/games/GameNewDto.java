@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** A {@link GameDto} represents a new {@link Game}. */
+/** A {@link GameNewDto} represents a new {@link Game}. */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameDto {
+public class GameNewDto {
   private String name;
-  private Integer gameTypeID;
+  private Integer gameTypeId;
   private boolean forCash;
-  private Integer seasonID;
+  private Integer seasonId;
 }

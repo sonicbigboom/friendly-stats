@@ -7,5 +7,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface BankCashTransactionRepository
     extends CrudRepository<BankCashTransaction, Integer> {
 
-  public Iterable<BankCashTransaction> findByPersonIDAndClubID(Integer personID, Integer clubID);
+  public Iterable<BankCashTransaction> findByPersonIdAndClubId(Integer personId, Integer clubId);
 }

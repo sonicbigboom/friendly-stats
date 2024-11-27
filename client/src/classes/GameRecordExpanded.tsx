@@ -1,33 +1,33 @@
 export default class GameRecordExpanded {
   id: number;
-  clubID: number;
-  gameID: number;
-  gameTypeID: number;
+  groupId: number;
+  gameId: number;
+  gameTypeId: number;
   forCash: boolean;
-  seasonID: number;
-  personID: number;
+  seasonId: number;
+  userId: number;
   scoreChange: number;
   date: Date;
 
   constructor();
   constructor(
     id?: number,
-    clubID?: number,
-    gameID?: number,
-    gameTypeID?: number,
+    groupId?: number,
+    gameId?: number,
+    gameTypeId?: number,
     forCash?: boolean,
-    seasonID?: number,
-    personID?: number,
+    seasonId?: number,
+    userId?: number,
     scoreChange?: number,
     date?: Date,
   ) {
     this.id = id ?? -1;
-    this.clubID = clubID ?? -1;
-    this.gameID = gameID ?? -1;
-    this.gameTypeID = gameTypeID ?? -1;
+    this.groupId = groupId ?? -1;
+    this.gameId = gameId ?? -1;
+    this.gameTypeId = gameTypeId ?? -1;
     this.forCash = forCash ?? true;
-    this.seasonID = seasonID ?? -1;
-    this.personID = personID ?? -1;
+    this.seasonId = seasonId ?? -1;
+    this.userId = userId ?? -1;
     this.scoreChange = scoreChange ?? 0;
     this.date = date ?? new Date();
   }

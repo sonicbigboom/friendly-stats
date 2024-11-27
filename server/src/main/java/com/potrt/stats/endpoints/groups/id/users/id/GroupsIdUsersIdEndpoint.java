@@ -26,35 +26,35 @@ public class GroupsIdUsersIdEndpoint {
   }
 
   /**
-   * TODO: The {@code /groups/{groupID}/users/{userID}} {@code GET} endpoint returns user details
+   * TODO: The {@code /groups/{groupId}/users/{userId}} {@code GET} endpoint returns user details
    * for a group.
    */
-  @GetMapping("/groups/{groupID}/users/{userID}")
+  @GetMapping("/groups/{groupId}/users/{userId}")
   public ResponseEntity<Membership> getMembership(
-      @PathVariable(value = "groupID") String groupID,
-      @PathVariable(value = "userID") String userID) {
+      @PathVariable(value = "groupId") String groupId,
+      @PathVariable(value = "userId") String userId) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
   /**
-   * TODO: The {@code /groups/{groupID}/users/{userID}} {@code POST} endpoint adds a user to a
+   * TODO: The {@code /groups/{groupId}/users/{userId}} {@code POST} endpoint adds a user to a
    * group.
    */
-  @PostMapping("/groups/{groupID}/users/{userID}")
+  @PostMapping("/groups/{groupId}/users/{userId}")
   public ResponseEntity<Void> createMembership(
-      @PathVariable(value = "groupID") String groupID,
-      @PathVariable(value = "userID") String userID) {
+      @PathVariable(value = "groupId") String groupId,
+      @PathVariable(value = "userId") String userId) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }
 
   /**
-   * TODO: The {@code /groups/{groupID}/users/{userID}} {@code PATCH} endpoint updates a user's
+   * TODO: The {@code /groups/{groupId}/users/{userId}} {@code PATCH} endpoint updates a user's
    * permission within a group.
    */
-  @PatchMapping("/groups/{groupID}/users/{userID}")
+  @PatchMapping("/groups/{groupId}/users/{userId}")
   public ResponseEntity<Void> updateMembership(
-      @PathVariable(value = "groupID") String groupID,
-      @PathVariable(value = "userID") String userID,
+      @PathVariable(value = "groupId") String groupId,
+      @PathVariable(value = "userId") String userId,
       @RequestBody Membership membership) {
     return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
   }

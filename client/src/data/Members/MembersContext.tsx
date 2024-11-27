@@ -3,9 +3,9 @@ import { TokenContext } from "../Token/TokenContext";
 import Member from "../../classes/Member";
 
 export const MembersContext = createContext({
-  refresh: (groupID: number) => {},
-  getMembers: (groupID: number) => { return [] as Member[] },
-  getMember: (groupID: number, userID: number) => { return new Member() }
+  refresh: (groupId: number) => {},
+  getMembers: (groupId: number) => { return [] as Member[] },
+  getMember: (groupId: number, userId: number) => { return new Member() }
 });
 
 type Props = { children: ReactNode }
@@ -14,11 +14,11 @@ const REFRESH_RATE = 1 * 60 * 1000;
 
 export default function MembersContextWrapper({ children }: Readonly<Props>) {
   const { token } = useContext(TokenContext);
-  const [members, setMembers] = useState<{[groupID: number] : Member[]}>({});
-  const [refreshDates, setRefreshDates] = useState<{[groupID: number] : Date}>({})
+  const [members, setMembers] = useState<{[groupId: number] : Member[]}>({});
+  const [refreshDates, setRefreshDates] = useState<{[groupId: number] : Date}>({})
 
-  function refresh(groupID: number) {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupID}/users`, {
+  function refresh(groupId: number) {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/users`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {
@@ -35,22 +35,22 @@ export default function MembersContextWrapper({ children }: Readonly<Props>) {
 
       setMembers(d => {return {
         ...d,
-        [groupID]: json
+        [groupId]: json
       }});
 
       setRefreshDates(d => {return {
         ...d,
-        [groupID]: new Date()
+        [groupId]: new Date()
       }})
     });
   }
 
-  function getMembers(groupID: number) {
-    if (!refreshDates[groupID] || refreshDates[groupID].getTime() + REFRESH_RATE < Date.now()) {
-      refresh(groupID);
+  function getMembers(groupId: number) {
+    if (!refreshDates[groupId] || refreshDates[groupId].getTime() + REFRESH_RATE < Date.now()) {
+      refresh(groupId);
     }
 
-    const ms = members[groupID];
+    const ms = members[groupId];
     if (!ms) {
       return [] as Member[];
     }
@@ -58,10 +58,10 @@ export default function MembersContextWrapper({ children }: Readonly<Props>) {
     return ms;
   }
 
-  function getMember(groupID: number, userID: number) {
-    const ms = getMembers(groupID);
+  function getMember(groupId: number, userId: number) {
+    const ms = getMembers(groupId);
 
-    const member = ms.find((m:Member) => { return m.personID === userID; })
+    const member = ms.find((m:Member) => { return m.userId === userId; })
     if (!member) {
       return new Member()
     }

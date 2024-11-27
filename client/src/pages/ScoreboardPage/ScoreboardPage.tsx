@@ -5,18 +5,18 @@ import { GroupsContext } from "../../data/Groups/GroupsContext";
 import ScoreboardPanel from "../../components/ScoreboardPanel/ScoreboardPanel";
 
 export default function ScoreboardPage() {
-  const { groupID } = useParams()
+  const { groupId } = useParams()
   const { getGroup } = useContext(GroupsContext);
-  const [ gameTypeID, setGameTypeID ] = useState(1);
+  const [ gameTypeId, setGameTypeId ] = useState(1);
   const [ forCash, setForCash ] = useState(true);
-  const [ seasonID, setSeasonID ] = useState(1);
-  const [ userID, setUserID ] = useState(-1);
+  const [ seasonId, setSeasonId ] = useState(1);
+  const [ userId, setUserId ] = useState(-1);
 
   return (
     <>
-      <h2>{getGroup(Number(groupID)).name} Scoreboard</h2>
+      <h2>{getGroup(Number(groupId)).name} Scoreboard</h2>
         <div className="column">
-          <ScoreboardPanel groupID={Number(groupID)} gameTypeID={gameTypeID} forCash={forCash} seasonID={seasonID} userID={userID} />
+          <ScoreboardPanel groupId={Number(groupId)} gameTypeId={gameTypeId} forCash={forCash} seasonId={seasonId} userId={userId} />
         </div>
       <br />
     </>

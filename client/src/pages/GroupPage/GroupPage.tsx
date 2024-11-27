@@ -7,19 +7,19 @@ import { Link } from "react-router-dom";
 import { GroupsContext } from "../../data/Groups/GroupsContext";
 
 export default function GroupPage() {
-  const { groupID } = useParams()
+  const { groupId } = useParams()
   const { getGroup } = useContext(GroupsContext);
 
   return (
     <>
-      <h2>{getGroup(Number(groupID)).name}</h2>
+      <h2>{getGroup(Number(groupId)).name}</h2>
       <div className="row">
         <div className="column">
-          <MembersPanel groupID={Number(groupID)} isCashAdmin={true}/>
+          <MembersPanel groupId={Number(groupId)} isCashAdmin={true}/>
         </div>
         <div className="column">
-          <Link to={`/group/${Number(groupID)}/scoreboard`}>Scoreboard</Link>
-          <GamesPanel groupID={Number(groupID)} isGameAdmin={true}/>
+          <Link to={`/group/${Number(groupId)}/scoreboard`}>Scoreboard</Link>
+          <GamesPanel groupId={Number(groupId)} isGameAdmin={true}/>
         </div>
       </div>
       <br />

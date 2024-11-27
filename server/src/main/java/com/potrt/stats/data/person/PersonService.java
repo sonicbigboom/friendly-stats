@@ -1,7 +1,6 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.person;
 
-import com.potrt.stats.data.person.Person.MaskedPerson;
 import com.potrt.stats.exceptions.PersonDoesNotExistException;
 import com.potrt.stats.security.auth.RegisterDto;
 import com.potrt.stats.security.auth.exceptions.EmailAlreadyExistsException;
@@ -98,11 +97,11 @@ public class PersonService {
   /**
    * Enables a {@link Person} account.
    *
-   * @param personID The {@link Person} to enable's id.
+   * @param personId The {@link Person} to enable's id.
    * @apiNote This method does not check authorization.
    */
-  public void enableWithoutAuthCheck(Integer personID) {
-    personRepository.enable(personID);
+  public void enableWithoutAuthCheck(Integer personId) {
+    personRepository.enable(personId);
   }
 
   /**
@@ -110,9 +109,9 @@ public class PersonService {
    * everyone is included).
    *
    * @param filter A string that is compared to all of a {@link Person}'s fields.
-   * @return A {@link List} of {@link MaskedPerson}s who contain the field.
+   * @return A {@link List} of {@link Person}s who contain the field.
    */
-  public List<MaskedPerson> getPersons(String filter) {
+  public List<Person> getPersons(String filter) {
     Iterable<Person> persons;
     if (filter == null) {
       persons = personRepository.findAll();
@@ -120,12 +119,12 @@ public class PersonService {
       persons = personRepository.findAllThatContain("%" + filter + "%");
     }
 
-    List<MaskedPerson> maskedPersons = new ArrayList<>();
+    List<Person> maskedPersons = new ArrayList<>();
     for (Person person : persons) {
       if (person.isDeleted() || person.isPrivate()) {
         continue;
       }
-      maskedPersons.add(new MaskedPerson(person));
+      maskedPersons.add(person);
     }
 
     return maskedPersons;

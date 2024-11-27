@@ -1,7 +1,6 @@
 /* Copyright (c) 2024 */
 package com.potrt.stats.data.club;
 
-import com.potrt.stats.data.club.Club.MaskedClub;
 import com.potrt.stats.data.membership.MembershipService;
 import com.potrt.stats.data.membership.PersonRole;
 import com.potrt.stats.data.person.Person;
@@ -36,20 +35,27 @@ public class ClubService {
   /**
    * Gets a {@link Club} by its id.
    *
-   * @param clubID The {@link Club} id.
-   * @return A {@link MaskedClub}.
+   * @param clubId The {@link Club} id.
+   * @return The {@link Club}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    * @throws UnauthorizedException Thrown if the caller is not a {@code Person} of the {@link Club}.
    * @throws NoResourceException Thrown if there is no {@link Club} with this id.
    */
-  public MaskedClub getClub(Integer clubID)
+  public Club getClub(Integer clubId)
       throws UnauthenticatedException, UnauthorizedException, NoResourceException {
-    securityService.assertHasPermission(clubID, PersonRole.PERSON);
+    securityService.assertHasPermission(clubId, PersonRole.PERSON);
 
-    Club club = clubRepository.findById(clubID).get();
-    return new MaskedClub(
-        club,
-        membershipService.hasRole(securityService.getPersonID(), clubID, PersonRole.CASH_ADMIN));
+    boolean isCashAdmin =
+        membershipService.hasPermission(
+            securityService.getPersonId(), clubId, PersonRole.CASH_ADMIN);
+
+    Club club = clubRepository.findById(clubId).get();
+
+    if (!isCashAdmin) {
+      club = club.mask();
+    }
+
+    return club;
   }
 
   /**
@@ -59,12 +65,12 @@ public class ClubService {
    * @return The new {@link MaskedClub}.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    */
-  public MaskedClub createClub(String name) throws UnauthenticatedException {
-    Integer personID = securityService.getPersonID();
-    Club club = new Club(null, name, personID, 0, false);
+  public Club createClub(String name) throws UnauthenticatedException {
+    Integer personId = securityService.getPersonId();
+    Club club = new Club(null, name, personId, 0, false);
     club = clubRepository.save(club);
-    membershipService.updatePermissions(personID, club.getId(), PersonRole.OWNER);
-    return new MaskedClub(club, true);
+    membershipService.updatePermissions(personId, club.getId(), PersonRole.OWNER);
+    return club;
   }
 
   /**
@@ -73,16 +79,16 @@ public class ClubService {
    * @return A {@link List} of {@link MaskedClub}s that the caller is a member of.
    * @throws UnauthenticatedException Thrown if the caller is not authenticated.
    */
-  public List<MaskedClub> getClubs() throws UnauthenticatedException {
-    Iterable<Integer> clubIDs = membershipService.getClubIDs();
+  public List<Club> getClubs() throws UnauthenticatedException {
+    Iterable<Integer> clubIds = membershipService.getClubIds();
 
-    List<MaskedClub> clubs = new ArrayList<>();
-    for (Club club : clubRepository.findAllById(clubIDs)) {
+    List<Club> clubs = new ArrayList<>();
+    for (Club club : clubRepository.findAllById(clubIds)) {
       if (club.isDeleted()) {
         continue;
       }
 
-      clubs.add(new MaskedClub(club));
+      clubs.add(club);
     }
 
     return clubs;
