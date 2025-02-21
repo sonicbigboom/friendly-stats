@@ -7,6 +7,7 @@ A website that lets friends track stats with one another. (Poker games, silly be
 - [Tools](#tools)
 - [Server](#server)
 - [Client](#client)
+- [DevOps](#dev-ops)
 - [Goal](#goals)
 
 ## Links
@@ -80,6 +81,61 @@ Copy `.env.example` to `.env` and edit variables as needed:
 #### Local Run
 Run: `npm start`
 
+## DevOps
+
+To ensure SSL connection, prevent direct access to my private network, and properly route domains, this project uses a complex traffic routing system.
+
+### SSL Certificate
+
+This project uses Letsencrypt, a free certificate authority.
+To use Letsencrypt with the multiple subdomains in this project, a wildcard SSL certificate is used for the domain to streamline the process.
+
+### Reverse Proxy
+
+Two proxy servers are used:
+- WAN proxy
+- LAN proxy
+
+Nginx is used here for a variety of considerations
+- Cost
+	- Public-facing hosts/VMs/containers requires minimum resources
+	- CPU and memory intensive work run on private VMs/containers
+- Security
+	- Hide web/api/db servers in private network
+	- Minimize servers atack surface
+
+### Network Topology
+
+```mermaid
+flowchart TD
+    client(Client Browser) --> |All Traffic| internet1(Public Internet)
+    internet1 --> |80 & 443| nginxWAN(WAN nginx)
+    nginxWAN --> | | isSSL{is HTTPS / SSL ?}
+    isSSL --> |HTTP| httpVhost(HTTP Virtual Host)
+    httpVhost --> |HTTP| http302[302 for Secure Domains]
+    httpVhost --> |HTTP| otherHttpSites[Static Sites]
+    http302 --> |Redirect| client
+    isSSL --> |SSL Streaming| internet2(Public Internet)
+    internet2 --> |Private Proxy Endpoint, e.g., 8443| router(Router / Firewall)
+    router --> |Port Forwarding| nginxLAN1(LAN nginx Step 1)
+    nginxLAN1 --> |SSL Streaming and Termination| nginxLAN2((LAN nginx Step 2))
+    nginxLAN2 --> |www Subdomain| dockerWEB((LAN Docker WEB))
+    nginxLAN2 --> |api Subdomain| dockerAPI((LAN Docker API))
+    dockerAPI --> |SQL Traffic on Local Docker Network| dockerDB((LAN Docker DB))
+```
+
+### Important Points
+
+- SSL proxy is insufficient and inappropriate because WAN traffic traverses the public internet.
+- SSL streaming is required to encrypt traffic across the internet.
+- By default, Nginx (from APT package and older Docker images) is not compiled with SSL Streaming option.
+  - Recent Docker images come with SSL Streaming option compiled.
+  - Exec into the container and run `nginx -V` to check options for `stream_ssl_module` and `stream_ssl_preread_module`.
+- SSL Termination takes place at LAN Proxy
+	- Hence, wildcard SSL certificate is not needed on WAN Proxy; only needed by LAN Proxy.
+- Virtual Host is not possible with SSL Stream since it cannot peak into the header.
+- Virtual Host is instead handled on the LAN side.
+
 ## Goals
 - Users information is tied to an account (oauth2?)
 - Users can create a group that tracks game data
@@ -89,3 +145,4 @@ Run: `npm start`
 		- This should also handle buy in and cash outs
 	- Another 'game' is bets
 	- It should be easy for users to make their own games / stat counters
+- Set up auto-renewal (every 90 days) for Letsencrypt

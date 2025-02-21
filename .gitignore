@@ -26,5 +26,8 @@ replay_pid*
 # IDE Support
 .vscode
 
+# Mac
+.DS_Store
+
 # Secrets
 .env
