@@ -49,7 +49,7 @@ services:
     container_name: friendly_stats_api
     image: friendly_stats_api_image
     build:
-      context: ./server/
+      context: ./api/
       dockerfile: Dockerfile
     ports:
       - ${FRIENDLY_STATS_API_PORT}:8080
@@ -88,7 +88,7 @@ services:
     image: friendly_stats_web_image
     restart: always
     build:
-      context: ./client/
+      context: ./web/
       dockerfile: Dockerfile
       args:
         REACT_APP_FRIENDLY_STATS_API_HOST: ${REACT_APP_FRIENDLY_STATS_API_HOST}
