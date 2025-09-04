@@ -31,7 +31,7 @@ export default function MembersPanel( { groupId, isCashAdmin }: Readonly<Props>)
 
   async function addMember() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/users`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups/${groupId}/users`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
@@ -106,7 +106,7 @@ export function BankTransaction({ groupId, userId, isCashAdmin }: Readonly<BankT
 
   function depositTransaction() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/bank`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups/${groupId}/bank`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),

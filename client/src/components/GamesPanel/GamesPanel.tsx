@@ -35,7 +35,7 @@ export default function GamesPanel( { groupId, isGameAdmin }: Readonly<Props>) {
 
   async function addGame() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/games`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups/${groupId}/games`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),

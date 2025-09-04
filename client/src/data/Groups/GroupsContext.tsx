@@ -18,7 +18,7 @@ export default function GroupsContextWrapper({ children }: Readonly<Props>) {
   const [refreshDate, setRefreshDate] = useState(new Date(0))
 
   function refresh() {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {

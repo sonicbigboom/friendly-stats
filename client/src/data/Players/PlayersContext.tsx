@@ -22,7 +22,7 @@ export default function PlayersContextWrapper({ children }: Readonly<Props>) {
   const { getMembers, refresh: refreshMember } = useContext(MembersContext);
 
   function refresh(groupId: number, gameId: number) {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/players`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/games/${gameId}/players`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {

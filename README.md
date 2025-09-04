@@ -72,8 +72,8 @@ Run: `gradlew bootRun`
 ### Setup
 Copy `.env.example` to `.env` and edit variables as needed:
 
-`REACT_APP_FRIENDLY_STATS_CLIENT_HOST` - The base client application url. For example: `localhost:3000` \
-`REACT_APP_FRIENDLY_STATS_SERVER_HOST` - The base server application url. For example: `https://api.potrt.com/friendly-stats` or `http://localhost:8080` \
+`REACT_APP_FRIENDLY_STATS_WEB_HOST` - The base client application url. For example: `localhost:3000` \
+`REACT_APP_FRIENDLY_STATS_API_HOST` - The base server application url. For example: `https://api.potrt.com/friendly-stats` or `http://localhost:8080` \
 `REACT_APP_FRIENDLY_STATS_GOOGLE_CLIENT_ID` - The google oauth client id for clients.
 
 ### Run

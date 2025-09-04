@@ -18,7 +18,7 @@ export default function MembersContextWrapper({ children }: Readonly<Props>) {
   const [refreshDates, setRefreshDates] = useState<{[groupId: number] : Date}>({})
 
   function refresh(groupId: number) {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/users`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups/${groupId}/users`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {

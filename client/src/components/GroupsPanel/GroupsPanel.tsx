@@ -25,7 +25,7 @@ export default function GroupsPanel() {
 
   async function createGroup() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups?name=${newGroupName}`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups?name=${newGroupName}`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token }),

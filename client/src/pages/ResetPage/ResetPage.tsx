@@ -12,7 +12,7 @@ async function resetUser(
   code: string
 ) {
   return fetch(
-    `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/reset`,
+    `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/auth/reset`,
     {
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),
@@ -27,7 +27,7 @@ async function resetUser(
 
 async function sendToken(email: string) {
   return fetch(
-    `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/reset?email=` +
+    `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/auth/reset?email=` +
       email,
     {
       method: "GET",

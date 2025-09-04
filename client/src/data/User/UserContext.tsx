@@ -11,7 +11,7 @@ export default function UserContextWrapper({ children }: Readonly<Props>) {
   const [user, setUser] = useState(new User());
 
   function refresh() {
-    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/me`, {
+    fetch(`${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/me`, {
       method: "GET",
       headers: new Headers({ Authorization: token }),
     }).then(async (response) => {

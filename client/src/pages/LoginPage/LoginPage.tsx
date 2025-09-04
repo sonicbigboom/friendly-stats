@@ -10,7 +10,7 @@ async function loginUser(credentials: {
   authType: string;
 }) {
   return fetch(
-    `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/auth/login`,
+    `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/auth/login`,
     {
       method: "POST",
       headers: new Headers({ "content-type": "application/json" }),

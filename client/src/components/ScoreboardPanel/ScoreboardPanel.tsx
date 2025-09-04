@@ -27,7 +27,7 @@ export default function ScoreboardPanel( { groupId, gameTypeId, forCash, seasonI
 
   useEffect(() => {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/groups/${groupId}/records${parameters}`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/groups/${groupId}/records${parameters}`,
       {
         method: "GET",
         headers: new Headers({ Authorization: token, "content-type": "application/json" })

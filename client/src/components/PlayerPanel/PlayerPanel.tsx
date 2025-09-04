@@ -48,7 +48,7 @@ export default function PlayerPanel( { groupId, gameId, isGameAdmin, isCashAdmin
     }
     setNewPlayerId(-1)
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/players`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/games/${gameId}/players`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
@@ -101,7 +101,7 @@ export function GameRecord({ userId, groupId, gameId, isGameAdmin }: Readonly<Ga
 
   function recordScoreChange() {
     fetch(
-      `${process.env.REACT_APP_FRIENDLY_STATS_SERVER_HOST}/games/${gameId}/records`,
+      `${process.env.REACT_APP_FRIENDLY_STATS_API_HOST}/games/${gameId}/records`,
       {
         method: "POST",
         headers: new Headers({ Authorization: token, "content-type": "application/json" }),
