@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JwtTokenService {
 
-  private static final long EXPIRATION_TIME_IN_MILLISECONDS = (long) 60 * 60 * 1000;
+  private static final long EXPIRATION_TIME_IN_MILLISECONDS = (long) 24 * 60 * 60 * 1000;
   private static final String JWT_SIGNATURE = System.getenv("FRIENDLY_STATS_SIGNATURE");
 
   /**
