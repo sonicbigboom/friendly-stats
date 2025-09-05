@@ -20,7 +20,7 @@ export default function Wrapper({ children, token, setToken }: Readonly<Props>) 
   return (
     <TokenContext.Provider value={tokenProvider}>
       <GoogleOAuthProvider clientId={clientId}>
-        <BrowserRouter>{children}</BrowserRouter>
+        <BrowserRouter basename={process.env.REACT_APP_FRIENDLY_STATS_BASENAME}>{children}</BrowserRouter>
       </GoogleOAuthProvider>
     </TokenContext.Provider>
   );
